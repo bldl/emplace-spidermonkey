@@ -9,8 +9,10 @@
 - Mikhail Barash
 
 ## topics of discussion
+// what was discussed during the meeting
 
 ## descisions
+// changes
 
 ## Topics for upcoming meetings
 ### 2. sep (Rolf)
