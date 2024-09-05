@@ -28,3 +28,8 @@
 - make a 1-page summary of the old vs. new version
 - use ChatGPT to answer: TODO: Design question: Should the callback function take the key as an argument?
 
+- implement Jonas's spec of f(key, value) in SpiderMonkey
+- write the spec for the other function
+- implement that spec in SpiderMonkey
+- write both specs using ecmarkup
+- design question: pros/cons of design (using chatgpt)
