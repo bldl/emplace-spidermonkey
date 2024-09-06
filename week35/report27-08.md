@@ -7,12 +7,12 @@
 - Vetle Larsen
 - Lauritz Angeltveit
 - Mikhail Barash
+- Dan Minor
 
-## topics of discussion
-// what was discussed during the meeting
-
-## descisions
-// changes
+## Report
+- Python DefaultDict, emplace (python inspired)
+- Simpler API
+- Design questions
 
 ## Topics for upcoming meetings
 ### 2. sep (Rolf)
@@ -26,7 +26,7 @@
 - start implementing `emplace`
 - todo for the polyfill (// Todo: verify that callback is callable)
 - make a 1-page summary of the old vs. new version
-- use ChatGPT to answer: TODO: Design question: Should the callback function take the key as an argument?
+- TODO: Design question: Should the callback function take the key as an argument?
 
 - implement Jonas's spec of f(key, value) in SpiderMonkey
 - write the spec for the other function
