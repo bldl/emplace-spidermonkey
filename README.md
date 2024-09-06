@@ -67,7 +67,7 @@ function MapEmplace(key, value) {
         this,
         key,
         value,             
-        "MapEmplaceKV"
+        "MapEmplace"
       );
     }
     
@@ -76,7 +76,6 @@ function MapEmplace(key, value) {
   
     for (var e of allowContentIter(entries)) {
       var eKey = e[0];   
-      var eValue = e[1];
       // Step 3.a. 
       if (SameValueZero(eKey, key)) {
         return callContentFunction(std_Map_get, M, key);

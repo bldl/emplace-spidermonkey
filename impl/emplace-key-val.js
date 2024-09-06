@@ -1,32 +1,31 @@
 function MapEmplace(key, value) {
-    //1
+    // Step 1.
     var M = this;
     
-    //2
+    // Step 2.
     if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
       return callFunction(      
         CallMapMethodIfWrapped, 
         this,
         key,
         value,             
-        "MapEmplaceKV"
+        "MapEmplace"
       );
     }
     
-    //3
+    // Step 3.
     var entries = callFunction(std_Map_entries, M);
   
     for (var e of allowContentIter(entries)) {
       var eKey = e[0];   
-      var eValue = e[1];
-  
+      // Step 3.a. 
       if (SameValueZero(eKey, key)) {
         return callContentFunction(std_Map_get, M, key);
       }
     }
-    //4
+    // Step 4.
     callContentFunction(std_Map_set, M, key, value);
     
-    //5
-    return M;
-  }
+    // Step 5.
+    return callContentFunction(std_Map_get, M, key);
+}
