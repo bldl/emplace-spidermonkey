@@ -1,4 +1,4 @@
-function MapEmplaceKV(key, value) {
+function MapEmplace(key, value) {
     //1
     var M = this;
     
