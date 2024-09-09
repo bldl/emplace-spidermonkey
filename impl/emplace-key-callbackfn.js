@@ -1,4 +1,4 @@
-function MapEmplaceCB(key, callbackfn) {
+function MapEmplace(key, callbackfn) {
   //Step 1
   var M = this;
 
@@ -9,7 +9,7 @@ function MapEmplaceCB(key, callbackfn) {
       this,
       key,
       callbackfn,             
-      "MapEmplaceCB"
+      "MapEmplace"
     );
   }
 
