@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+<script src="./spec.js"></script>
+<pre class="metadata">
+title: Map.prototype.emplace
+stage: 2
+contributors: Erica Pramer
+</pre>
+
+<emu-clause id="sec-map.prototype.emplace">
+  <h1>Map.prototype.emplace ( _key_, _callbackfn_ )</h1>
+  <p>When the emplace method is called the following steps are taken:</p>
+  <emu-alg>
+    1. Let _M_ be the *this* value.
+    1. Perform ? <emu-xref id="_ref_0" aoid="RequireInternalSlot"></emu-xref>(_M_, [[MapData]]).
+    1. If <emu-xref id="_ref_1" aoid="IsCallable"></emu-xref>(_callbackfn_) is false, throw a TypeError exception.
+    1. For each <emu-xref href="#sec-list-and-record-specification-type"></emu-xref> { [[Key]], [[Value]] } _e_ that is an element of _M_.[[MapData]], do
+      1. If _e_.[[Key]] is not empty and <emu-xref id="_ref_2" aoid="SameValueZero"></emu-xref>(_e_.[[Key]], _key_) is *true*, return _e_.[[Value]].
+    1. Let _inserted_ be ? <emu-xref id="_ref_3" aoid="Call"></emu-xref>(_callbackfn_, _key_, _M_).
+    1. Set _e_.[[Value]] to _inserted_.
+    1. Return _e_.[[Value]].
+  </emu-alg>
+</emu-clause>
