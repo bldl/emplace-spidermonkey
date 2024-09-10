@@ -91,6 +91,8 @@ function MapEmplace(key, value) {
 
 ## `emplace(key, cb)`
 
+The `emplace(key, callbackfn)` function checks if a given key exists in a map. If the key is present, it returns the associated value. If the key does not exist, it invokes the provided `callbackfn` to compute a new value for the key, inserts the key-value pair into the map, and then returns the newly inserted value. This approach allows for the deferred creation of the value only when the key is not already in the map, combining retrieval and insertion logic into a single operation.
+
 ```js
 function MapEmplace(key, callbackfn) {
   //Step 1
