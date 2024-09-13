@@ -1,0 +1,55 @@
+{
+  "name": "ecmarkdown",
+  "version": "8.1.0",
+  "description": "A compiler for \"Ecmarkdown\" algorithm shorthand into HTML.",
+  "main": "dist/ecmarkdown.js",
+  "scripts": {
+    "build": "tsc -p src",
+    "prepublish": "npm run build",
+    "test": "mocha test/",
+    "rebaseline": "UPDATE_SNAPSHOTS=true npm run test",
+    "lint": "eslint --ext .js,.ts src test",
+    "format": "prettier --write src test"
+  },
+  "repository": "https://github.com/tc39/ecmarkdown",
+  "keywords": [
+    "ecmascript",
+    "javascript",
+    "specs",
+    "typography",
+    "markup",
+    "markdown",
+    "html",
+    "code"
+  ],
+  "files": [
+    "dist/*.js",
+    "dist/*.d.ts"
+  ],
+  "dependencies": {
+    "escape-html": "^1.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "inline-elements": "^1.0.0",
+    "js-beautify": "1.13.0",
+    "mocha": "^7.1.1",
+    "prettier": "^2.0.4",
+    "typescript": "^3.8.3"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "printWidth": 100
+  },
+  "author": "Domenic Denicola <d@domenic.me> (https://domenic.me/)",
+  "contributors": [
+    "Domenic Denicola <d@domenic.me> (https://domenic.me/)",
+    "Brian Terlson <brian.terlson@microsoft.com> (https://github.com/bterlson)"
+  ],
+  "license": "WTFPL"
+}

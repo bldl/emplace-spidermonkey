@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@tc39/ecma262-biblio": "^2.1.2771",
+    "ecmarkup": "^19.1.0"
+  }
+}
