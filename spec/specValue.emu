@@ -23,7 +23,7 @@ contributors: Erica Pramer
 </emu-clause>
 
 <emu-clause id="sec-weakmap.prototype.emplace">
-  <h1>WeakMap.prototype.emplace ( _key_, _handler_ )</h1>
+  <h1>WeakMap.prototype.emplace ( _key_, _value_ )</h1>
   <p>When the emplace method is called the following steps are taken:</p>
   <emu-alg>
     1. Let _M_ be the *this* value.
