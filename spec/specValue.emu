@@ -5,7 +5,7 @@
 <pre class="metadata">
 title: Map.prototype.emplace
 stage: 2
-contributors: Erica Pramer
+contributors: Jonas Haukenes
 </pre>
 
 <emu-clause id="sec-map.prototype.emplace">
