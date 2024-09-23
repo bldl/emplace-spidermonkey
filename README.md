@@ -3,6 +3,7 @@
 ## The `Map.prototype.emplace` proposal
 What is it, how does it work, motivation and why it's needed. se [Readme i orginal ](https://github.com/tc39/proposal-upsert/blob/master/README.md)
 
+
 __What is it?__
 Map.prototype.emplace is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs. 
 
@@ -21,10 +22,14 @@ __The function follow these steps:__
 
 __What is the motivation?__ Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
 
-## installing mozilla unified
-for spidermonkey
-building and runnning
-hg/mercurial and git
+## Installing mozilla unified
+
+Installing Mozilla Unified and other tools.
+Specific instructions for different OS by link.
+hg/mercurial or git.
+Building and running the engine.
+Changing the code and rebuild.
+
 
 ## Tools
 how to read specs, how to use searchfox
