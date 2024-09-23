@@ -3,14 +3,14 @@
 ## The `Map.prototype.emplace` proposal
 What is it, how does it work, motivation and why it's needed. se [Readme i orginal ](https://github.com/tc39/proposal-upsert/blob/master/README.md)
 
-## installing mozilla unified
+## Installing mozilla unified
 
 ### 1.1 Installation of SpiderMonkey and required tools
 Naivgate in terminal to the folder you wish to place `mozilla-unified`
 Different process depending on OS, look at these links.
 * [Build on linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-linux)
-* https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-mac
-* https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-windows
+* [Build on mac](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-mac)
+* [Build on windows](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-windows)
   
 When asked which version of Firefox, choose `5: SpiderMonkey JavaScript engine`.
 Use hg/mercurial, but git is being tested(?).
