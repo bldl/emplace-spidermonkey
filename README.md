@@ -33,3 +33,136 @@ Changing the code and rebuild.
 how to read specs, how to use searchfox
 
 ## implementation
+### creating a function
+
+create a hook in `MapObject.cpp`
+
+`JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),`
+
+in `Map.js`
+
+```javascript
+function MapEmplace(key, handler) {
+  return 42
+}
+```
+
+build to test
+
+### implement the first line
+
+```
+1. Let M be the this value.
+```
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+}
+```
+
+### moving on
+explain the purpose of performing internal slot
+
+borrow from ForEach
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+}
+```
+
+self hosted code is different
+
+```cpp
+// Standard builtins used by self-hosting.
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+```
+
+use std_Map_entries to get the list of entry records
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+}
+```
+
+step 4 iterating through the entries
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    //...
+  }
+}
+```
+
+verify that the given key is in the map if update
+perform abstract operation SameValueZero
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      //...
+    }
+  }
+}
+```
