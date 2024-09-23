@@ -39,6 +39,9 @@ You can also run with a file:
 ./mach run helloworld.js
 ```
 
+### 1.3 Applying simple changes
+Look at file ... and change function ... to return ...
+Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
 
 ## Tools
 how to read specs, how to use searchfox
