@@ -66,6 +66,10 @@ explain the purpose of performing internal slot
 
 borrow from ForEach
 
+```
+2. Perform ? RequireInternalSlot(M, [[MapData]]).
+```
+
 ```javascript
 function MapEmplace(key, handler) {
   var M = this;
@@ -93,6 +97,10 @@ self hosted code is different
 
 use std_Map_entries to get the list of entry records
 
+```
+3. Let entries be the List that is M.[[MapData]].
+```
+
 ```javascript
 function MapEmplace(key, handler) {
   var M = this;
@@ -112,6 +120,10 @@ function MapEmplace(key, handler) {
 ```
 
 step 4 iterating through the entries
+
+```
+4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+```
 
 ```javascript
 function MapEmplace(key, handler) {
@@ -139,6 +151,10 @@ function MapEmplace(key, handler) {
 
 verify that the given key is in the map if update
 perform abstract operation SameValueZero
+
+```
+4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
+```
 
 ```javascript
 function MapEmplace(key, handler) {
