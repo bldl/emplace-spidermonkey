@@ -2,6 +2,8 @@
 
 ## The `Map.prototype.emplace` proposal
 
+**TODO code examples**
+
 __What is it?__
 Map.prototype.emplace is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs. 
 
@@ -57,6 +59,8 @@ You can also run with a file:
 ```
 
 ### 3. Applying simple changes
+**TODO: specify selfhosted code files located in ../builtin**
+**TODO: what is selfhosted code? different to normal js/limitations (alternatively in impl section)**
 Look at file ... and change function ... to return ...
 Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
 
@@ -99,7 +103,7 @@ Test your changes by rebuilding and running the SpiderMonkey and then call the f
   - Then, the new element is added to the array.
   - Finally, the length property is updated to reflect the added element.
 
-
+**TODO first task is getting a rough understanding of the emplace spec, write line by line understamding, provide example solution**
 
 ## Tools
 how to read specs, how to use searchfox
@@ -255,5 +259,17 @@ function MapEmplace(key, handler) {
 }
 ```
 
-## Write ecmarkup 
+...
+## changes to the proposal
 
+## explaining the new proposal
+- simplicity over functionality etc
+
+## Writing the new spec in ecmarkup 
+
+## implementing the new proposal
+
+## optimization
+
+## testing
+   - functionality should be tested before optimization?
