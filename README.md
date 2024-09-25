@@ -284,6 +284,20 @@ function MapEmplace(key, handler) {
 ```
 4ai. If HasProperty(handler, "update") is true, then
 ```
+In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use selfhosted
+Object methods on almost "everything".
+
+```cpp
+// Code snippet from Object.cpp
+static const JSFunctionSpec object_methods[] = {
+    //...
+    JS_SELF_HOSTED_FN("toLocaleString", "Object_toLocaleString", 0, 0),
+    JS_SELF_HOSTED_FN("valueOf", "Object_valueOf", 0, 0),
+    JS_SELF_HOSTED_FN("hasOwnProperty", "Object_hasOwnProperty", 1, 0),
+    //...
+    JS_FS_END,
+};
+```
 
 <details>
 <summary>Solution</summary>
@@ -319,6 +333,227 @@ function MapEmplace(key, handler) {
 
 </details>
 
+```
+4ai1. Let updateFn be ? Get(handler, "update").
+```
+
+get the update handler if its specified.
+
+<details>
+<summary>Solution</summary>
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+        var updateFN = handler['update'];
+        //...
+      }
+    }
+  }
+}
+```
+
+</details>
+
+```
+4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
+```
+
+Use `callFunction` to call updateFN, store it as `var updated`
+
+<details>
+<summary>Solution</summary>
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+        var updateFN = handler['update'];
+        var updated = callFunction(updateFN, M, Value, key);
+        //...
+      }
+    }
+  }
+}
+```
+
+</details>
+
+```
+4ai3. Set e.[[Value]] to updated.
+```
+
+Perform a set operation on the Map to update it.
+
+<details>
+<summary>Solution</summary>
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+        var updateFN = handler['update'];
+        var updated = callFunction(updateFN, M, Value, key);
+        callContentFunction(std_Map_set, M, key, updated);
+      }
+    }
+  }
+}
+```
+
+</details>
+
+```
+4aii. Return e.[[Value]].
+```
+
+Now that we have updated the map, the updated value should be returned.
+
+<details>
+<summary>Solution</summary>
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+        var updateFN = handler['update'];
+        var updated = callFunction(updateFN, M, Value, key);
+        callContentFunction(std_Map_set, M, key, updated);
+      }
+
+      return updated;
+    }
+  }
+}
+```
+
+</details>
+
+```
+5. Let insertFn be ? Get(handler, "insert").
+6. Let inserted be ? Call(insertFn, handler, « e.[[Value]], key, M »).
+7. Set e.[[Value]] to inserted.
+8. Return e.[[Value]].
+```
+
+With the knowledge from implementing update, use similar techniques to implement insert. 
+
+<details>
+<summary>Solution</summary>
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+        var updateFN = handler['update'];
+        var updated = callFunction(updateFN, M, Value, key);
+        callContentFunction(std_Map_set, M, key, updated);
+      }
+
+      return updated;
+    }
+  }
+
+  var insertFN = handler['insert'];
+  var inserted = callFunction(insertFN, key, M);
+  callContentFunction(std_Map_set, M, key, inserted);
+  
+  return inserted;
+}
+```
+
+</details>
 callfunction vs callcontentfunction?
 
 ...
