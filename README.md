@@ -167,11 +167,27 @@ function MapEmplace(key, handler) {
 
 </details>
 
+ **`callfunction` vs `callcontentfunction`?**
+
+Why do we need to use `callFunction` and `callContentFunction`?
+In self-hosted JavaScript code, directly calling methods like map.get() is not allowed because content (external scripts) 
+could modify built-in objects like Map. This could lead to unexpected behavior if a method, like get, has been changed by 
+content. This scenario is called monkeyPatching. 
+
+`callFunction` is an optimized version of `callContentfunction`, however it has a tradeoff. `callContentFunction` is 
+safer when there is a potential risk of the object or method being altered it's `callFunction` is not guaranteed to work.
+**general rule**
+Use `callContentFunction` when interfering with the `this` object. In the case of this tutorial, `M`.
+
+Read more [here] (https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
 self hosted code is different
+  - We can use other methods written in selfhosted code
+  - We can use methods methods specified in selfHosting.cpp, which are made available to selfhosted code.
 
 ```cpp
 // Standard builtins used by self-hosting.
+// Code snippet from SelfHosting.cpp
     JS_FN("std_Map_entries", MapObject::entries, 0, 0),
     JS_FN("std_Map_get", MapObject::get, 1, 0),
     JS_FN("std_Map_set", MapObject::set, 2, 0),
@@ -548,13 +564,12 @@ function MapEmplace(key, handler) {
   var insertFN = handler['insert'];
   var inserted = callFunction(insertFN, key, M);
   callContentFunction(std_Map_set, M, key, inserted);
-  
+
   return inserted;
 }
 ```
 
 </details>
-callfunction vs callcontentfunction?
 
 ...
 ## changes to the proposal
