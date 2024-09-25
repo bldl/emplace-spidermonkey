@@ -146,6 +146,9 @@ borrow from ForEach
 2. Perform ? RequireInternalSlot(M, [[MapData]]).
 ```
 
+<details>
+<summary>Solution</summary>
+
 ```javascript
 function MapEmplace(key, handler) {
   var M = this;
@@ -162,6 +165,9 @@ function MapEmplace(key, handler) {
 }
 ```
 
+</details>
+
+
 self hosted code is different
 
 ```cpp
@@ -176,6 +182,9 @@ use std_Map_entries to get the list of entry records
 ```
 3. Let entries be the List that is M.[[MapData]].
 ```
+
+<details>
+<summary>Solution</summary>
 
 ```javascript
 function MapEmplace(key, handler) {
@@ -195,11 +204,16 @@ function MapEmplace(key, handler) {
 }
 ```
 
+</details>
+
+
 step 4 iterating through the entries
 
 ```
 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
 ```
+<details>
+<summary>Solution</summary>
 
 ```javascript
 function MapEmplace(key, handler) {
@@ -225,12 +239,17 @@ function MapEmplace(key, handler) {
 }
 ```
 
+</details>
+
+
 verify that the given key is in the map if update
 perform abstract operation SameValueZero
 
 ```
 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
 ```
+<details>
+<summary>Solution</summary>
 
 ```javascript
 function MapEmplace(key, handler) {
@@ -258,6 +277,49 @@ function MapEmplace(key, handler) {
   }
 }
 ```
+
+</details>
+
+
+```
+4ai. If HasProperty(handler, "update") is true, then
+```
+
+<details>
+<summary>Solution</summary>
+
+```javascript
+function MapEmplace(key, handler) {
+  var M = this;
+
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
+
+  var entries = callFunction(std_Map_entries, M);
+
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    
+    if (SameValueZero(key, eKey)) {
+      if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+        //...
+      }
+    }
+  }
+}
+```
+
+</details>
+
+callfunction vs callcontentfunction?
 
 ...
 ## changes to the proposal
