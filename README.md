@@ -179,7 +179,7 @@ safer when there is a potential risk of the object or method being altered it's 
 **general rule**
 Use `callContentFunction` when interfering with the `this` object. In the case of this tutorial, `M`.
 
-Read more [here] (https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
+Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
 self hosted code is different
   - We can use other methods written in selfhosted code
