@@ -22,6 +22,48 @@ __The function follow these steps:__
 
 __What is the motivation?__ Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
 
+__Either update or insert for a specific key:__
+
+Before:
+```javascript
+// two lookups
+old = map.get(key);
+if (!old) {
+  map.set(key, value);
+} else {
+  map.set(key, updated);
+}
+```
+
+Using emplace:
+```javascript
+map.emplace(key, {
+  update: () => updated,
+  insert: () => value
+});
+```
+
+__Just insert if missing:__
+
+Before:
+```javascript
+// two lookups
+if (!map1.has(key)) {
+  map1.set(key, value);
+}
+```
+
+Using emplace:
+
+```javascript
+map.emplace(key, {
+  insert: () => value
+});
+```
+
+
+
+
 ## Installing mozilla unified
 
 ### 1. Installation of SpiderMonkey and required tools
