@@ -61,6 +61,28 @@ map.emplace(key, {
 });
 ```
 
+__Just update if present:__
+
+Before:
+```javascript
+// three lookups
+if (map.has(key)) {
+  old = map.get(key);
+  updated = old.doThing();
+  map.set(key, updated);
+}
+```
+
+Using emplace:
+
+```javascript
+if (map.has(key)) {
+  map.emplace(key, {
+    update: (old) => old.doThing()
+  });
+}
+```
+
 
 
 
