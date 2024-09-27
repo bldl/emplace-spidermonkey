@@ -28,7 +28,7 @@
 <details>
   <summary><h2>Installing mozilla unified</h2></summary>
 
-  In this section you will learn how to download the Mozilla environment based on your OS. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
+  In this section you will learn how to download the Mozilla environment based on your operating system. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
 
   ### 1. Installation of SpiderMonkey and required tools
   We will start by installing SpiderMonkey and all required tools.
