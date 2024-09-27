@@ -41,40 +41,55 @@
   * [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/macos_build.html)
   * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
     
-  When asked which version of Firefox, choose `5: SpiderMonkey JavaScript engine`.
-  Use hg/mercurial, but git is being tested(?).
+  During the installation, you will be asked which version of Firefox we want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript engine`, which will allow for faster builds during development
+
+  When asked if you want to use the Configuration Wizard, say no(?)
 
   **TODO check the hg/git thing**
 
   ### 2. Running SpiderMonkey
-  A folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide.
+  After the installation is complete a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
 
-  Navigate into the `mozilla-unified` folder.
+  Navigate into the `mozilla-unified` folder using `cd mozilla_unified`.
+  
   **TODO add output**
-  Build the SpiderMonkey engine:
+
+  In order to run the SpiderMonkey engine, we first have to build it:
   ```sh
   $ ./mach build
   ```
-  If successful:
+  After executing this command the output should look something like this:
+  ```sh
+  $ # Show output here
+  ```
+  
+  In order to run the finished build, execute this command:
   ```sh
   $ ./mach run
   ```
-  Your terminal should now be in JS-loop:
+  Your terminal should now be in JS-loop: **TODO more info**
   ```sh
   js>
   ```
-  **TODO show output**
+  This will be used to test our implementation throughout the tutorial.
+  
   You can use it to write js-lines to evaluate.
-  You can also run with a file:
+  
+  You can also run with a file: **TODO elaborate on the example**
   ```sh
   ./mach run helloworld.js
   ```
 
   ### 3. Applying simple changes
   **TODO: specify selfhosted code files located in ../builtin**
+
   **TODO: what is selfhosted code? different to normal js/limitations (alternatively in impl section)**
+
   Look at file ... and change function ... to return ...
+
   Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
+
+  **TODO Should we also have an exercise?**
 
 </details>
 
