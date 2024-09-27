@@ -28,12 +28,18 @@
 <details>
   <summary><h2>Installing mozilla unified</h2></summary>
 
+  In this section you will learn how to download the Mozilla environment based on your OS. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
+
   ### 1. Installation of SpiderMonkey and required tools
-  Naivgate in terminal to the folder you wish to place `mozilla-unified`
-  Different process depending on OS, look at these links.
-  * [Build on linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-linux)
-  * [Build on mac](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-mac)
-  * [Build on windows](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-windows)
+  We will start by installing SpiderMonkey and all required tools.
+
+  Before you start installing, we advice you to open a terminal and navigate to the desired location of the `mozilla_unified` folder.
+
+  The installation process depends on your operating system, therefore you can click on the link under that matches yours.
+
+  * [Build Mozilla Firefox on Linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-linux)
+  * [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-mac)
+  * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-windows)
     
   When asked which version of Firefox, choose `5: SpiderMonkey JavaScript engine`.
   Use hg/mercurial, but git is being tested(?).
