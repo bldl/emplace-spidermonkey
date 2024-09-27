@@ -28,7 +28,6 @@
 <details>
   <summary><h2>Installing mozilla unified</h2></summary>
 
-
   ### 1. Installation of SpiderMonkey and required tools
   Naivgate in terminal to the folder you wish to place `mozilla-unified`
   Different process depending on OS, look at these links.
@@ -39,11 +38,13 @@
   When asked which version of Firefox, choose `5: SpiderMonkey JavaScript engine`.
   Use hg/mercurial, but git is being tested(?).
 
+  **TODO check the hg/git thing**
+
   ### 2. Running SpiderMonkey
   A folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide.
 
   Navigate into the `mozilla-unified` folder.
-
+  **TODO add output**
   Build the SpiderMonkey engine:
   ```sh
   $ ./mach build
@@ -56,7 +57,7 @@
   ```sh
   js>
   ```
-
+  **TODO show output**
   You can use it to write js-lines to evaluate.
   You can also run with a file:
   ```sh
