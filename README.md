@@ -37,9 +37,9 @@
 
   The installation process depends on your operating system, therefore you can click on the link under that matches yours.
 
-  * [Build Mozilla Firefox on Linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-linux)
-  * [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-mac)
-  * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/linux_build.html#building-firefox-on-windows)
+  * [Build Mozilla Firefox on Linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html)
+  * [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/macos_build.html)
+  * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
     
   When asked which version of Firefox, choose `5: SpiderMonkey JavaScript engine`.
   Use hg/mercurial, but git is being tested(?).
