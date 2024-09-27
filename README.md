@@ -2,7 +2,6 @@
 
 ## The `Map.prototype.emplace` proposal
 
-**TODO code examples**
 
 __What is it?__
 Map.prototype.emplace is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs. 
