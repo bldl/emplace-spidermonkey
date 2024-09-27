@@ -21,7 +21,10 @@ __The function follow these steps:__
 
 __What is the motivation?__ Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
 
-__Either update or insert for a specific key:__
+<details>
+<summary>
+Either update or insert for a specific key
+</summary>
 
 Before:
 ```javascript
@@ -41,8 +44,11 @@ map.emplace(key, {
   insert: () => value
 });
 ```
-
-__Just insert if missing:__
+</details>
+<details>
+<summary>
+Just insert if missing:
+</summary>
 
 Before:
 ```javascript
@@ -59,8 +65,11 @@ map.emplace(key, {
   insert: () => value
 });
 ```
-
-__Just update if present:__
+</details>
+<details>
+<summary>
+Just update if present:
+</summary>
 
 Before:
 ```javascript
@@ -81,9 +90,7 @@ if (map.has(key)) {
   });
 }
 ```
-
-
-
+</details>
 
 ## Installing mozilla unified
 
