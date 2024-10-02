@@ -694,7 +694,130 @@ General info here maybe?
 </details>
  
 <details>
-   <summary><h2>Implementing the new proposal</h2></summary>
+  <summary><h2>Implementing the new proposal</h2></summary>
+
+  Minor changes to the implementation. Keep the same logic for line 1-4.
+
+  ```
+  1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  3. Let entries be the List that is M.[[MapData]].
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+  ```
+
+  <details>
+    <summary>Solution</summary>
+
+    ```javascript
+    
+    function MapEmplace(key, handler) {
+      var M = this;
+   
+      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+       return callFunction(
+          CallMapMethodIfWrapped,
+          this,
+          key,
+          handler,
+         "MapEmplace"
+       );
+     }
+   
+      var entries = callFunction(std_Map_entries, M);
+   
+      for (var e of allowContentIter(entries)) {
+        var eKey = e[0];
+        var eValue = e[1];
+       
+        //...
+      }
+    }
+   ```
+
+  </details>
+  
+  If the key is present, return the value from the key, value pair.
+
+  ```
+  4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  ```
+
+  <details>
+    <summary>Solution</summary>
+
+    ```javascript
+
+    function MapEmplace(key, handler) {
+      var M = this;
+   
+      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+       return callFunction(
+          CallMapMethodIfWrapped,
+          this,
+          key,
+          handler,
+         "MapEmplace"
+       );
+     }
+   
+      var entries = callFunction(std_Map_entries, M);
+   
+      for (var e of allowContentIter(entries)) {
+        var eKey = e[0];
+        var eValue = e[1];
+       
+        if (SameValueZero(eKey, key)) {
+          return callContentFunction(std_Map_get, M, key);
+        }
+      }
+    }
+   ```
+
+  </details>
+
+  If the key was not present in the map, set the new value and then return it.
+
+  ```
+  5. Set e.[[Value]] to value.
+  6. Return e.[[Value]].
+  ```
+
+  <details>
+    <summary>Solution</summary>
+
+    ```javascript
+
+    function MapEmplace(key, value) {
+      var M = this;
+   
+      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+       return callFunction(
+          CallMapMethodIfWrapped,
+          this,
+          key,
+          value,
+         "MapEmplace"
+       );
+      }
+   
+      var entries = callFunction(std_Map_entries, M);
+   
+      for (var e of allowContentIter(entries)) {
+        var eKey = e[0];
+        var eValue = e[1];
+       
+        if (SameValueZero(eKey, key)) {
+          return callContentFunction(std_Map_get, M, key);
+        }
+      }
+
+      callContentFunction(std_Map_set, M, key, value);
+    
+      return value;
+    }
+   ```
+
+  </details>
 </details>
 
 <details>
