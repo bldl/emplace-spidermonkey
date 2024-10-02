@@ -1,12 +1,12 @@
 # Installing Mozilla Unified
 
 ## Table of Contents
-- [intro](README.md)
-- [The `Map.prototype.emplace` proposal](tutorial/initial-proposal.md)
-- [Installing mozilla unified](tutorial/installing-mozilla-unified.md)
-- [Get to know the tools](tutorial/tools.md)
-- [How to Read the ECMA-262 Language Specification](tutorial/reading-Ecma262-specs.md)
-- [implementing the proposal](tutorial/implementation.md)
+- [intro](../README.md)
+- [The `Map.prototype.emplace` proposal](./initial-proposal.md)
+- [Installing mozilla unified](./installing-mozilla-unified.md)
+- [Get to know the tools](./tools.md)
+- [How to Read the ECMA-262 Language Specification](./reading-Ecma262-specs.md)
+- [implementing the proposal](./implementation.md)
 
 In this section you will learn how to download the Mozilla environment based on your operating system. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
 
