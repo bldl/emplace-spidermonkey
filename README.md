@@ -699,11 +699,12 @@ General info here maybe?
   Minor changes to the implementation. Keep the same logic for line 1-4.
 
   ```
-  1. Let _M_ be the *this* value.
-  2. Perform ? RequireInternalSlot(_M_, [[MapData]]).
-  3. Let _entries_ be the List that is _M_.[[MapData]].
-  4. For each Record { [[Key]], [[Value]] } _e_ that is an element of _entries_, do
+  1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  3. Let entries be the List that is M.[[MapData]].
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   ```
+  
   <details>
     <summary>Solution</summary>
 
@@ -737,7 +738,7 @@ General info here maybe?
   If the key is present, return the value from the key, value pair.
 
   ```
-  4a. If _e_.[[Key]] is not empty and SameValueZero(_e_.[[Key]], _key_) is *true*, return _e_.[[Value]].
+  4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
 
   <details>
@@ -775,8 +776,8 @@ General info here maybe?
   If the key was not present in the map, set the new value and then return it.
 
   ```
-  5. Set _e_.[[Value]] to _value_.
-  6. Return _e_.[[Value]].
+  5. Set e.[[Value]] to value.
+  6. Return e.[[Value]].
   ```
 
   <details>
@@ -814,7 +815,6 @@ General info here maybe?
    ```
 
   </details>
-
 </details>
 
 <details>
