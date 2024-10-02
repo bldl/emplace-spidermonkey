@@ -704,11 +704,12 @@ General info here maybe?
   3. Let entries be the List that is M.[[MapData]].
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   ```
-  
+
   <details>
     <summary>Solution</summary>
 
     ```javascript
+    
     function MapEmplace(key, handler) {
       var M = this;
    
@@ -745,6 +746,7 @@ General info here maybe?
     <summary>Solution</summary>
 
     ```javascript
+
     function MapEmplace(key, handler) {
       var M = this;
    
@@ -784,6 +786,7 @@ General info here maybe?
     <summary>Solution</summary>
 
     ```javascript
+
     function MapEmplace(key, value) {
       var M = this;
    
