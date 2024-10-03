@@ -710,28 +710,28 @@ General info here maybe?
 
     ```javascript
 
-    function MapEmplace(key, handler) {
-      var M = this;
+      function MapEmplace(key, handler) {
+        var M = this;
 
-      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-        return callFunction(
-          CallMapMethodIfWrapped,
-          this,
-          key,
-          handler,
-          "MapEmplace"
-        );
+        if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+          return callFunction(
+            CallMapMethodIfWrapped,
+            this,
+            key,
+            handler,
+            "MapEmplace"
+          );
+        }
+
+        var entries = callFunction(std_Map_entries, M);
+
+        for (var e of allowContentIter(entries)) {
+          var eKey = e[0];
+          var eValue = e[1];
+
+          //...
+        }
       }
-
-      var entries = callFunction(std_Map_entries, M);
-
-      for (var e of allowContentIter(entries)) {
-        var eKey = e[0];
-        var eValue = e[1];
-
-        //...
-      }
-    }
     ```
 
   </details>
@@ -747,30 +747,30 @@ General info here maybe?
 
     ```javascript
 
-    function MapEmplace(key, handler) {
-      var M = this;
+      function MapEmplace(key, handler) {
+        var M = this;
 
-      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-        return callFunction(
-          CallMapMethodIfWrapped,
-          this,
-          key,
-          handler,
-          "MapEmplace"
-        );
-      }
+        if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+          return callFunction(
+            CallMapMethodIfWrapped,
+            this,
+            key,
+            handler,
+            "MapEmplace"
+          );
+        }
 
-      var entries = callFunction(std_Map_entries, M);
+        var entries = callFunction(std_Map_entries, M);
 
-      for (var e of allowContentIter(entries)) {
-        var eKey = e[0];
-        var eValue = e[1];
+        for (var e of allowContentIter(entries)) {
+          var eKey = e[0];
+          var eValue = e[1];
 
-        if (SameValueZero(eKey, key)) {
-          return callContentFunction(std_Map_get, M, key);
+          if (SameValueZero(eKey, key)) {
+            return callContentFunction(std_Map_get, M, key);
+          }
         }
       }
-    }
     ```
 
   </details>
@@ -787,34 +787,34 @@ General info here maybe?
 
     ```javascript
 
-    function MapEmplace(key, value) {
-      var M = this;
+      function MapEmplace(key, value) {
+        var M = this;
 
-      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-        return callFunction(
-          CallMapMethodIfWrapped,
-          this,
-          key,
-          value,
-          "MapEmplace"
-        );
-      }
-
-      var entries = callFunction(std_Map_entries, M);
-
-      for (var e of allowContentIter(entries)) {
-        var eKey = e[0];
-        var eValue = e[1];
-
-        if (SameValueZero(eKey, key)) {
-          return callContentFunction(std_Map_get, M, key);
+        if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+          return callFunction(
+            CallMapMethodIfWrapped,
+            this,
+            key,
+            value,
+            "MapEmplace"
+          );
         }
+
+        var entries = callFunction(std_Map_entries, M);
+
+        for (var e of allowContentIter(entries)) {
+          var eKey = e[0];
+          var eValue = e[1];
+
+          if (SameValueZero(eKey, key)) {
+            return callContentFunction(std_Map_get, M, key);
+          }
+        }
+
+        callContentFunction(std_Map_set, M, key, value);
+
+        return value;
       }
-
-      callContentFunction(std_Map_set, M, key, value);
-
-      return value;
-    }
     ```
 
   </details>
