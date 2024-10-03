@@ -7,6 +7,12 @@
 - [Get to know the tools](./tools.md)
 - [How to Read the ECMA-262 Language Specification](./reading-Ecma262-specs.md)
 - [implementing the proposal](./implementation.md)
+- [Issues with the initial proposal](./issues-with-initial-proposal.md)
+- [The new proposal](./new-proposal.md)
+- [writing the new spec](./writing-spec-ecmarkup.md)
+- [implementing the new proposal](./implementing-new-proposal.md)
+- [optimization](./optimization.md)
+- [testing](./testing.md)
 
 ### 1. What is the ECMA-262 Specification?
 - ECMA-262 is the official document that defines how JavaScript works. It tells developers and browser makers what JavaScript should do in every situation.

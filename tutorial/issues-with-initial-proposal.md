@@ -1,4 +1,4 @@
-# How to use the tools
+# Issues with the initial proposal
 
 ## Table of Contents
 - [intro](../README.md)
@@ -13,7 +13,3 @@
 - [implementing the new proposal](./implementing-new-proposal.md)
 - [optimization](./optimization.md)
 - [testing](./testing.md)
-
-## browsing Ecmascript specs
-
-## using searchfox

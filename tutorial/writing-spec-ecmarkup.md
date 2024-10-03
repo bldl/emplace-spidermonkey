@@ -1,4 +1,4 @@
-# How to use the tools
+# Writing the new specification in Ecmarkup
 
 ## Table of Contents
 - [intro](../README.md)
@@ -13,7 +13,3 @@
 - [implementing the new proposal](./implementing-new-proposal.md)
 - [optimization](./optimization.md)
 - [testing](./testing.md)
-
-## browsing Ecmascript specs
-
-## using searchfox
