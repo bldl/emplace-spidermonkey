@@ -690,7 +690,22 @@ General info here maybe?
 
 
 <details>
-   <summary><h2>Writing the new spec in ecmarkup</h2></summary>
+    <summary><h2>Writing the new spec in ecmarkup</h2></summary>
+
+  
+  TODO: Installation, link to documentation of ecmarkup; https://tc39.es/ecmarkup/. 
+
+  TODO: Explain how to translate from ecmascript to ecmarkup 
+  
+  TODO: The actual translation
+    
+  TODO: Building the spec
+  
+  TODO: Troubleshooting
+  
+  TODO: Load the html file to verify successfully connected hyperlinks etc.
+
+
 </details>
  
 <details>
