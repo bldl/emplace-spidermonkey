@@ -2,6 +2,10 @@
 
 General info here maybe?
 
+**TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
+
+**TODO? explain the process of an Ecmascript proposal, ex. phases2 -> 2.7 etc**
+
 <details>
    <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
    
@@ -170,7 +174,7 @@ General info here maybe?
    
    ### 2. How to Navigate the Document
    - **Start with the Table of Contents**: This is where you’ll find major sections like grammar, types, and functions. It helps you jump to the part you’re interested in.
-   - **Use Search**: The specification is large. If you’re looking for a specific topic, like “Promise” or “Array,” use your browser’s search function (`Ctrl + F`) to find it quickly. 
+   - **Use Search**: The specification is large. If you’re looking for a specific topic, like “Promise” or “Array,” use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly. 
    - **Annexes (Extras)**: At the end of the document, you’ll find extra sections that explain older features or give additional context.
    
    ### 3. How to Read the Algorithms
@@ -216,6 +220,7 @@ General info here maybe?
    ### creating a function
 
    create a hook in `MapObject.cpp`
+   **TODO simple explaination of where to hook it and why**
    
    `JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),`
    
@@ -270,8 +275,10 @@ General info here maybe?
    ```
    
    </details>
+
+  ### Line 3 - engine space and user space
    
-    **`callfunction` vs `callcontentfunction`?**
+  **`callfunction` vs `callcontentfunction`?**
    
    Why do we need to use `callFunction` and `callContentFunction`?
    In self-hosted JavaScript code, directly calling methods like map.get() is not allowed because content (external scripts) 
@@ -326,7 +333,8 @@ General info here maybe?
    
    </details>
    
-   
+   ### iterating through the map entries
+
    step 4 iterating through the entries
    
    ```
@@ -360,7 +368,6 @@ General info here maybe?
    ```
    
    </details>
-   
    
    verify that the given key is in the map if update
    perform abstract operation SameValueZero
@@ -622,6 +629,8 @@ General info here maybe?
    
    </details>
    
+  ### implementing the insert handler
+
    ```
    5. Let insertFn be ? Get(handler, "insert").
    6. Let inserted be ? Call(insertFn, handler, « e.[[Value]], key, M »).
@@ -678,6 +687,7 @@ General info here maybe?
    ...
 </details>
 
+**TODO IDEA, change to "issues with initial proposal" explaining why the old proposal was undesireable**
 <details>
    <summary><h2>Changes to the proposal</h2></summary>
 </details>
@@ -704,6 +714,9 @@ let prefs = new getUserPrefs();
 prefs.emplace("useDarkmode", true); // default to true
    ```
    By using emplace, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting. 
+
+   **TODO simple code flow example, replaces the has->get or set code block**
+   **TODO show examples from other programming languages**
 </details>
 
 
@@ -730,6 +743,8 @@ prefs.emplace("useDarkmode", true); // default to true
   <summary><h2>Implementing the new proposal</h2></summary>
 
   Minor changes to the implementation. Keep the same logic for line 1-4.
+
+  **TODO fix js codeblocks, color highlighting doesn't work**
 
   ```
   1. Let M be the this value.
@@ -856,6 +871,13 @@ prefs.emplace("useDarkmode", true); // default to true
 
 <details>
    <summary><h2>Optimization</h2></summary>
+
+  **TODO explain need for optimization, for loop iteration is slow**
+
+  **TODO introduce std_has as a solution**
+
+  **TODO? more advanced, next iteration introducing cpp code**
+
 </details>
 
 <details>
