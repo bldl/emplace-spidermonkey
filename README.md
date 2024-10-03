@@ -685,7 +685,11 @@ General info here maybe?
 <details>
    <summary><h2>Explaining the new proposal</h2></summary>
 
-   - simplicity over functionality etc
+   __What is the motivation for a new propsosal?__
+   A common problem when using a Map is how to handle doing an update when you're not sure if the key already exists in the Map. This can be handled by first checking if the key is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the Map that could otherwise be handled in a single call.
+
+   __What is the solution?__
+   
 </details>
 
 
