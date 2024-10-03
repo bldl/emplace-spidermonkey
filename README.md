@@ -690,6 +690,20 @@ General info here maybe?
 
    __What is the solution?__
    A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value. 
+
+   __Simple use of "new" emplace:__
+   ```js
+   // Currently
+let prefs = new getUserPrefs();
+if (!prefs.has("useDarkmode")) {
+  prefs.set("useDarkmode", true); // default to true
+}
+
+// Using emplace
+let prefs = new getUserPrefs();
+prefs.emplace("useDarkmode", true); // default to true
+   ```
+   
 </details>
 
 
