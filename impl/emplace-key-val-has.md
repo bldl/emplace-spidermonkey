@@ -1,6 +1,5 @@
 
 in `MapObject.h`
-
 ```cpp
     //moved from private to public
     [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
@@ -14,6 +13,7 @@ in `SelfHosting.cpp`
     JS_FN("std_Map_set", MapObject::set, 2, 0),
 ```
 
+Implementation in `Map.js`
 ```js
     function MapEmplace(key, value) {
     var M = this;
