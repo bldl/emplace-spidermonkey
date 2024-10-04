@@ -689,7 +689,17 @@ General info here maybe?
 
 **TODO IDEA, change to "issues with initial proposal" explaining why the old proposal was undesireable**
 <details>
-   <summary><h2>Changes to the proposal</h2></summary>
+   <summary><h2>Issues with the original proposal</h2></summary>
+    
+The original proposal allows for a lot of flexibility, however this increases the complexity of the function, making it less likely to be used.
+
+Simpler is often better, and it is a sufficiently common usecase to just want to insert the key-value pair if not present.
+    
+This usecase shares many similarities in functionality with other languages, where pythons `setdefault` is the most similar one.
+
+The ability to both insert and update is not present in many other languages.
+
+    
 </details>
 
 <details>
