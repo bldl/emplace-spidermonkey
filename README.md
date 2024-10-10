@@ -709,28 +709,49 @@ The ability to both insert and update is not present in many other languages.
    A common problem when using a Map is how to handle doing an update when you're not sure if the key already exists in the Map. This can be handled by first checking if the key is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the Map that could otherwise be handled in a single call.
 
    __What is the solution?__
-   A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value. Similar functionalities also exists in other languages such as Python (setdefault). 
+   A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value.  
 
    __Simple use of "new" emplace:__
    ```js
    // Currently
 let prefs = new getUserPrefs();
 if (prefs.has("useDarkmode")) {
-  let darkMode = prefs.get("useDarkmode");
+    let darkMode = prefs.get("useDarkmode");
 }
 else {
-  prefs.set("useDarkmode", true); // default to true
-  darkMode = true;
+    prefs.set("useDarkmode", true);
+    darkMode = true; //Default value
 }
 
 // Using emplace
 let prefs = new getUserPrefs();
-prefs.emplace("useDarkmode", true); // default to true
+    prefs.emplace("useDarkmode", true); // Default to true
    ```
-   By using emplace, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting. 
+By using emplace, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting. 
 
-   **TODO simple code flow example, replaces the has->get or set code block**
-   **TODO show examples from other programming languages**
+<details>
+<summary> 
+Similar functionality in Python
+</summary>
+As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and it's "setdefault" method. In our case we use emplace on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
+
+```python
+# Without setdefault
+prefs = {}
+if "useDarkmode" not in prefs : 
+  prefs["useDarkmode"] = True # Default value
+
+dark_mode = prefs["useDarkmode"]
+```
+
+```python
+# Using setdefault
+prefs = {}
+prefs.setdefault("useDarkmode", True)
+```
+</details>
+
+
 </details>
 
 
