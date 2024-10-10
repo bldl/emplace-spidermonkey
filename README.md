@@ -918,7 +918,6 @@ prefs.setdefault("useDarkmode", True)
 
   Minor changes to the implementation. Keep the same logic for line 1-4.
 
-  **TODO fix js codeblocks, color highlighting doesn't work**
 
   ```
 
