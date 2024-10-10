@@ -751,20 +751,20 @@ The ability to both insert and update is not present in many other languages.
 
    **Simple use of "new" emplace:**
 
-   ```js
-   // Currently
-let prefs = new getUserPrefs();
-if (prefs.has("useDarkmode")) {
-    let darkMode = prefs.get("useDarkmode");
-}
-else {
-    prefs.set("useDarkmode", true);
-    darkMode = true; //Default value
-}
-
-// Using emplace
-let prefs = new getUserPrefs();
-    prefs.emplace("useDarkmode", true); // Default to true
+   ```javascript
+    // Currently
+    let prefs = new getUserPrefs();
+    if (prefs.has("useDarkmode")) {
+        let darkMode = prefs.get("useDarkmode");
+    }
+    else {
+        prefs.set("useDarkmode", true);
+        darkMode = true; //Default value
+    }
+    
+    // Using emplace
+    let prefs = new getUserPrefs();
+        prefs.emplace("useDarkmode", true); // Default to true
    ```
 
 By using emplace, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting.
@@ -932,32 +932,32 @@ prefs.setdefault("useDarkmode", True)
   <details>
     <summary>Solution</summary>
 
-    ```js
+```js
 
-    function MapEmplace(key, handler) {
-      var M = this;
+function MapEmplace(key, handler) {
+  var M = this;
 
-      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-        return callFunction(
-          CallMapMethodIfWrapped,
-          this,
-          key,
-          handler,
-          "MapEmplace"
-        );
-      }
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
 
-      var entries = callFunction(std_Map_entries, M);
+  var entries = callFunction(std_Map_entries, M);
 
-      for (var e of allowContentIter(entries)) {
-        var eKey = e[0];
-        var eValue = e[1];
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
 
-        //...
-      }
-    }
+    //...
+  }
+}
 
-    ```
+```
 
   </details>
 
@@ -970,34 +970,34 @@ prefs.setdefault("useDarkmode", True)
   <details>
     <summary>Solution</summary>
 
-    ```javascript
+```js
 
-    function MapEmplace(key, handler) {
-      var M = this;
+function MapEmplace(key, handler) {
+  var M = this;
 
-      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-        return callFunction(
-          CallMapMethodIfWrapped,
-          this,
-          key,
-          handler,
-          "MapEmplace"
-        );
-      }
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      handler,
+      "MapEmplace"
+    );
+  }
 
-      var entries = callFunction(std_Map_entries, M);
+  var entries = callFunction(std_Map_entries, M);
 
-      for (var e of allowContentIter(entries)) {
-        var eKey = e[0];
-        var eValue = e[1];
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
 
-        if (SameValueZero(eKey, key)) {
-          return callContentFunction(std_Map_get, M, key);
-        }
-      }
+    if (SameValueZero(eKey, key)) {
+      return callContentFunction(std_Map_get, M, key);
     }
+  }
+}
 
-    ```
+```
 
   </details>
 
@@ -1011,38 +1011,38 @@ prefs.setdefault("useDarkmode", True)
   <details>
     <summary>Solution</summary>
 
-    ```javascript
+```js
 
-    function MapEmplace(key, value) {
-      var M = this;
+function MapEmplace(key, value) {
+  var M = this;
 
-      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-        return callFunction(
-          CallMapMethodIfWrapped,
-          this,
-          key,
-          value,
-          "MapEmplace"
-        );
-      }
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      value,
+      "MapEmplace"
+    );
+  }
 
-      var entries = callFunction(std_Map_entries, M);
+  var entries = callFunction(std_Map_entries, M);
 
-      for (var e of allowContentIter(entries)) {
-        var eKey = e[0];
-        var eValue = e[1];
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
 
-        if (SameValueZero(eKey, key)) {
-          return callContentFunction(std_Map_get, M, key);
-        }
-      }
-
-      callContentFunction(std_Map_set, M, key, value);
-
-      return value;
+    if (SameValueZero(eKey, key)) {
+      return callContentFunction(std_Map_get, M, key);
     }
+  }
 
-    ```
+  callContentFunction(std_Map_set, M, key, value);
+
+  return value;
+}
+
+```
 
   </details>
   
