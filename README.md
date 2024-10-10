@@ -797,44 +797,59 @@ prefs.setdefault("useDarkmode", True)
 <details>
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
 
-  TODO: Installation, link to documentation of ecmarkup; <https://tc39.es/ecmarkup/>.
-  * Installing Node.js and Node Package Manager
-      * Windows
-        1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version). 
-        2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
-        3. Verify installation by opening Command Prompt and typing:  
-        ```bash
-        node -v
-        npm -v
-        ```
-        This should return the versions of Node.js and npm.
-      * Mac
-        1. Open Terminal
-        2. Install Node.js via Homebrew by running the following command:
-        ```bash
-        brew install node
-        ```
-        3. Verify installation by typing:
-        ```bash
-        node -v
-        npm -v
-        ```
-      * Linux
-        1. Open Terminal
-        2. Update your package list:
-        ```bash
-        sudo apt update
-        ```
-        3. Install Node.js by running:
-        ```bash
-        sudo apt install node.js spm
-        ```
-        4. Verify the installation:
-        ```bash
-        node -v
-        npm -v
-        ```
-  * Installing Ecmarkup
+  
+  * **Installing Node.js and Node Package Manager**
+      <details>
+      <summary>
+      <b>Windows</b>
+      </summary>
+
+      1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version).
+
+      2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
+
+      3. Verify installation by opening Command Prompt and typing:
+
+      ```bash
+      node -v
+      npm -v
+      ```
+      This should return the versions of Node.js and npm.
+      
+      </details>
+
+      <details>
+      <summary><b>Mac</b></summary>
+      
+      1. Open Terminal
+      2. Install Node.js via Homebrew by running the following command:
+      ```bash
+      brew install node
+      ```
+      3. Verify installation by typing:
+      ```bash
+      node -v
+      npm -v
+      ```
+      </details>
+      <details>
+      <summary><b>Linux</b></summary>
+      1. Open Terminal
+      2. Update your package list:
+      ```bash
+      sudo apt update
+      ```
+      3. Install Node.js by running:
+      ```bash
+      sudo apt install node.js spm
+      ```
+      4. Verify the installation:
+      ```bash
+      node -v
+      npm -v
+      ```
+      </details>
+  * **Installing Ecmarkup**
     * Windows/Mac/Linux
       1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
       2. Run the following command to install Ecmarkup globally:
@@ -846,12 +861,25 @@ prefs.setdefault("useDarkmode", True)
       ecmarkup --version
       ```
       Now you have installed Ecmarkup! 
-      
+
   TODO: Troubleshooting
 
-  TODO: Explain how to translate from ecmascript to ecmarkup
+* **How to translate from ECMAscript to ecmarkup**
   
-  * The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
+  Translating from ECMAscript to Ecmarkup involves understanding the differences between what each reperesents. ECMAscript is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAscript and other web standards. 
+
+    1. **Understanding why we need Ecmarkup**
+
+        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAscript with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
+    2. **Basic translation steps**
+        * `<emu-alg>`: Defines an algorithm.
+        * `<emu-clause>`: Defines a clause/section in the specification.
+        * Underscores are used to refer to variables (`_varname_`).
+        * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification. 
+        * `*someBoldText*`: Make bold text with `*`.
+        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
+
+* The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
     ```emu
       <!DOCTYPE html>
       <meta charset="utf8">
