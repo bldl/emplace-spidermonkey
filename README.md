@@ -797,15 +797,117 @@ prefs.setdefault("useDarkmode", True)
 <details>
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
 
-  TODO: Installation, link to documentation of ecmarkup; <https://tc39.es/ecmarkup/>.
-
-  TODO: Explain how to translate from ecmascript to ecmarkup
   
-  TODO: The actual translation
+  * **Installing Node.js and Node Package Manager**
+      <details>
+      <summary>
+      <b>Windows</b>
+      </summary>
+
+      1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version).
+
+      2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
+
+      3. Verify installation by opening Command Prompt and typing:
+
+      ```bash
+      node -v
+      npm -v
+      ```
+      This should return the versions of Node.js and npm.
+      
+      </details>
+
+      <details>
+      <summary><b>Mac</b></summary>
+      
+      1. Open Terminal
+      2. Install Node.js via Homebrew by running the following command:
+      ```bash
+      brew install node
+      ```
+      3. Verify installation by typing:
+      ```bash
+      node -v
+      npm -v
+      ```
+      </details>
+      <details>
+      <summary><b>Linux</b></summary>
+      1. Open Terminal
+      2. Update your package list:
+      ```bash
+      sudo apt update
+      ```
+      3. Install Node.js by running:
+      ```bash
+      sudo apt install node.js spm
+      ```
+      4. Verify the installation:
+      ```bash
+      node -v
+      npm -v
+      ```
+      </details>
+  * **Installing Ecmarkup**
+    * Windows/Mac/Linux
+      1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
+      2. Run the following command to install Ecmarkup globally:
+      ```bash
+      npm install -g ecmarkup
+      ```
+      3. Verify that Ecmarkup has been installed by typing:
+      ```bash
+      ecmarkup --version
+      ```
+      Now you have installed Ecmarkup! 
+
+  TODO: Troubleshooting
+
+* **How to translate from ECMAscript to ecmarkup**
+  
+  Translating from ECMAscript to Ecmarkup involves understanding the differences between what each reperesents. ECMAscript is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAscript and other web standards. 
+
+    1. **Understanding why we need Ecmarkup**
+
+        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAscript with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
+    2. **Basic translation steps**
+        * `<emu-alg>`: Defines an algorithm.
+        * `<emu-clause>`: Defines a clause/section in the specification.
+        * Underscores are used to refer to variables (`_varname_`).
+        * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification. 
+        * `*someBoldText*`: Make bold text with `*`.
+        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
+
+* The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
+    ```emu
+      <!DOCTYPE html>
+      <meta charset="utf8">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+      <script src="./spec.js"></script>
+      <pre class="metadata">
+      title: Map.prototype.emplace
+      stage: 2
+      contributors: Erica Pramer
+      </pre>
+
+      <emu-clause id="sec-map.prototype.emplace">
+        <h1>Map.prototype.emplace ( _key_, _callbackfn_ )</h1>
+        <p>When the emplace method is called the following steps are taken:</p>
+        <emu-alg>
+          1. Let _M_ be the *this* value.
+          1. Perform ? RequireInternalSlot(_M_, [[MapData]]).
+          1. If IsCallable(_callbackfn_) is false, throw a *TypeError* exception.
+          1. For each Record { [[Key]], [[Value]] } _e_ that is an element of _M_.[[MapData]], do:
+            1. If _e_.[[Key]] is not empty and SameValueZero(_e_.[[Key]], _key_) is *true*, return _e_.[[Value]].
+          1. Let _inserted_ be ? Call(_callbackfn_, _key_).
+          1. Set _e_.[[Value]] to _inserted_.
+          1. Return _e_.[[Value]].
+        </emu-alg>
+      </emu-clause>
+    ```
 
   TODO: Building the spec
-  
-  TODO: Troubleshooting
   
   TODO: Load the html file to verify successfully connected hyperlinks etc.
 
