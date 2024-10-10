@@ -796,16 +796,18 @@ prefs.setdefault("useDarkmode", True)
   **TODO fix js codeblocks, color highlighting doesn't work**
 
   ```
+
   1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
   3. Let entries be the List that is M.[[MapData]].
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+
   ```
 
   <details>
     <summary>Solution</summary>
 
-    ```javascript
+    ```js
 
       function MapEmplace(key, handler) {
         var M = this;
@@ -829,6 +831,7 @@ prefs.setdefault("useDarkmode", True)
           //...
         }
       }
+
     ```
 
   </details>
