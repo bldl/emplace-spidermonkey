@@ -846,11 +846,12 @@ prefs.setdefault("useDarkmode", True)
       ecmarkup --version
       ```
       Now you have installed Ecmarkup! 
+      
   TODO: Troubleshooting
 
   TODO: Explain how to translate from ecmascript to ecmarkup
   
-  * The actual translation
+  * The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
     ```emu
       <!DOCTYPE html>
       <meta charset="utf8">
