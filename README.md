@@ -209,9 +209,20 @@ General info here maybe?
 
 
 <details>
-   <summary><h2>Tools</h2></summary>
+   <summary><h2>Searchfox</h2></summary>
    
-   how to read specs, how to use searchfox
+   When implementing a feature, Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+
+   When Implementing the `emplace` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
+
+   Example workflow: 
+   1. --some line from the specification--
+   2. Find some other function with the same spec line in the Ecma-262 specification
+   3. Look up the function in Searchfox
+   4. Borrow from the other function.
+
+
+
 </details>
 
 <details>
@@ -220,7 +231,7 @@ General info here maybe?
    ### creating a function
 
    create a hook in `MapObject.cpp`
-   **TODO simple explaination of where to hook it and why**
+   **TODO simple explaination of where to hook it and why, and the hook args**
    
    `JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),`
    
@@ -247,13 +258,16 @@ General info here maybe?
    ```
    
    ### moving on
-   explain the purpose of performing internal slot
-   
-   borrow from ForEach
+
+    The second line
    
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
+
+   **TODO: explain the purpose of performing internal slot**
+
+   This step is commmon for almost all selfhosted MapObject methods. The solution is already exists in the code.
    
    <details>
    <summary>Solution</summary>
