@@ -798,14 +798,61 @@ prefs.setdefault("useDarkmode", True)
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
 
   TODO: Installation, link to documentation of ecmarkup; <https://tc39.es/ecmarkup/>.
+  * Installing Node.js and Node Package Manager
+      * Windows
+        1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version). 
+        2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
+        3. Verify installation by opening Command Prompt and typing:  
+        ```bash
+        node -v
+        npm -v
+        ```
+        This should return the versions of Node.js and npm.
+      * Mac
+        1. Open Terminal
+        2. Install Node.js via Homebrew by running the following command:
+        ```bash
+        brew install node
+        ```
+        3. Verify installation by typing:
+        ```bash
+        node -v
+        npm -v
+        ```
+      * Linux
+        1. Open Terminal
+        2. Update your package list:
+        ```bash
+        sudo apt update
+        ```
+        3. Install Node.js by running:
+        ```bash
+        sudo apt install node.js spm
+        ```
+        4. Verify the installation:
+        ```bash
+        node -v
+        npm -v
+        ```
+  * Installing Ecmarkup
+    * Windows/Mac/Linux
+      1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
+      2. Run the following command to install Ecmarkup globally:
+      ```bash
+      npm install -g ecmarkup
+      ```
+      3. Verify that Ecmarkup has been installed by typing:
+      ```bash
+      ecmarkup --version
+      ```
+      Now you have installed Ecmarkup! 
+  TODO: Troubleshooting
 
   TODO: Explain how to translate from ecmascript to ecmarkup
   
   TODO: The actual translation
 
   TODO: Building the spec
-  
-  TODO: Troubleshooting
   
   TODO: Load the html file to verify successfully connected hyperlinks etc.
 
