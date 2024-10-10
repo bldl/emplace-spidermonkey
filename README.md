@@ -751,7 +751,7 @@ The ability to both insert and update is not present in many other languages.
 
    **Simple use of "new" emplace:**
 
-   ```javascript
+   ```js
     // Currently
     let prefs = new getUserPrefs();
     if (prefs.has("useDarkmode")) {
