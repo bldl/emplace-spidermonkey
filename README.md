@@ -695,8 +695,12 @@ General info here maybe?
    ```js
    // Currently
 let prefs = new getUserPrefs();
-if (!prefs.has("useDarkmode")) {
+if (prefs.has("useDarkmode")) {
+  let darkMode = prefs.get("useDarkmode");
+}
+else {
   prefs.set("useDarkmode", true); // default to true
+  darkMode = true;
 }
 
 // Using emplace
