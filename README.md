@@ -156,7 +156,8 @@ General info here maybe?
   ./mach run
   ```
 
-  Your terminal should now be in JS-loop: **TODO more info**
+  Your terminal should now enter the JS Read-Eval-Print-Loop mode. 
+  The functionality is similar to a browsers console and arbitrary JS code can be executed. 
 
   ```sh
   js>
