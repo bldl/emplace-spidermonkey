@@ -1081,7 +1081,8 @@ function MapEmplace(key, value) {
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
   The problem with this, is that the function is not currently exposed to our code.
-  **TODO explain further on std_has**
+  
+**TODO explain further on std_has**
 
   **TODO? more advanced, next iteration introducing cpp code**
 
