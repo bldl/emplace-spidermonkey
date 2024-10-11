@@ -165,10 +165,15 @@ General info here maybe?
 
   This will be used to test our implementation throughout the tutorial.
   
-  You can use it to write js-lines to evaluate.
-  
-  You can also run with a file: **TODO elaborate on the example**
+  You can use it to write js-lines to evaluate. This will output `Hello World!` in the console:
 
+  ```sh
+  js> console.log("Hello World!");
+  ```
+  
+  You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command: 
+
+  If you create a file with `console.log("Hello World!);` and save it. You can execute it like this:
   ```sh
   ./mach run helloworld.js
   ```
