@@ -156,7 +156,8 @@ General info here maybe?
   ./mach run
   ```
 
-  Your terminal should now be in JS-loop: **TODO more info**
+  Your terminal should now enter the JS Read-Eval-Print-Loop mode. 
+  The functionality is similar to a browsers console and arbitrary JS code can be executed. 
 
   ```sh
   js>
@@ -164,10 +165,15 @@ General info here maybe?
 
   This will be used to test our implementation throughout the tutorial.
   
-  You can use it to write js-lines to evaluate.
-  
-  You can also run with a file: **TODO elaborate on the example**
+  You can use it to write js-lines to evaluate. This will output `Hello World!` in the console:
 
+  ```sh
+  js> console.log("Hello World!");
+  ```
+  
+  You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command: 
+
+  If you create a file with `console.log("Hello World!);` and save it. You can execute it like this:
   ```sh
   ./mach run helloworld.js
   ```
@@ -1049,10 +1055,34 @@ function MapEmplace(key, value) {
 
 <details>
    <summary><h2>Optimization</h2></summary>
+  
+  A proposal goes through several stages before it becomes a part of the ECMAscript language.
+  Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
+  Therefore optimization becomes crucial when designing and implementing these features.
+  In our case there is especially one line which could use som optimization:
 
-  **TODO explain need for optimization, for loop iteration is slow**
+  ```
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+  ```
+  
+  As of right now it is implemented like this:
+  ```js
+  for (var e of allowContentIter(entries)) {
+    var eKey = e[0];
+    var eValue = e[1];
+    //...
+  }
+  ```
 
-  **TODO introduce std_has as a solution**
+  The worst case for this is that is loops through the entire `entries`.
+  This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
+  Therefore, we decided to try to optimize this line.
+
+
+  One solution we had, was to check if the entry was in the map, by using `std_has`.
+  The problem with this, is that the function is not currently exposed to our code.
+  
+**TODO explain further on std_has**
 
   **TODO? more advanced, next iteration introducing cpp code**
 
