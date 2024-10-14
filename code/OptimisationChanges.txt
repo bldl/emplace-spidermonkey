@@ -1,0 +1,7 @@
+Since I wasn't a 100% sure of how to do it, I tried to follow what the other functions did.
+Specifically, has and set.
+Sadly it doesn't return a value, just "function getOrSet() {[native code]}"
+
+js/src/builtin/MapObject.cpp, lines: 512, 736-766, 1020-1026, 1028-1033
+js/src/builtin/MapObject.h, lines: 190, 221, 245
+js/src/ds/OrderedHashTable.h, lines: 990-993
