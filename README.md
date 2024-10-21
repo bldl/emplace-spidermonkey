@@ -732,17 +732,16 @@ General info here maybe?
    ...
 </details>
 
-**TODO IDEA, change to "issues with initial proposal" explaining why the old proposal was undesireable**
 <details>
    <summary><h2>Issues with the original proposal</h2></summary>
 
-The original proposal allows for a lot of flexibility, however this increases the complexity of the function, making it less likely to be used.
+The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `emplace`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
-Simpler is often better, and it is a sufficiently common usecase to just want to insert the key-value pair if not present.
+The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
-This usecase shares many similarities in functionality with other languages, where pythons `setdefault` is the most similar one.
+In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
-The ability to both insert and update is not present in many other languages.
+By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
 </details>
 
