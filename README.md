@@ -135,8 +135,6 @@ General info here maybe?
   After the installation is complete a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
 
   Navigate into the `mozilla-unified` folder using `cd mozilla_unified`.
-  
-  **TODO add output**
 
   In order to run the SpiderMonkey engine, we first have to build it:
 
@@ -147,7 +145,8 @@ General info here maybe?
   After executing this command the output should look something like this:
 
   ```sh
-  # Show output here
+  Your build was successful!
+  To take your build for a test drive, run: |mach run|
   ```
   
   In order to run the finished build, execute this command:
