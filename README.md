@@ -1154,9 +1154,122 @@ function MapEmplace(key, value) {
 
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
-  The problem with this, is that the function is not currently exposed to self hosted javascript code.
+  The problem with this, is that the function is not currently exposed to self hosted javascript code. The reason for this
+  is seemingly because there has not been any need for the `std_has` method in selfhosted code previously.
+
+  `Selfhosting.cpp`
+  ```cpp
+
+    // Standard builtins used by self-hosting.
+    //...
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+    //...
+
+  ```
+
+  We want to add this line so that we can use `has` in our optimized implementation.
+
+  ```cpp  
+
+    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
+
+  ```
+
+  Copy the line and paste it into `js/src/vm/Selfhosting.cpp`, before MapObject::set (to ensure consistency across files).
+
+  <details>
+    <summary>Solution</summary>
   
-**TODO explain further on std_has**
+    ```cpp
+
+    // Standard builtins used by self-hosting.
+    //...
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+    //...
+
+  ```
+  </details>
+
+  We also need to make the has function publicly exposed in `MapObject.h` to use it in selfhosted code.
+
+  In `MapObject.h`, move this line from private to public.
+
+  ```cpp
+  [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
+  ```
+
+  (This could be tricky) Let's break down the structure of the file:
+
+  ```cpp
+    class MapObject : public NativeObject {
+      public:
+        //...
+        const ValueMap* getData() { return getTableUnchecked(); }
+
+        [[nodiscard]] static bool get(JSContext* cx, unsigned argc, Value* vp);
+        [[nodiscard]] static bool set(JSContext* cx, unsigned argc, Value* vp);
+        //add has here
+
+        //...
+
+      private: 
+        //...
+        [[nodiscard]] static bool size_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool size(JSContext* cx, unsigned argc, Value* vp);
+        [[nodiscard]] static bool get_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool has_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp); //remove this line
+        [[nodiscard]] static bool set_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool delete_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool delete_(JSContext* cx, unsigned argc, Value* vp);
+        [[nodiscard]] static bool keys_impl(JSContext* cx, const CallArgs& args);
+        //...
+    }
+
+  ```
+
+  Now the `std_has`method should be available in selfhosted javascript.
+  **TODO provide a test function to verify that has was correctly exposed**
+
+  ### Optimize the function
+
+  With has now exposed to selfhosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  and `SameValueZero`.
+
+  <details>
+    <summary>Solution</summary>
+
+    ```js
+      function MapEmplace(key, value) {
+        var M = this;
+
+        if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+            return callFunction(      
+                CallMapMethodIfWrapped, 
+                this,
+                key,
+                value,             
+                "MapEmplace"
+            );
+        }
+
+        if (callContentFunction(std_Map_has, M, key)) {
+          return callFunction(std_Map_get, M, key);
+        }
+
+        callContentFunction(std_Map_set, M, key, value);
+          return value;
+      }
+    ```
+  </details>
+
+
+  **TODO explain further on std_has**
 
   **TODO? more advanced, next iteration introducing cpp code**
 
@@ -1164,6 +1277,6 @@ function MapEmplace(key, value) {
 
 <details>
 
-   <summary><h2>Testing</h2></summary>
-   - functionality should be tested before optimization?
+   <summary><h2>Testing (test262)</h2></summary>
+   
 </details>
