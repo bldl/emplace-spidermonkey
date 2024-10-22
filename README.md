@@ -258,12 +258,29 @@ General info here maybe?
 
 ### creating a function
 
-   create a hook in `MapObject.cpp`
-   **TODO simple explaination of where to hook it and why, and the hook args**
+   Create a hook in `MapObject.cpp`:
 
-   `JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),`
+    ```cpp
 
-   in `Map.js`
+      JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),
+    
+    ```
+
+    The javascript type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+    in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
+
+    <details>
+      <summary>A closer look at the hook</summary>
+      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted Javascript. Other possible implmenatations are FN, and INLINABLE_FN.
+      - First argument: the name that javascript will use to call the function.
+      - Second argument: the engine's function implementation.
+      - Third argument: Number of arguments.
+      - Fourth argument: Number of flags.
+    </details>
+
+    **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
+
+    Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
 
    ```javascript
    function MapEmplace(key, handler) {
@@ -271,7 +288,20 @@ General info here maybe?
    }
    ```
 
-   build to test
+   You should now have a function which returns the number 42! Build to test the implementation.
+
+   ```sh
+  ./mach build
+  ...
+  ./mach run
+  ```
+
+  ```sh
+  js> const m = new Map()
+  js> m.emplace(0,0)
+  42
+  ```
+
 
 ### implement the first line
 
@@ -287,15 +317,14 @@ General info here maybe?
 
 ### moving on
 
-    The second line
-
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
    **TODO: explain the purpose of performing internal slot**
 
-   This step is commmon for almost all selfhosted MapObject methods. The solution is already exists in the code.
+   This abstract operation verifies that the called object has the "internal slot" MapData. The meaning of this operation
+   is to confirm that the object is in fact a Map object. This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
@@ -318,25 +347,47 @@ General info here maybe?
 
    </details>
 
-### Line 3 - engine space and user space
+### Step 3 - engine space and user space
 
   **`callfunction` vs `callcontentfunction`?**
 
-   Why do we need to use `callFunction` and `callContentFunction`?
-   In self-hosted JavaScript code, directly calling methods like map.get() is not allowed because content (external scripts)
-   could modify built-in objects like Map. This could lead to unexpected behavior if a method, like get, has been changed by
-   content. This scenario is called monkeyPatching.
+    In self-hosted JavaScript code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
+    scripts could modify built-in objects like Map. This practice is referred to as **monkey patching**, where external 
+    scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling 
+    `map.get()` could result in unexpected or even malicious behavior.
 
-   `callFunction` is an optimized version of `callContentfunction`, however it has a tradeoff. `callContentFunction` is
-   safer when there is a potential risk of the object or method being altered it's `callFunction` is not guaranteed to work.
-   **general rule**
-   Use `callContentFunction` when interfering with the `this` object. In the case of this tutorial, `M`.
+    To avoid this, SpiderMonkey provides two function-calling mechanisms in self-hosted code:
+
+    **callFunction:** This allows calling non-altered (or safe) built-in functions directly. It's optimized for performance 
+    because it assumes that the method hasn't been altered (i.e., it’s the native, built-in function).
+    **callContentFunction:** This is the safer approach and should be used when there's a potential risk that the method or 
+    object you're interacting with could have been altered by content scripts. It bypasses any modified versions of the 
+    method and calls the native, built-in function safely.
+
+    **When to Use Which?**
+    __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method 
+    you're calling is guaranteed to be unaltered, you can use callFunction for better performance.
+
+    __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external 
+    scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of 
+    any changes made by user scripts.
+
+    **General Rule:**
+    Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods 
+    might have been altered by content (e.g., when interacting with objects like Map or Array).
+    In the context of your tutorial, if you're interacting with the map (M), you should use callContentFunction to ensure 
+    you're working with the original, unmodified method.
+
+    **TODO: this rule is poorly explained/incorrect asessment**
 
    Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
-   self hosted code is different
-     - We can use other methods written in selfhosted code
-     - We can use methods methods specified in selfHosting.cpp, which are made available to selfhosted code.
+   The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
+   strict limitations, as supposed to normal javascript.
+
+   **What methods can be used in selfhosted javascript**
+     - We can use other methods written in selfhosted code (remember, "everything" is an object)
+     - We can use methods specified in selfHosting.cpp, which are made available to selfhosted code.
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -346,11 +397,11 @@ General info here maybe?
        JS_FN("std_Map_set", MapObject::set, 2, 0),
    ```
 
-   use std_Map_entries to get the list of entry records
-
    ```
    3. Let entries be the List that is M.[[MapData]].
    ```
+
+   **Use std_Map_entries to get the list of entry records**
 
    <details>
    <summary>Solution</summary>
@@ -375,13 +426,13 @@ General info here maybe?
 
    </details>
 
-### iterating through the map entries
-
-   step 4 iterating through the entries
+### step 4 - iterating through the map entries
 
    ```
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
+
+   **Different methods of iteration is used the other selfhosted Map methods**
 
    <details>
    <summary>Solution</summary>
@@ -412,12 +463,13 @@ General info here maybe?
 
    </details>
 
-   verify that the given key is in the map if update
-   perform abstract operation SameValueZero
-
    ```
    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
    ```
+
+    The purpose of iterating through the entries in the map is to check whether or not the key already exists in the map.
+    This can be done by comparing the keys with SameValueZero.
+   **Use the function SameValueZero to compare the key arg with the key from the iteration entry**
 
    <details>
    <summary>Solution</summary>
@@ -454,9 +506,11 @@ General info here maybe?
    ```
    4ai. If HasProperty(handler, "update") is true, then
    ```
+   If the key was found in the map, we want to update the pair. The next step is to check if an update function was
+   specified in the the handler.
 
-   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use selfhosted
-   Object methods on almost "everything".
+   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use 
+   selfhosted Object methods in selfhosted Map method implementations.
 
    ```cpp
    // Code snippet from Object.cpp
@@ -469,6 +523,8 @@ General info here maybe?
        JS_FS_END,
    };
    ```
+
+   **Check if `handler` has the property `"update"`**
 
    <details>
    <summary>Solution</summary>
@@ -508,7 +564,7 @@ General info here maybe?
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-   get the update handler if its specified.
+   **get the update handler if its specified**
 
    <details>
    <summary>Solution</summary>
@@ -549,7 +605,7 @@ General info here maybe?
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
-   Use `callFunction` to call updateFN, store it as `var updated`
+   **Use `callFunction` to call updateFN, store it as `var updated`**
 
    <details>
    <summary>Solution</summary>
@@ -591,7 +647,15 @@ General info here maybe?
    4ai3. Set e.[[Value]] to updated.
    ```
 
-   Perform a set operation on the Map to update it.
+   **Perform a `set` operation on the Map to update it (remember the standard built-in map operations).**
+
+   ```cpp
+   // Standard builtins used by self-hosting.
+   // Code snippet from SelfHosting.cpp
+       JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+       JS_FN("std_Map_get", MapObject::get, 1, 0),
+       JS_FN("std_Map_set", MapObject::set, 2, 0),
+   ```
 
    <details>
    <summary>Solution</summary>
@@ -634,6 +698,7 @@ General info here maybe?
    ```
 
    Now that we have updated the map, the updated value should be returned.
+   **return the var `updated`.**
 
    <details>
    <summary>Solution</summary>
@@ -682,7 +747,7 @@ General info here maybe?
    8. Return e.[[Value]].
    ```
 
-   With the knowledge from implementing update, use similar techniques to implement insert.
+   **With the knowledge from implementing update, use similar techniques to implement insert.**
 
    <details>
    <summary>Solution</summary>
@@ -728,7 +793,6 @@ General info here maybe?
 
    </details>
 
-   ...
 </details>
 
 <details>
