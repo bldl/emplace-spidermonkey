@@ -956,7 +956,7 @@ prefs.setdefault("useDarkmode", True)
       <pre class="metadata">
       title: Map.prototype.emplace
       stage: 2
-      contributors: Erica Pramer
+      contributors: YOUR NAME HERE
       </pre>
 
       <emu-clause id="sec-map.prototype.emplace">
@@ -984,7 +984,7 @@ prefs.setdefault("useDarkmode", True)
 <details>
   <summary><h2>Implementing the new proposal</h2></summary>
 
-  Minor changes to the implementation. Keep the same logic for line 1-4.
+  ### Step 1-4 - the logic remains the same
 
 
   ```
@@ -996,12 +996,16 @@ prefs.setdefault("useDarkmode", True)
 
   ```
 
+  These lines are similar to the previous proposal specification. The code remains unchanged.
+
+  **Use the code from the old implementation and changes the `handler` parameter to `value`**
+
   <details>
     <summary>Solution</summary>
 
 ```js
 
-function MapEmplace(key, handler) {
+function MapEmplace(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -1009,7 +1013,7 @@ function MapEmplace(key, handler) {
       CallMapMethodIfWrapped,
       this,
       key,
-      handler,
+      value,
       "MapEmplace"
     );
   }
@@ -1028,18 +1032,22 @@ function MapEmplace(key, handler) {
 
   </details>
 
-  If the key is present, return the value from the key, value pair.
+  ### step 4a - If the key exists, return the value
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
+
+  This is where the logic changes in the newer proposal. The new proposal does not care about updates.
+
+  **If the key exists, return it's value with a standard built-in get operation**
 
   <details>
     <summary>Solution</summary>
 
 ```js
 
-function MapEmplace(key, handler) {
+function MapEmplace(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -1047,7 +1055,7 @@ function MapEmplace(key, handler) {
       CallMapMethodIfWrapped,
       this,
       key,
-      handler,
+      value,
       "MapEmplace"
     );
   }
@@ -1068,12 +1076,16 @@ function MapEmplace(key, handler) {
 
   </details>
 
-  If the key was not present in the map, set the new value and then return it.
-
+  ### step 5 & 6 - insert the new key value pair
+  
   ```
   5. Set e.[[Value]] to value.
   6. Return e.[[Value]].
   ```
+
+  If the key was not present in the map, set the new key-value pair and then return the value.
+
+  **use a standard built-in `set` operation, and return `value`**
 
   <details>
     <summary>Solution</summary>
@@ -1142,7 +1154,7 @@ function MapEmplace(key, value) {
 
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
-  The problem with this, is that the function is not currently exposed to our code.
+  The problem with this, is that the function is not currently exposed to self hosted javascript code.
   
 **TODO explain further on std_has**
 
