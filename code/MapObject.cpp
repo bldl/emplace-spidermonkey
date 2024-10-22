@@ -755,14 +755,14 @@ inline bool MapObject::getOrSet(JSContext* cx, MapObject* obj,
       return false;
     }
 
-    // } else {
-    //   auto* preBarriedTable = reinterpret_cast<PreBarrieredTable*>(table);
-    //   ValueMap::Entry* p2 =
-    //       preBarriedTable->getOrAdd(key.get(), value.get());
-    //   if (p2) {
-    //     ReportOutOfMemory(cx);
-    //     return false;
-    //   }
+  } else {
+    auto* preBarriedTable = reinterpret_cast<PreBarrieredTable*>(table);
+    if (const auto* p = preBarriedTable->getOrAdd(key.get(), value)) {
+      rval.set(p->value);
+    } else {
+      ReportOutOfMemory(cx);
+      return false;
+    }
   }
 
   return true;
