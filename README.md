@@ -1330,8 +1330,8 @@ function MapEmplace(key, value) {
   }
 
   console.log("Starting tests...");
-  measureRuntime(testEmplaceForEntries, "Test emplace for " + iterations + " iterations");
-  measureRuntime(testWithoutEmplace, "Test without emplace for " + iterations + " iterations");
+  measureRuntime(withEmplace, "Test emplace for " + iterations + " iterations");
+  measureRuntime(WithoutEmplace, "Test without emplace for " + iterations + " iterations");
 
   ```
 
