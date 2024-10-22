@@ -793,6 +793,128 @@ General info here maybe?
 
    </details>
 
+   ### test the implementation
+
+   Recall, you can create files and run them with the command:
+
+    ```sh
+    ./mach run MyFileName.js
+    ```
+
+  **Create a script to test your implementation or use the sample script below**
+
+
+  <details>
+    <summary>Script</summary>
+
+   ```js
+    console.log("Running tests for Map.prototype.emplace proposal...");
+
+    // Utility function for logging test results
+    function logResult(testName, actual, expected) {
+        console.log(`Test: ${testName}`);
+        console.log(`Expected: ${expected}`);
+        console.log(`Actual: ${actual}`);
+        console.log(actual === expected ? "Passed" : "Failed");
+        console.log('------------------------------');
+    }
+
+    // Test 1: Update on existing key
+    (function testUpdateExistingKey() {
+        const map1 = new Map();
+        map1.set("key1", "val1");
+
+        map1.emplace("key1", {
+            update: () => "updated"
+        });
+
+        logResult("Update on existing key", map1.get("key1"), "updated");
+    })();
+
+    // Test 2: Insert on existing key (should not change existing value)
+    (function testInsertExistingKey() {
+        const map1 = new Map();
+        map1.set("key1", "val1");
+
+        map1.emplace("key1", {
+            insert: () => "inserted"
+        });
+
+        logResult("Insert on existing key (no change)", map1.get("key1"), "val1");
+    })();
+
+    // Test 3: Insert and update on existing key
+    (function testInsertAndUpdateExistingKey() {
+        const map1 = new Map();
+        map1.set("key1", "val1");
+
+        map1.emplace("key1", {
+            update: () => "updated",
+            insert: () => "inserted"
+        });
+
+        logResult("Insert and update on existing key", map1.get("key1"), "updated");
+    })();
+
+    // Test 4: Update nonexistent key (should not update, no effect)
+    (function testUpdateNonexistentKey() {
+        const map1 = new Map();
+
+        try {
+            map1.emplace("nonexistent", {
+                update: () => "updated"
+            });
+        } catch (e) {
+            console.log("Test: Update nonexistent key");
+            console.log("Expected failure: cannot update nonexistent key");
+            console.log('------------------------------');
+        }
+
+    })();
+
+    // Test 5: Insert nonexistent key
+    (function testInsertNonexistentKey() {
+        const map1 = new Map();
+
+        map1.emplace("nonexistent", {
+            insert: () => "inserted"
+        });
+
+        logResult("Insert nonexistent key", map1.get("nonexistent"), "inserted");
+    })();
+
+    // Test 6: Insert and update nonexistent key (insert should happen)
+    (function testInsertAndUpdateNonexistentKey() {
+        const map1 = new Map();
+
+        map1.emplace("nonexistent", {
+            update: () => "updated",
+            insert: () => "inserted"
+        });
+
+        logResult("Insert and update nonexistent key", map1.get("nonexistent"), "inserted");
+    })();
+
+    // Test 7: Increment counter twice
+    (function testIncrementCounter() {
+        const counter = new Map();
+
+        counter.emplace("a", {
+            update: (v) => v + 1,
+            insert: () => 1
+        });
+        logResult("Increment counter first time", counter.get("a"), 1);
+
+        counter.emplace("a", {
+            update: (v) => v + 1,
+            insert: () => 1
+        });
+        logResult("Increment counter second time", counter.get("a"), 2);
+    })();
+   ```
+  </details>
+
+
 </details>
 
 <details>
@@ -1151,6 +1273,62 @@ function MapEmplace(key, value) {
   The worst case for this is that is loops through the entire `entries`.
   This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
   Therefore, we decided to try to optimize this line.
+
+  **Demonstration: Create a new file; Runtime.js with the code below and run it with `./mach run`**
+
+  <details>
+    <summary>Runtime script</summary>
+
+  ```js
+    const iterations = 1000; 
+
+  // Function to measure runtime of a given block of code
+  function measureRuntime(callback, description) {
+      console.log("############################");
+      console.log(description);
+      const startTime = Date.now(); // Get the start time in milliseconds
+      
+      // Execute the code block (callback function)
+      callback();
+      
+      const endTime = Date.now(); // Get the end time in milliseconds
+      const runtime = endTime - startTime; // Calculate the runtime
+      console.log(`Runtime: ${runtime} milliseconds \n`);
+  }
+
+  // test emplace for e record of entries
+  function withEmplace() {
+      const m = new Map();
+
+      var k = 0;
+      while (k < iterations) {
+          m.emplace(k, "val");
+          k++;
+      }
+  }
+
+  //test without emplace
+  function withoutEmplace() {
+      const m = new Map();
+
+      var k = 0;
+      while (k < iterations) {
+          if (m.has(k)) {
+              m.get(k);
+          } else {
+              m.set(k, "val");
+          }
+          k++;
+      }
+  }
+
+  console.log("Starting tests...");
+  measureRuntime(testEmplaceForEntries, "Test emplace for " + iterations + " iterations");
+  measureRuntime(testWithoutEmplace, "Test without emplace for " + iterations + " iterations");
+
+  ```
+
+  </details>
 
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
