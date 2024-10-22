@@ -124,17 +124,16 @@ General info here maybe?
 * [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/macos_build.html)
 * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
 
-  During the installation, you will be asked which version of Firefox we want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript engine`, which will allow for faster builds during development
+  
+  During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript engine`, which will allow for faster builds during development.
 
-  When asked if you want to use the Configuration Wizard, say no(?)
-
-  **TODO check the hg/git thing**
+  It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 ### 2. Running SpiderMonkey
 
-  After the installation is complete a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
+  After the installation is completed a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
 
-  Navigate into the `mozilla-unified` folder using `cd mozilla_unified`.
+  Navigate into `mozilla-unified` folder using `cd mozilla_unified`.
 
   In order to run the SpiderMonkey engine, we first have to build it:
 
@@ -172,20 +171,28 @@ General info here maybe?
   
   You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command: 
 
-  If you create a file with `console.log("Hello World!);` and save it. You can execute it like this:
+  If you create a file called `helloworld.js` with `console.log("Hello World!);` in it and save it. You can execute it like this (given it is in the same folder):
   ```sh
   ./mach run helloworld.js
   ```
 
 ### 3. Applying simple changes
 
-  **TODO: specify selfhosted code files located in ../builtin**
+  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or add/remove functions.
 
-  **TODO: what is selfhosted code? different to normal js/limitations (alternatively in impl section)**
+  To see the effect of this, we can change the return value of a function.
 
-  Look at file ... and change function ... to return ...
+  Open file `Array.js` and change function `ArrayAt` to return 42.
 
   Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
+  ```sh
+    js> var l = [1,2,3];
+    js> l.at(1);
+    42
+  ```
+
+  Self-hosted code is a bit different to normal js, given that you can effectively and easily edit/create functions you want.
+  This can cause problems, more on this later.
 
 </details>
 
@@ -258,12 +265,29 @@ General info here maybe?
 
 ### creating a function
 
-   create a hook in `MapObject.cpp`
-   **TODO simple explaination of where to hook it and why, and the hook args**
+   Create a hook in `MapObject.cpp`:
 
-   `JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),`
+    ```cpp
 
-   in `Map.js`
+      JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),
+    
+    ```
+
+    The javascript type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+    in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
+
+    <details>
+      <summary>A closer look at the hook</summary>
+      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted Javascript. Other possible implmenatations are FN, and INLINABLE_FN.
+      - First argument: the name that javascript will use to call the function.
+      - Second argument: the engine's function implementation.
+      - Third argument: Number of arguments.
+      - Fourth argument: Number of flags.
+    </details>
+
+    **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
+
+    Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
 
    ```javascript
    function MapEmplace(key, handler) {
@@ -271,7 +295,20 @@ General info here maybe?
    }
    ```
 
-   build to test
+   You should now have a function which returns the number 42! Build to test the implementation.
+
+   ```sh
+  ./mach build
+  ...
+  ./mach run
+  ```
+
+  ```sh
+  js> const m = new Map()
+  js> m.emplace(0,0)
+  42
+  ```
+
 
 ### implement the first line
 
@@ -287,15 +324,14 @@ General info here maybe?
 
 ### moving on
 
-    The second line
-
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
    **TODO: explain the purpose of performing internal slot**
 
-   This step is commmon for almost all selfhosted MapObject methods. The solution is already exists in the code.
+   This abstract operation verifies that the called object has the "internal slot" MapData. The meaning of this operation
+   is to confirm that the object is in fact a Map object. This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
@@ -318,25 +354,47 @@ General info here maybe?
 
    </details>
 
-### Line 3 - engine space and user space
+### Step 3 - engine space and user space
 
   **`callfunction` vs `callcontentfunction`?**
 
-   Why do we need to use `callFunction` and `callContentFunction`?
-   In self-hosted JavaScript code, directly calling methods like map.get() is not allowed because content (external scripts)
-   could modify built-in objects like Map. This could lead to unexpected behavior if a method, like get, has been changed by
-   content. This scenario is called monkeyPatching.
+    In self-hosted JavaScript code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
+    scripts could modify built-in objects like Map. This practice is referred to as **monkey patching**, where external 
+    scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling 
+    `map.get()` could result in unexpected or even malicious behavior.
 
-   `callFunction` is an optimized version of `callContentfunction`, however it has a tradeoff. `callContentFunction` is
-   safer when there is a potential risk of the object or method being altered it's `callFunction` is not guaranteed to work.
-   **general rule**
-   Use `callContentFunction` when interfering with the `this` object. In the case of this tutorial, `M`.
+    To avoid this, SpiderMonkey provides two function-calling mechanisms in self-hosted code:
+
+    **callFunction:** This allows calling non-altered (or safe) built-in functions directly. It's optimized for performance 
+    because it assumes that the method hasn't been altered (i.e., it’s the native, built-in function).
+    **callContentFunction:** This is the safer approach and should be used when there's a potential risk that the method or 
+    object you're interacting with could have been altered by content scripts. It bypasses any modified versions of the 
+    method and calls the native, built-in function safely.
+
+    **When to Use Which?**
+    __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method 
+    you're calling is guaranteed to be unaltered, you can use callFunction for better performance.
+
+    __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external 
+    scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of 
+    any changes made by user scripts.
+
+    **General Rule:**
+    Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods 
+    might have been altered by content (e.g., when interacting with objects like Map or Array).
+    In the context of your tutorial, if you're interacting with the map (M), you should use callContentFunction to ensure 
+    you're working with the original, unmodified method.
+
+    **TODO: this rule is poorly explained/incorrect asessment**
 
    Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
-   self hosted code is different
-     - We can use other methods written in selfhosted code
-     - We can use methods methods specified in selfHosting.cpp, which are made available to selfhosted code.
+   The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
+   strict limitations, as supposed to normal javascript.
+
+   **What methods can be used in selfhosted javascript**
+     - We can use other methods written in selfhosted code (remember, "everything" is an object)
+     - We can use methods specified in selfHosting.cpp, which are made available to selfhosted code.
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -346,11 +404,11 @@ General info here maybe?
        JS_FN("std_Map_set", MapObject::set, 2, 0),
    ```
 
-   use std_Map_entries to get the list of entry records
-
    ```
    3. Let entries be the List that is M.[[MapData]].
    ```
+
+   **Use std_Map_entries to get the list of entry records**
 
    <details>
    <summary>Solution</summary>
@@ -375,13 +433,13 @@ General info here maybe?
 
    </details>
 
-### iterating through the map entries
-
-   step 4 iterating through the entries
+### step 4 - iterating through the map entries
 
    ```
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
+
+   **Different methods of iteration is used the other selfhosted Map methods**
 
    <details>
    <summary>Solution</summary>
@@ -412,12 +470,13 @@ General info here maybe?
 
    </details>
 
-   verify that the given key is in the map if update
-   perform abstract operation SameValueZero
-
    ```
    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
    ```
+
+    The purpose of iterating through the entries in the map is to check whether or not the key already exists in the map.
+    This can be done by comparing the keys with SameValueZero.
+   **Use the function SameValueZero to compare the key arg with the key from the iteration entry**
 
    <details>
    <summary>Solution</summary>
@@ -454,9 +513,11 @@ General info here maybe?
    ```
    4ai. If HasProperty(handler, "update") is true, then
    ```
+   If the key was found in the map, we want to update the pair. The next step is to check if an update function was
+   specified in the the handler.
 
-   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use selfhosted
-   Object methods on almost "everything".
+   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use 
+   selfhosted Object methods in selfhosted Map method implementations.
 
    ```cpp
    // Code snippet from Object.cpp
@@ -469,6 +530,8 @@ General info here maybe?
        JS_FS_END,
    };
    ```
+
+   **Check if `handler` has the property `"update"`**
 
    <details>
    <summary>Solution</summary>
@@ -508,7 +571,7 @@ General info here maybe?
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-   get the update handler if its specified.
+   **get the update handler if its specified**
 
    <details>
    <summary>Solution</summary>
@@ -549,7 +612,7 @@ General info here maybe?
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
-   Use `callFunction` to call updateFN, store it as `var updated`
+   **Use `callFunction` to call updateFN, store it as `var updated`**
 
    <details>
    <summary>Solution</summary>
@@ -591,7 +654,15 @@ General info here maybe?
    4ai3. Set e.[[Value]] to updated.
    ```
 
-   Perform a set operation on the Map to update it.
+   **Perform a `set` operation on the Map to update it (remember the standard built-in map operations).**
+
+   ```cpp
+   // Standard builtins used by self-hosting.
+   // Code snippet from SelfHosting.cpp
+       JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+       JS_FN("std_Map_get", MapObject::get, 1, 0),
+       JS_FN("std_Map_set", MapObject::set, 2, 0),
+   ```
 
    <details>
    <summary>Solution</summary>
@@ -634,6 +705,7 @@ General info here maybe?
    ```
 
    Now that we have updated the map, the updated value should be returned.
+   **return the var `updated`.**
 
    <details>
    <summary>Solution</summary>
@@ -682,7 +754,7 @@ General info here maybe?
    8. Return e.[[Value]].
    ```
 
-   With the knowledge from implementing update, use similar techniques to implement insert.
+   **With the knowledge from implementing update, use similar techniques to implement insert.**
 
    <details>
    <summary>Solution</summary>
@@ -728,20 +800,140 @@ General info here maybe?
 
    </details>
 
-   ...
+   ### test the implementation
+
+   Recall, you can create files and run them with the command:
+
+    ```sh
+    ./mach run MyFileName.js
+    ```
+
+  **Create a script to test your implementation or use the sample script below**
+
+
+  <details>
+    <summary>Script</summary>
+
+   ```js
+    console.log("Running tests for Map.prototype.emplace proposal...");
+
+    // Utility function for logging test results
+    function logResult(testName, actual, expected) {
+        console.log(`Test: ${testName}`);
+        console.log(`Expected: ${expected}`);
+        console.log(`Actual: ${actual}`);
+        console.log(actual === expected ? "Passed" : "Failed");
+        console.log('------------------------------');
+    }
+
+    // Test 1: Update on existing key
+    (function testUpdateExistingKey() {
+        const map1 = new Map();
+        map1.set("key1", "val1");
+
+        map1.emplace("key1", {
+            update: () => "updated"
+        });
+
+        logResult("Update on existing key", map1.get("key1"), "updated");
+    })();
+
+    // Test 2: Insert on existing key (should not change existing value)
+    (function testInsertExistingKey() {
+        const map1 = new Map();
+        map1.set("key1", "val1");
+
+        map1.emplace("key1", {
+            insert: () => "inserted"
+        });
+
+        logResult("Insert on existing key (no change)", map1.get("key1"), "val1");
+    })();
+
+    // Test 3: Insert and update on existing key
+    (function testInsertAndUpdateExistingKey() {
+        const map1 = new Map();
+        map1.set("key1", "val1");
+
+        map1.emplace("key1", {
+            update: () => "updated",
+            insert: () => "inserted"
+        });
+
+        logResult("Insert and update on existing key", map1.get("key1"), "updated");
+    })();
+
+    // Test 4: Update nonexistent key (should not update, no effect)
+    (function testUpdateNonexistentKey() {
+        const map1 = new Map();
+
+        try {
+            map1.emplace("nonexistent", {
+                update: () => "updated"
+            });
+        } catch (e) {
+            console.log("Test: Update nonexistent key");
+            console.log("Expected failure: cannot update nonexistent key");
+            console.log('------------------------------');
+        }
+
+    })();
+
+    // Test 5: Insert nonexistent key
+    (function testInsertNonexistentKey() {
+        const map1 = new Map();
+
+        map1.emplace("nonexistent", {
+            insert: () => "inserted"
+        });
+
+        logResult("Insert nonexistent key", map1.get("nonexistent"), "inserted");
+    })();
+
+    // Test 6: Insert and update nonexistent key (insert should happen)
+    (function testInsertAndUpdateNonexistentKey() {
+        const map1 = new Map();
+
+        map1.emplace("nonexistent", {
+            update: () => "updated",
+            insert: () => "inserted"
+        });
+
+        logResult("Insert and update nonexistent key", map1.get("nonexistent"), "inserted");
+    })();
+
+    // Test 7: Increment counter twice
+    (function testIncrementCounter() {
+        const counter = new Map();
+
+        counter.emplace("a", {
+            update: (v) => v + 1,
+            insert: () => 1
+        });
+        logResult("Increment counter first time", counter.get("a"), 1);
+
+        counter.emplace("a", {
+            update: (v) => v + 1,
+            insert: () => 1
+        });
+        logResult("Increment counter second time", counter.get("a"), 2);
+    })();
+   ```
+  </details>
+
+
 </details>
 
-**TODO IDEA, change to "issues with initial proposal" explaining why the old proposal was undesireable**
 <details>
    <summary><h2>Issues with the original proposal</h2></summary>
 
-The original proposal allows for a lot of flexibility, however this increases the complexity of the function, making it less likely to be used.
+The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `emplace`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
-Simpler is often better, and it is a sufficiently common usecase to just want to insert the key-value pair if not present.
+The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
-This usecase shares many similarities in functionality with other languages, where pythons `setdefault` is the most similar one.
+In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
-The ability to both insert and update is not present in many other languages.
+By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
 </details>
 
@@ -893,7 +1085,7 @@ prefs.setdefault("useDarkmode", True)
       <pre class="metadata">
       title: Map.prototype.emplace
       stage: 2
-      contributors: Erica Pramer
+      contributors: YOUR NAME HERE
       </pre>
 
       <emu-clause id="sec-map.prototype.emplace">
@@ -921,7 +1113,7 @@ prefs.setdefault("useDarkmode", True)
 <details>
   <summary><h2>Implementing the new proposal</h2></summary>
 
-  Minor changes to the implementation. Keep the same logic for line 1-4.
+  ### Step 1-4 - the logic remains the same
 
 
   ```
@@ -933,12 +1125,16 @@ prefs.setdefault("useDarkmode", True)
 
   ```
 
+  These lines are similar to the previous proposal specification. The code remains unchanged.
+
+  **Use the code from the old implementation and changes the `handler` parameter to `value`**
+
   <details>
     <summary>Solution</summary>
 
 ```js
 
-function MapEmplace(key, handler) {
+function MapEmplace(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -946,7 +1142,7 @@ function MapEmplace(key, handler) {
       CallMapMethodIfWrapped,
       this,
       key,
-      handler,
+      value,
       "MapEmplace"
     );
   }
@@ -965,18 +1161,22 @@ function MapEmplace(key, handler) {
 
   </details>
 
-  If the key is present, return the value from the key, value pair.
+  ### step 4a - If the key exists, return the value
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
+
+  This is where the logic changes in the newer proposal. The new proposal does not care about updates.
+
+  **If the key exists, return it's value with a standard built-in get operation**
 
   <details>
     <summary>Solution</summary>
 
 ```js
 
-function MapEmplace(key, handler) {
+function MapEmplace(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -984,7 +1184,7 @@ function MapEmplace(key, handler) {
       CallMapMethodIfWrapped,
       this,
       key,
-      handler,
+      value,
       "MapEmplace"
     );
   }
@@ -1005,12 +1205,16 @@ function MapEmplace(key, handler) {
 
   </details>
 
-  If the key was not present in the map, set the new value and then return it.
-
+  ### step 5 & 6 - insert the new key value pair
+  
   ```
   5. Set e.[[Value]] to value.
   6. Return e.[[Value]].
   ```
+
+  If the key was not present in the map, set the new key-value pair and then return the value.
+
+  **use a standard built-in `set` operation, and return `value`**
 
   <details>
     <summary>Solution</summary>
@@ -1077,11 +1281,180 @@ function MapEmplace(key, value) {
   This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
   Therefore, we decided to try to optimize this line.
 
+  **Demonstration: Create a new file; Runtime.js with the code below and run it with `./mach run`**
+
+  <details>
+    <summary>Runtime script</summary>
+
+  ```js
+    const iterations = 1000; 
+
+  // Function to measure runtime of a given block of code
+  function measureRuntime(callback, description) {
+      console.log("############################");
+      console.log(description);
+      const startTime = Date.now(); // Get the start time in milliseconds
+      
+      // Execute the code block (callback function)
+      callback();
+      
+      const endTime = Date.now(); // Get the end time in milliseconds
+      const runtime = endTime - startTime; // Calculate the runtime
+      console.log(`Runtime: ${runtime} milliseconds \n`);
+  }
+
+  // test emplace for e record of entries
+  function withEmplace() {
+      const m = new Map();
+
+      var k = 0;
+      while (k < iterations) {
+          m.emplace(k, "val");
+          k++;
+      }
+  }
+
+  //test without emplace
+  function withoutEmplace() {
+      const m = new Map();
+
+      var k = 0;
+      while (k < iterations) {
+          if (m.has(k)) {
+              m.get(k);
+          } else {
+              m.set(k, "val");
+          }
+          k++;
+      }
+  }
+
+  console.log("Starting tests...");
+  measureRuntime(testEmplaceForEntries, "Test emplace for " + iterations + " iterations");
+  measureRuntime(testWithoutEmplace, "Test without emplace for " + iterations + " iterations");
+
+  ```
+
+  </details>
+
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
-  The problem with this, is that the function is not currently exposed to our code.
+  The problem with this, is that the function is not currently exposed to self hosted javascript code. The reason for this
+  is seemingly because there has not been any need for the `std_has` method in selfhosted code previously.
+
+  `Selfhosting.cpp`
+  ```cpp
+
+    // Standard builtins used by self-hosting.
+    //...
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+    //...
+
+  ```
+
+  We want to add this line so that we can use `has` in our optimized implementation.
+
+  ```cpp  
+
+    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
+
+  ```
+
+  Copy the line and paste it into `js/src/vm/Selfhosting.cpp`, before MapObject::set (to ensure consistency across files).
+
+  <details>
+    <summary>Solution</summary>
   
-**TODO explain further on std_has**
+    ```cpp
+
+    // Standard builtins used by self-hosting.
+    //...
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+    //...
+
+  ```
+  </details>
+
+  We also need to make the has function publicly exposed in `MapObject.h` to use it in selfhosted code.
+
+  In `MapObject.h`, move this line from private to public.
+
+  ```cpp
+  [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
+  ```
+
+  (This could be tricky) Let's break down the structure of the file:
+
+  ```cpp
+    class MapObject : public NativeObject {
+      public:
+        //...
+        const ValueMap* getData() { return getTableUnchecked(); }
+
+        [[nodiscard]] static bool get(JSContext* cx, unsigned argc, Value* vp);
+        [[nodiscard]] static bool set(JSContext* cx, unsigned argc, Value* vp);
+        //add has here
+
+        //...
+
+      private: 
+        //...
+        [[nodiscard]] static bool size_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool size(JSContext* cx, unsigned argc, Value* vp);
+        [[nodiscard]] static bool get_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool has_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp); //remove this line
+        [[nodiscard]] static bool set_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool delete_impl(JSContext* cx, const CallArgs& args);
+        [[nodiscard]] static bool delete_(JSContext* cx, unsigned argc, Value* vp);
+        [[nodiscard]] static bool keys_impl(JSContext* cx, const CallArgs& args);
+        //...
+    }
+
+  ```
+
+  Now the `std_has`method should be available in selfhosted javascript.
+  **TODO provide a test function to verify that has was correctly exposed**
+
+  ### Optimize the function
+
+  With has now exposed to selfhosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  and `SameValueZero`.
+
+  <details>
+    <summary>Solution</summary>
+
+    ```js
+      function MapEmplace(key, value) {
+        var M = this;
+
+        if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+            return callFunction(      
+                CallMapMethodIfWrapped, 
+                this,
+                key,
+                value,             
+                "MapEmplace"
+            );
+        }
+
+        if (callContentFunction(std_Map_has, M, key)) {
+          return callFunction(std_Map_get, M, key);
+        }
+
+        callContentFunction(std_Map_set, M, key, value);
+          return value;
+      }
+    ```
+  </details>
+
+
+  **TODO explain further on std_has**
 
   **TODO? more advanced, next iteration introducing cpp code**
 
@@ -1089,6 +1462,6 @@ function MapEmplace(key, value) {
 
 <details>
 
-   <summary><h2>Testing</h2></summary>
-   - functionality should be tested before optimization?
+   <summary><h2>Testing (test262)</h2></summary>
+   
 </details>
