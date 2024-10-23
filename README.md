@@ -1466,6 +1466,45 @@ function MapEmplace(key, value) {
 
    <summary><h2>Testing (test262)</h2></summary>
    
+   ### Writing tests for test262
+   When it comes to testing implementations, there are som guidelines to follow. 
+   The official guidelines state that an acceptable test in Test262 is the following:
+   ```
+   Any test that exercises observable grammar or semantics, originating with citable, 
+   ormative text in the latest draft of the ECMAScript Language Specification, 
+   the ECMAScript Internationalization API Specification, the The JSON Data Interchange Syntax, 
+   a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications.
+   ```
+
+   The key point for this, is that we can write tests for any observable grammar or semantic from our specification.
+
+   First we need to identify the so-called testable lines in our specification.
+   One way to think about it, is when the behaviour of the specification is observable to the user.
+   
+   An example of easily testable line in our specification is:
+   ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
+
+   Recall that this line checks if `this` is an Object, therefore we can test it by trying it on non-objects.
+   So an example of the tests you can write for this, could look like this:
+   
+   ```js
+   var m = new Map();
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(false, 1);
+   });
+   ```
+
+   The `assert` is what is part of the Test262 suite, here we assert that a TypeErrors is thrown.
+
+   You can find the rest of the functions for assert [here](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment).
+
+   ### More than just testing
+
+   Additional to the tests, there is a strict guide for documentation for the test.
+
+
+   
 </details>
 
 
