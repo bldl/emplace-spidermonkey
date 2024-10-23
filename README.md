@@ -257,7 +257,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### interpretation of the `Map.prototype.emplace` specification
 
-The ESCMAScript262 specification text can look intitmidating at first glance.Before starting the implementation of you 
+The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
 should try to get a rough understanding of what each line in the spec means. Write sudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
 
