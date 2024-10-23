@@ -6,7 +6,7 @@ General info here maybe?
 
 **TODO? explain the process of an Ecmascript proposal, ex. phases2 -> 2.7 etc**
 
-<details>
+<details open>
    <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
 
    **What is it?**
@@ -107,7 +107,7 @@ General info here maybe?
 
 </details>
 
-<details>
+<details open>
    <summary><h2>Installing mozilla unified</h2></summary>
 
    In this section you will learn how to download the Mozilla environment based on your operating system. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
@@ -196,7 +196,7 @@ General info here maybe?
 
 </details>
 
-<details>
+<details open>
    <summary><h2>How to Read the ECMA-262 Language Specification</h2></summary>
 
 ### 1. What is the ECMA-262 Specification?
@@ -244,7 +244,7 @@ General info here maybe?
 
 </details>
 
-<details>
+<details open>
    <summary><h2>Searchfox</h2></summary>
 
    When implementing a feature, Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
@@ -260,7 +260,7 @@ General info here maybe?
 
 </details>
 
-<details>
+<details open>
    <summary><h2>Implementation</h2></summary>
 
 ### creating a function
@@ -924,7 +924,7 @@ General info here maybe?
 
 </details>
 
-<details>
+<details open>
    <summary><h2>Issues with the original proposal</h2></summary>
 
 The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `emplace`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
@@ -937,7 +937,7 @@ By making it overcomplicated and a feature that is not commonly found in other l
 
 </details>
 
-<details>
+<details open>
    <summary><h2>Explaining the new proposal</h2></summary>
 
    **What is the motivation for a new propsosal?**
@@ -991,7 +991,7 @@ prefs.setdefault("useDarkmode", True)
 
 </details>
 
-<details>
+<details open>
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
 
   
@@ -1110,7 +1110,7 @@ prefs.setdefault("useDarkmode", True)
 
 </details>
 
-<details>
+<details open>
   <summary><h2>Implementing the new proposal</h2></summary>
 
   ### Step 1-4 - the logic remains the same
@@ -1256,7 +1256,7 @@ function MapEmplace(key, value) {
   
 </details>
 
-<details>
+<details open>
    <summary><h2>Optimization</h2></summary>
   
   A proposal goes through several stages before it becomes a part of the ECMAscript language.
@@ -1462,7 +1462,7 @@ function MapEmplace(key, value) {
   </details>
 </details>
 
-<details>
+<details open>
 
    <summary><h2>Testing (test262)</h2></summary>
    
