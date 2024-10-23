@@ -292,35 +292,35 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### creating a function
 
-   Create a hook in `MapObject.cpp`:
+  Create a hook in `MapObject.cpp`:
 
-    ```cpp
+  ```cpp
 
-      JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),
-    
-    ```
+    JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),
+  
+  ```
 
-    The javascript type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
-    in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
+  The javascript type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+  in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
 
-    <details>
-      <summary>A closer look at the hook</summary>
-      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted Javascript. Other possible implmenatations are FN, and INLINABLE_FN.
-      - First argument: the name that javascript will use to call the function.
-      - Second argument: the engine's function implementation.
-      - Third argument: Number of arguments.
-      - Fourth argument: Number of flags.
-    </details>
+  <details>
+    <summary>A closer look at the hook</summary>
+    - JS_SELF_HOSTED_FN: The function is implemented in selfhosted Javascript. Other possible implmenatations are FN, and INLINABLE_FN.
+    - First argument: the name that javascript will use to call the function.
+    - Second argument: the engine's function implementation.
+    - Third argument: Number of arguments.
+    - Fourth argument: Number of flags.
+  </details>
 
-    **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
+  **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
 
-    Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
+  Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
 
-   ```javascript
-   function MapEmplace(key, handler) {
-     return 42
-   }
-   ```
+  ```javascript
+  function MapEmplace(key, handler) {
+    return 42
+  }
+  ```
 
    You should now have a function which returns the number 42! Build to test the implementation.
 
