@@ -1479,7 +1479,7 @@ function MapEmplace(key, value) {
    The key point for this, is that we can write tests for any observable grammar or semantic from our specification.
 
    First we need to identify the so-called testable lines in our specification.
-   One way to think about it, is when the behaviour of the specification is observable to the user.
+   One way to think about it, is when the behaviour of the specification is observable to the user we can test it.
    
    An example of easily testable line in our specification is:
    ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
@@ -1502,8 +1502,113 @@ function MapEmplace(key, value) {
    ### More than just testing
 
    Additional to the tests, there is a strict guide for documentation for the test.
+    
+   You should start the test by declaring the copyright, here you just fill in the year and your name:
+   ```
+   // Copyright (C) *Year *Name. All rights reserved.
+   // This code is governed by the BSD license found in the LICENSE file.
+   ```
 
+   The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
+   All the info is inside the YAML tags `/*---` and `---*/`.
 
+   We start with the `esid`, which is the ECMAScript identifier and required. 
+   This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
+
+   ```
+   esid: pending
+   ```
+
+   Next comes the description which is the other required key. 
+   The description should be short and on one line regarding the purpose of this testcase.
+   In our case, it will look something like: 
+   ```
+   description: >
+        Throws a TypeError if 'this' is not an object
+   ```
+
+   Although not required, we should fill out the `info` key aswell.
+   Some points that are beneficial here are:
+    - What does the method look like?
+    - Which line of code are we testing?
+
+   ```
+   info: |
+        Map.getOrInsert( key , value )
+        
+        1. Let M be the this value
+        2. Perform ? RequireInternalSlot(M, [[MapData]])
+        ... 
+   ```
+
+   There are many other keys we can look at, but if you want to learn more about them, check out this [link](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter).
+
+   Our full test should now look something like this:
+   ```js
+   // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
+   // This code is governed by the BSD license found in the LICENSE file.
+   /*---
+   esid: pending
+   description: >
+       Throws a TypeError if `this` is not an Object.
+   info: |
+       Map.getOrInsert ( key, value )
+
+       1. Let M be the this value
+       2. Perform ? RequireInternalSlot(M, [[MapData]])
+       ...
+   ---*/
+   var m = new Map();
+
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(false, 1, 1);
+   });
+   ```
+   ### Fill in test cases
+   We can now fill in with other test cases:
+   ```js
+   // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
+   // This code is governed by the BSD license found in the LICENSE file.
+   /*---
+   esid: pending
+   description: >
+       Throws a TypeError if `this` is not an Object.
+   info: |
+       Map.getOrInsert ( key, value )
+
+       1. Let M be the this value
+       2. Perform ? RequireInternalSlot(M, [[MapData]])
+       ...
+   features: [Symbol]
+   ---*/
+   var m = new Map();
+
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(false, 1, 1);
+   });
+
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(1, 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call("", 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(undefined, 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(null, 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(Symbol(), 1, 1);
+   });
+   ```
+
+   You can take a look at other tests written in the test262 folder or try to write some tests yourself.
    
 </details>
 
