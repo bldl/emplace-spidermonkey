@@ -1479,6 +1479,172 @@ function MapEmplace(key, value) {
 
    <summary><h2>Testing (test262)</h2></summary>
    
+   ### Writing tests for test262
+   When it comes to testing implementations, there are som guidelines to follow. 
+   The official guidelines state that an acceptable test in Test262 is the following:
+   ```
+   Any test that exercises observable grammar or semantics, originating with citable, 
+   ormative text in the latest draft of the ECMAScript Language Specification, 
+   the ECMAScript Internationalization API Specification, the The JSON Data Interchange Syntax, 
+   a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications.
+   ```
+
+   The key point for this, is that we can write tests for any observable grammar or semantic from our specification.
+
+   First we need to identify the so-called testable lines in our specification.
+   One way to think about it, is when the behaviour of the specification is observable to the user, it is testable.
+   
+   An example of easily testable line in our specification is:
+   ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
+
+   Recall that this line, among other things, checks if `this` is an Object, therefore we can test it by trying it on non-objects.
+   Primitive types in JavaScript are not considered objects.
+   So an example of the tests you can write for this, could look like this:
+   
+   ```js
+   var m = new Map();
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(false, 1);
+   });
+   ```
+
+   The `assert` is part of the Test262 suite, here we assert that a TypeError is thrown.
+
+   You can find the rest of the functions for assert [here](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment).
+
+   ### More than just testing
+
+   Additional to the tests, there is a strict guide for documentation for the test.
+    
+   You should start the test by declaring the copyright, here you just fill in the year and your name:
+   ```
+   // Copyright (C) *Year *Name. All rights reserved.
+   // This code is governed by the BSD license found in the LICENSE file.
+   ```
+
+   The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
+   All the info is inside the YAML tags `/*---` and `---*/`.
+
+   We start with the required key `esid`, which is the ECMAScript identifier. 
+   This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
+
+   ```
+   esid: pending
+   ```
+
+   Next comes the description which is the other required key. 
+   The description should be short and on one line regarding the purpose of this testcase.
+   In our case, it will look something like: 
+   ```
+   description: >
+        Throws a TypeError if 'this' is not an object
+   ```
+
+   Although not required, we should fill out the `info` key aswell.
+   Some points that are beneficial here are:
+    - What does the method look like?
+    - Which line of code are we testing?
+
+   ```
+   info: |
+        Map.getOrInsert( key , value )
+        
+        1. Let M be the this value
+        2. Perform ? RequireInternalSlot(M, [[MapData]])
+        ... 
+   ```
+
+   There are many other keys we can look at, but if you want to learn more about them, check out this [link](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter).
+
+   Our full test should now look something like this:
+   ```js
+   // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
+   // This code is governed by the BSD license found in the LICENSE file.
+   /*---
+   esid: pending
+   description: >
+       Throws a TypeError if `this` is not an Object.
+   info: |
+       Map.getOrInsert ( key, value )
+
+       1. Let M be the this value
+       2. Perform ? RequireInternalSlot(M, [[MapData]])
+       ...
+   ---*/
+   var m = new Map();
+
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(false, 1, 1);
+   });
+   ```
+   ### Fill in test cases
+   We can now fill in with other test cases (non-objects):
+   ```js
+   // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
+   // This code is governed by the BSD license found in the LICENSE file.
+   /*---
+   esid: pending
+   description: >
+       Throws a TypeError if `this` is not an Object.
+   info: |
+       Map.getOrInsert ( key, value )
+
+       1. Let M be the this value
+       2. Perform ? RequireInternalSlot(M, [[MapData]])
+       ...
+   features: [Symbol]
+   ---*/
+   var m = new Map();
+
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(false, 1, 1);
+   });
+
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(1, 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call("", 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(undefined, 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(null, 1, 1);
+   });
+    
+   assert.throws(TypeError, function () {
+       m.getOrInsert.call(Symbol(), 1, 1);
+   });
+   ```
+
+   You can take a look at other tests written in the test262 folder or try to write some tests yourself.
+   
+   ### Running tests in SpiderMonkey
+   To add the test you simply create the file in `mozilla-unified/js/src/tests/test262/built-ins/Map/`. 
+   Preferably creating a folder for the proposal as well.
+
+   When this is done, you can run the tests with `./mach jstests built-ins/Map`, or be even more specific if you have created a folder.
+   
+   You will then see something like this, depending on how many tests are run:
+   ```sh
+   [1|0|0|0]  12% =====>                                                
+   [2|0|0|0]  25% ============>                                         
+   [3|0|0|0]  37% ===================>                                  
+   [4|0|0|0]  50% ==========================>                           
+   [5|0|0|0]  62% =================================>                    
+   [6|0|0|0]  75% ========================================>             
+   [7|0|0|0]  87% ===============================================>      
+   [8|0|0|0] 100% ======================================================
+   [8|0|0|0] 100% ======================================================>|   
+   0.4s
+   ```
+
+   A general tip for testing is looking at how similar lines are tested in other implementations.
 </details>
 
 
