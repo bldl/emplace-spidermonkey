@@ -287,8 +287,7 @@ In the implementation part of this tutorial, each line of the specification will
 
 </details>
 
-<details open>
-   <summary><h2>Implementation</h2></summary>
+<h2>Implementation</h2>
 
 ### creating a function
 
@@ -950,8 +949,6 @@ In the implementation part of this tutorial, each line of the specification will
   </details>
 
 
-</details>
-
 <details open>
    <summary><h2>Issues with the original proposal</h2></summary>
 
@@ -1138,8 +1135,7 @@ prefs.setdefault("useDarkmode", True)
 
 </details>
 
-<details open>
-  <summary><h2>Implementing the new proposal</h2></summary>
+<h2>Implementing the new proposal</h2>
 
   ### Step 1-4 - the logic remains the same
 
@@ -1282,10 +1278,8 @@ function MapEmplace(key, value) {
 
   </details>
   
-</details>
 
-<details open>
-   <summary><h2>Optimization</h2></summary>
+<h2>Optimization</h2>
   
   A proposal goes through several stages before it becomes a part of the ECMAscript language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
@@ -1486,9 +1480,6 @@ function MapEmplace(key, value) {
 
   **TODO? more advanced, next iteration introducing cpp code**
 
-  
-  </details>
-</details>
 
 <details open>
 
