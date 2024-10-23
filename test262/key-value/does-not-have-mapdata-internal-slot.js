@@ -6,6 +6,7 @@ description: >
     Throws a TypeError if `this` object does not have a [[MapData]] internal slot.
 info: |
     Map.getOrInsert ( key , value )
+
     ...
     2. Perform ? RequireInternalSLot(M, [[MapData]])
     ...
