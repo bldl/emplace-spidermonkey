@@ -5,7 +5,7 @@ esid: pending
 description: >
     Throws a TypeError if `this` is not an Object.
 info: |
-    Map.getOrInsert ( key, value )
+    Map.getOrInsert ( key , value )
 
     1. Let M be the this value
     2. Perform ? RequireInternalSlot(M, [[MapData]])
