@@ -1,10 +1,22 @@
 # Tutorial
 
-General info here maybe?
+Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.emplace proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `emplace` function and testing it with the official test suite, Test262.
+
+You don’t need prior knowledge of JavaScript engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
+
+### What’s Covered in This Tutorial?
+- __The `Map.prototype.emplace` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
+- __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
+- __Implementing the Proposal:__ We will implement the emplace function both in self-hosted JavaScript and C++.
+- __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript, and how to run custom scripts.
+- __Optimizing Your Code:__ Learn about performance considerations and optimizations.
+- __Contributing to the ECMAScript Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript standard.
+
+By the end of this tutorial, you will have a full implementation of `Map.prototype.emplace` and a solid understanding of how JavaScript engine features are developed.
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
 
-**TODO? explain the process of an Ecmascript proposal, ex. phases2 -> 2.7 etc**
+**TODO? explain the process of an Ecmascript proposal, ex. phases 2 -> 2.7 etc**
 
 <details open>
    <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
