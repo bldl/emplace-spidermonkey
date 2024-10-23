@@ -1,13 +1,17 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
-
 /*---
+esid: pending
+description: >
+    Returns the value from the specified key on different types, when key not present.
+info: |
+    Map.getOrInsert ( key , value )
 
-...
-5. Set e.[[Value]] to value.
-6. Return e.[[Value]].
-...
-
+    ...
+    5. Set e.[[Value]] to value.
+    6. Return e.[[Value]].
+    ...
+feature: [Symbol]
 ---*/
 
 var map = new Map();
