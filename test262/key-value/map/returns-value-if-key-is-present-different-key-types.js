@@ -1,12 +1,17 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
-
 /*---
+esid: pending
+description: >
+    Returns the value set before getOrInsert from the specified key on different types.
+info: |
+    Map.getOrInsert ( key , value )
 
-...
-4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
-...
-
+    ...
+    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+        4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]]
+    ...
+features: [Symbol]
 ---*/
 
 var map = new Map();
