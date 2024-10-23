@@ -1479,12 +1479,13 @@ function MapEmplace(key, value) {
    The key point for this, is that we can write tests for any observable grammar or semantic from our specification.
 
    First we need to identify the so-called testable lines in our specification.
-   One way to think about it, is when the behaviour of the specification is observable to the user we can test it.
+   One way to think about it, is when the behaviour of the specification is observable to the user, it is testable.
    
    An example of easily testable line in our specification is:
    ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
 
-   Recall that this line checks if `this` is an Object, therefore we can test it by trying it on non-objects.
+   Recall that this line, among other things, checks if `this` is an Object, therefore we can test it by trying it on non-objects.
+   Primitive types in JavaScript are not considered objects.
    So an example of the tests you can write for this, could look like this:
    
    ```js
@@ -1495,7 +1496,7 @@ function MapEmplace(key, value) {
    });
    ```
 
-   The `assert` is what is part of the Test262 suite, here we assert that a TypeErrors is thrown.
+   The `assert` is part of the Test262 suite, here we assert that a TypeError is thrown.
 
    You can find the rest of the functions for assert [here](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment).
 
@@ -1512,7 +1513,7 @@ function MapEmplace(key, value) {
    The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
    All the info is inside the YAML tags `/*---` and `---*/`.
 
-   We start with the `esid`, which is the ECMAScript identifier and required. 
+   We start with the required key `esid`, which is the ECMAScript identifier. 
    This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
 
    ```
@@ -1565,7 +1566,7 @@ function MapEmplace(key, value) {
    });
    ```
    ### Fill in test cases
-   We can now fill in with other test cases:
+   We can now fill in with other test cases (non-objects):
    ```js
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
@@ -1610,6 +1611,27 @@ function MapEmplace(key, value) {
 
    You can take a look at other tests written in the test262 folder or try to write some tests yourself.
    
+   ### Running tests in SpiderMonkey
+   To add the test you simply create the file in `mozilla-unified/js/src/tests/test262/built-ins/Map/`. 
+   Preferably creating a folder for the proposal as well.
+
+   When this is done, you can run the tests with `./mach jstests built-ins/Map`, or be even more specific if you have created a folder.
+   
+   You will then see something like this, depending on how many tests are run:
+   ```sh
+   [1|0|0|0]  12% =====>                                                
+   [2|0|0|0]  25% ============>                                         
+   [3|0|0|0]  37% ===================>                                  
+   [4|0|0|0]  50% ==========================>                           
+   [5|0|0|0]  62% =================================>                    
+   [6|0|0|0]  75% ========================================>             
+   [7|0|0|0]  87% ===============================================>      
+   [8|0|0|0] 100% ======================================================
+   [8|0|0|0] 100% ======================================================>|   
+   0.4s
+   ```
+
+   A general tip for testing is looking at how similar lines are tested in other implementations.
 </details>
 
 
