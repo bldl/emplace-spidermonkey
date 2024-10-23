@@ -340,10 +340,11 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
-   **TODO: explain the purpose of performing internal slot**
-
-   This abstract operation verifies that the called object has the "internal slot" MapData. The meaning of this operation
-   is to confirm that the object is in fact a Map object. This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
+   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object. 
+   In JavaScript, objects may have internal slots, which are "hidden" properties that store information about the object. 
+   In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
+   
+   This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
