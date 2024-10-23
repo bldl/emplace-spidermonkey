@@ -5,6 +5,7 @@ Welcome to this detailed tutorial on how to implement and understand the `Map.pr
 You don’t need prior knowledge of JavaScript engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
 
 ### What’s Covered in This Tutorial?
+
 - __The `Map.prototype.emplace` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
 - __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
 - __Implementing the Proposal:__ We will implement the emplace function both in self-hosted JavaScript and C++.
@@ -14,30 +15,30 @@ You don’t need prior knowledge of JavaScript engine internals or advanced C++ 
 
 By the end of this tutorial, you will have a full implementation of `Map.prototype.emplace` and a solid understanding of how JavaScript engine features are developed.
 
-**TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
+__TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts__
 
-**TODO? explain the process of an Ecmascript proposal, ex. phases 2 -> 2.7 etc**
+__TODO? explain the process of an Ecmascript proposal, ex. phases 2 -> 2.7 etc__
 
 <details open>
    <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
 
-   **What is it?**
+   __What is it?__
    Map.prototype.emplace is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
 
-   **How does it work?**
+   __How does it work?__
    The "emplace" operation takes two arguments: a key and a handler object. The handler contains two properties:
 
-* update: Function to modify value of a key if the key is already existing in the Map.
-* insert: Function that generates a default-value to be set to the belonging value of the checked key.
+- update: Function to modify value of a key if the key is already existing in the Map.
+- insert: Function that generates a default-value to be set to the belonging value of the checked key.
 
-   **The function follow these steps:**
+   __The function follow these steps:__
 
    1. The Map is checked for the key passed as argument. If the key is found:
-       * It checks the handler for "update" function. If found this is used to update the value belonging to the key to then return it
+       - It checks the handler for "update" function. If found this is used to update the value belonging to the key to then return it
    2. If it is not found, the insert function from the handler is used to generate a new value, assign this to the passed key and then return the new value.
    3. Either way, the belonging value will be returned.
 
-   **What is the motivation?** Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
+   __What is the motivation?__ Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
 
    <details>
    <summary>
@@ -132,11 +133,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
   The installation process depends on your operating system, therefore you can click on the link under that matches yours.
 
-* [Build Mozilla Firefox on Linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html)
-* [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/macos_build.html)
-* [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
+- [Build Mozilla Firefox on Linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html)
+- [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/macos_build.html)
+- [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
 
-  
   During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript engine`, which will allow for faster builds during development.
 
   It doesn't matter if you choose to use `hg` or `git` to grab the source code.
@@ -166,8 +166,8 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
   ./mach run
   ```
 
-  Your terminal should now enter the JS Read-Eval-Print-Loop mode. 
-  The functionality is similar to a browsers console and arbitrary JS code can be executed. 
+  Your terminal should now enter the JS Read-Eval-Print-Loop mode.
+  The functionality is similar to a browsers console and arbitrary JS code can be executed.
 
   ```sh
   js>
@@ -181,9 +181,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
   js> console.log("Hello World!");
   ```
   
-  You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command: 
+  You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command:
 
   If you create a file called `helloworld.js` with `console.log("Hello World!);` in it and save it. You can execute it like this (given it is in the same folder):
+
   ```sh
   ./mach run helloworld.js
   ```
@@ -197,6 +198,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
   Open file `Array.js` and change function `ArrayAt` to return 42.
 
   Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
+
   ```sh
     js> var l = [1,2,3];
     js> l.at(1);
@@ -213,56 +215,55 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 1. What is the ECMA-262 Specification?
 
-* ECMA-262 is the official document that defines how JavaScript works. It tells developers and browser makers what JavaScript should do in every situation.
+- ECMA-262 is the official document that defines how JavaScript works. It tells developers and browser makers what JavaScript should do in every situation.
 
 ### 2. How to Navigate the Document
 
-* **Start with the Table of Contents**: This is where you’ll find major sections like grammar, types, and functions. It helps you jump to the part you’re interested in.
-* **Use Search**: The specification is large. If you’re looking for a specific topic, like “Promise” or “Array,” use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly.
-* **Annexes (Extras)**: At the end of the document, you’ll find extra sections that explain older features or give additional context.
+- __Start with the Table of Contents__: This is where you’ll find major sections like grammar, types, and functions. It helps you jump to the part you’re interested in.
+- __Use Search__: The specification is large. If you’re looking for a specific topic, like “Promise” or “Array,” use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly.
+- __Annexes (Extras)__: At the end of the document, you’ll find extra sections that explain older features or give additional context.
 
 ### 3. How to Read the Algorithms
 
-* **Algorithms are like instructions**: The spec breaks down how JavaScript works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
-* **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript checks something, and the next steps depend on the result.
+- __Algorithms are like instructions__: The spec breaks down how JavaScript works using step-by-step instructions, almost like a recipe.
+- __Steps to follow__: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
+- __Conditions__: You’ll often see steps like “If X is true...” which means that JavaScript checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
 
-* **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript objects. These are properties that JavaScript uses internally but developers can’t directly access.
-* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
-* **`Return`**: This marks the end of an operation, and tells you the result.
-* **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
+- __`[[ ]]` (Double Brackets)__: These represent internal properties of JavaScript objects. These are properties that JavaScript uses internally but developers can’t directly access.
+- __`?` (Question Mark)__: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
+- __`Return`__: This marks the end of an operation, and tells you the result.
+- __Keywords__: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
 
 ### 5. Finding Information on Other Symbols
 
-* The specification also uses symbols like `< >` for describing syntactic elements and different notations for describing the structure of code. To understand these symbols:
-  * Look at the section called **"Notation"** in the specification, which explains the meaning of each symbol in detail.
-  * For example, `<T>` in Backus-Naur Form (BNF) means a non-terminal element, which is used to describe parts of the language structure.
+- The specification also uses symbols like `< >` for describing syntactic elements and different notations for describing the structure of code. To understand these symbols:
+  - Look at the section called __"Notation"__ in the specification, which explains the meaning of each symbol in detail.
+  - For example, `<T>` in Backus-Naur Form (BNF) means a non-terminal element, which is used to describe parts of the language structure.
 
 ### 6. Start Simple
 
-* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript features such as arrays or functions.
-* **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript engine implementations or additional explanations before checking the more technical spec.
+- Don’t dive into the complex parts immediately. Start by reading sections like the __Introduction__ or common JavaScript features such as arrays or functions.
+- __External Help__: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript engine implementations or additional explanations before checking the more technical spec.
 
 ### 7. Example: Understanding `Array.prototype.push`
 
-* In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
-  * First, the length of the array is checked.
-  * Then, the new element is added to the array.
-  * Finally, the length property is updated to reflect the added element.
+- In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
+  - First, the length of the array is checked.
+  - Then, the new element is added to the array.
+  - Finally, the length property is updated to reflect the added element.
 
-   **TODO first task is getting a rough understanding of the emplace spec, write line by line understamding, provide example solution**
-
+   __TODO first task is getting a rough understanding of the emplace spec, write line by line understamding, provide example solution__
 
 ### interpretation of the `Map.prototype.emplace` specification
 
-The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
-should try to get a rough understanding of what each line in the spec means. Write sudo code, sentences or a combination. 
+The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you
+should try to get a rough understanding of what each line in the spec means. Write sudo code, sentences or a combination.
 The goal is gain an overview of what we are trying to achieve.
 
-**Rewrite the spec in your own words**
-Example: 
+__Rewrite the spec in your own words__
+Example:
 3. Let __entries__ be the `List` that is __M__.[[MapData]].
 -->>
 3. make a `List` variable __entries__, which stores pairs `(key, value)`
@@ -335,7 +336,6 @@ In the implementation part of this tutorial, each line of the specification will
   42
   ```
 
-
 ### implement the first line
 
    ```
@@ -354,10 +354,10 @@ In the implementation part of this tutorial, each line of the specification will
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
-   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object. 
-   In JavaScript, objects may have internal slots, which are "hidden" properties that store information about the object. 
+   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object.
+   In JavaScript, objects may have internal slots, which are "hidden" properties that store information about the object.
    In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
-   
+
    This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
@@ -383,43 +383,43 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### Step 3 - engine space and user space
 
-  **`callfunction` vs `callcontentfunction`?**
+  __`callfunction` vs `callcontentfunction`?__
 
-    In self-hosted JavaScript code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
-    scripts could modify built-in objects like Map. This practice is referred to as **monkey patching**, where external 
-    scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling 
-    `map.get()` could result in unexpected or even malicious behavior.
+  In self-hosted JavaScript code, directly calling methods like `map.get()` is not allowed because user-defined (content)
+  scripts could modify built-in objects like Map. This practice is referred to as __monkey patching__, where external
+  scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling
+  `map.get()` could result in unexpected or even malicious behavior.
 
-    To avoid this, SpiderMonkey provides two function-calling mechanisms in self-hosted code:
+  To avoid this, SpiderMonkey provides two function-calling mechanisms in self-hosted code:
 
-    **callFunction:** This allows calling non-altered (or safe) built-in functions directly. It's optimized for performance 
-    because it assumes that the method hasn't been altered (i.e., it’s the native, built-in function).
-    **callContentFunction:** This is the safer approach and should be used when there's a potential risk that the method or 
-    object you're interacting with could have been altered by content scripts. It bypasses any modified versions of the 
-    method and calls the native, built-in function safely.
+  __callFunction:__ This allows calling non-altered (or safe) built-in functions directly. It's optimized for performance
+  because it assumes that the method hasn't been altered (i.e., it’s the native, built-in function).
+  __callContentFunction:__ This is the safer approach and should be used when there's a potential risk that the method or
+  object you're interacting with could have been altered by content scripts. It bypasses any modified versions of the
+  method and calls the native, built-in function safely.
 
-    **When to Use Which?**
-    __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method 
-    you're calling is guaranteed to be unaltered, you can use callFunction for better performance.
+  __When to Use Which?__
+  __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method
+  you're calling is guaranteed to be unaltered, you can use callFunction for better performance.
 
-    __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external 
-    scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of 
-    any changes made by user scripts.
+  __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external
+  scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of
+  any changes made by user scripts.
 
-    **General Rule:**
-    Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods 
-    might have been altered by content (e.g., when interacting with objects like Map or Array).
-    In the context of your tutorial, if you're interacting with the map (M), you should use callContentFunction to ensure 
-    you're working with the original, unmodified method.
+  __General Rule:__
+  Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods
+  might have been altered by content (e.g., when interacting with objects like Map or Array).
+  In the context of your tutorial, if you're interacting with the map (M), you should use callContentFunction to ensure
+  you're working with the original, unmodified method.
 
-    **TODO: this rule is poorly explained/incorrect asessment**
+  __TODO: this rule is poorly explained/incorrect asessment__
 
    Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
-   The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
+   The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with
    strict limitations, as supposed to normal javascript.
 
-   **What methods can be used in selfhosted javascript**
+   __What methods can be used in selfhosted javascript__
      - We can use other methods written in selfhosted code (remember, "everything" is an object)
      - We can use methods specified in selfHosting.cpp, which are made available to selfhosted code.
 
@@ -435,7 +435,7 @@ In the implementation part of this tutorial, each line of the specification will
    3. Let entries be the List that is M.[[MapData]].
    ```
 
-   **Use std_Map_entries to get the list of entry records**
+   __Use std_Map_entries to get the list of entry records__
 
    <details>
    <summary>Solution</summary>
@@ -466,7 +466,7 @@ In the implementation part of this tutorial, each line of the specification will
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-   **Different methods of iteration is used the other selfhosted Map methods**
+   __Different methods of iteration is used the other selfhosted Map methods__
 
    <details>
    <summary>Solution</summary>
@@ -501,9 +501,9 @@ In the implementation part of this tutorial, each line of the specification will
    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
    ```
 
-    The purpose of iterating through the entries in the map is to check whether or not the key already exists in the map.
-    This can be done by comparing the keys with SameValueZero.
-   **Use the function SameValueZero to compare the key arg with the key from the iteration entry**
+  The purpose of iterating through the entries in the map is to check whether or not the key already exists in the map.
+  This can be done by comparing the keys with SameValueZero.
+  __Use the function SameValueZero to compare the key arg with the key from the iteration entry__
 
    <details>
    <summary>Solution</summary>
@@ -540,10 +540,11 @@ In the implementation part of this tutorial, each line of the specification will
    ```
    4ai. If HasProperty(handler, "update") is true, then
    ```
+
    If the key was found in the map, we want to update the pair. The next step is to check if an update function was
    specified in the the handler.
 
-   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use 
+   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use
    selfhosted Object methods in selfhosted Map method implementations.
 
    ```cpp
@@ -558,7 +559,7 @@ In the implementation part of this tutorial, each line of the specification will
    };
    ```
 
-   **Check if `handler` has the property `"update"`**
+   __Check if `handler` has the property `"update"`__
 
    <details>
    <summary>Solution</summary>
@@ -598,7 +599,7 @@ In the implementation part of this tutorial, each line of the specification will
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-   **get the update handler if its specified**
+   __get the update handler if its specified__
 
    <details>
    <summary>Solution</summary>
@@ -639,7 +640,7 @@ In the implementation part of this tutorial, each line of the specification will
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
-   **Use `callFunction` to call updateFN, store it as `var updated`**
+   __Use `callFunction` to call updateFN, store it as `var updated`__
 
    <details>
    <summary>Solution</summary>
@@ -681,7 +682,7 @@ In the implementation part of this tutorial, each line of the specification will
    4ai3. Set e.[[Value]] to updated.
    ```
 
-   **Perform a `set` operation on the Map to update it (remember the standard built-in map operations).**
+   __Perform a `set` operation on the Map to update it (remember the standard built-in map operations).__
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -732,7 +733,7 @@ In the implementation part of this tutorial, each line of the specification will
    ```
 
    Now that we have updated the map, the updated value should be returned.
-   **return the var `updated`.**
+   __return the var `updated`.__
 
    <details>
    <summary>Solution</summary>
@@ -781,7 +782,7 @@ In the implementation part of this tutorial, each line of the specification will
    8. Return e.[[Value]].
    ```
 
-   **With the knowledge from implementing update, use similar techniques to implement insert.**
+   __With the knowledge from implementing update, use similar techniques to implement insert.__
 
    <details>
    <summary>Solution</summary>
@@ -827,7 +828,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-   ### test the implementation
+### test the implementation
 
    Recall, you can create files and run them with the command:
 
@@ -835,8 +836,7 @@ In the implementation part of this tutorial, each line of the specification will
     ./mach run MyFileName.js
     ```
 
-  **Create a script to test your implementation or use the sample script below**
-
+  __Create a script to test your implementation or use the sample script below__
 
   <details>
     <summary>Script</summary>
@@ -946,32 +946,32 @@ In the implementation part of this tutorial, each line of the specification will
         logResult("Increment counter second time", counter.get("a"), 2);
     })();
    ```
-  </details>
 
+  </details>
 
 <details open>
    <summary><h2>Issues with the original proposal</h2></summary>
 
 The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `emplace`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
-The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
+The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`.
 
-In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
+In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial.
 
-By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
+By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively.
 
 </details>
 
 <details open>
    <summary><h2>Explaining the new proposal</h2></summary>
 
-   **What is the motivation for a new propsosal?**
+   __What is the motivation for a new propsosal?__
    A common problem when using a Map is how to handle doing an update when you're not sure if the key already exists in the Map. This can be handled by first checking if the key is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the Map that could otherwise be handled in a single call.
 
-   **What is the solution?**
+   __What is the solution?__
    A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value.  
 
-   **Simple use of "new" emplace:**
+   __Simple use of "new" emplace:__
 
    ```js
     // Currently
@@ -1019,8 +1019,7 @@ prefs.setdefault("useDarkmode", True)
 <details open>
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
 
-  
-  * **Installing Node.js and Node Package Manager**
+- __Installing Node.js and Node Package Manager__
       <details>
       <summary>
       <b>Windows</b>
@@ -1036,23 +1035,28 @@ prefs.setdefault("useDarkmode", True)
       node -v
       npm -v
       ```
+
       This should return the versions of Node.js and npm.
-      
+
       </details>
 
       <details>
       <summary><b>Mac</b></summary>
-      
+
       1. Open Terminal
       2. Install Node.js via Homebrew by running the following command:
+
       ```bash
       brew install node
       ```
+
       3. Verify installation by typing:
+
       ```bash
       node -v
       npm -v
       ```
+
       </details>
       <details>
       <summary><b>Linux</b></summary>
@@ -1071,37 +1075,42 @@ prefs.setdefault("useDarkmode", True)
       npm -v
       ```
       </details>
-  * **Installing Ecmarkup**
-    * Windows/Mac/Linux
+- __Installing Ecmarkup__
+  - Windows/Mac/Linux
       1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
       2. Run the following command to install Ecmarkup globally:
+
       ```bash
       npm install -g ecmarkup
       ```
+
       3. Verify that Ecmarkup has been installed by typing:
+
       ```bash
       ecmarkup --version
       ```
-      Now you have installed Ecmarkup! 
+
+      Now you have installed Ecmarkup!
 
   TODO: Troubleshooting
 
-* **How to translate from ECMAscript to ecmarkup**
+- __How to translate from ECMAscript to ecmarkup__
   
-  Translating from ECMAscript to Ecmarkup involves understanding the differences between what each reperesents. ECMAscript is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAscript and other web standards. 
+  Translating from ECMAscript to Ecmarkup involves understanding the differences between what each reperesents. ECMAscript is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format __specification documents__ for ECMAscript and other web standards.
 
-    1. **Understanding why we need Ecmarkup**
+    1. __Understanding why we need Ecmarkup__
 
         Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAscript with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
-    2. **Basic translation steps**
-        * `<emu-alg>`: Defines an algorithm.
-        * `<emu-clause>`: Defines a clause/section in the specification.
-        * Underscores are used to refer to variables (`_varname_`).
-        * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification. 
-        * `*someBoldText*`: Make bold text with `*`.
-        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
+    2. __Basic translation steps__
+        - `<emu-alg>`: Defines an algorithm.
+        - `<emu-clause>`: Defines a clause/section in the specification.
+        - Underscores are used to refer to variables (`_varname_`).
+        - `<emu-xref>`: Link to other sections, clauses or algorithms within the specification.
+        - `*someBoldText*`: Make bold text with `*`.
+        - Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
 
-* The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
+- The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
+
     ```emu
       <!DOCTYPE html>
       <meta charset="utf8">
@@ -1137,8 +1146,7 @@ prefs.setdefault("useDarkmode", True)
 
 <h2>Implementing the new proposal</h2>
 
-  ### Step 1-4 - the logic remains the same
-
+### Step 1-4 - the logic remains the same
 
   ```
 
@@ -1151,7 +1159,7 @@ prefs.setdefault("useDarkmode", True)
 
   These lines are similar to the previous proposal specification. The code remains unchanged.
 
-  **Use the code from the old implementation and changes the `handler` parameter to `value`**
+  __Use the code from the old implementation and changes the `handler` parameter to `value`__
 
   <details>
     <summary>Solution</summary>
@@ -1185,7 +1193,7 @@ function MapEmplace(key, value) {
 
   </details>
 
-  ### step 4a - If the key exists, return the value
+### step 4a - If the key exists, return the value
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
@@ -1193,7 +1201,7 @@ function MapEmplace(key, value) {
 
   This is where the logic changes in the newer proposal. The new proposal does not care about updates.
 
-  **If the key exists, return it's value with a standard built-in get operation**
+  __If the key exists, return it's value with a standard built-in get operation__
 
   <details>
     <summary>Solution</summary>
@@ -1229,7 +1237,7 @@ function MapEmplace(key, value) {
 
   </details>
 
-  ### step 5 & 6 - insert the new key value pair
+### step 5 & 6 - insert the new key value pair
   
   ```
   5. Set e.[[Value]] to value.
@@ -1238,7 +1246,7 @@ function MapEmplace(key, value) {
 
   If the key was not present in the map, set the new key-value pair and then return the value.
 
-  **use a standard built-in `set` operation, and return `value`**
+  __use a standard built-in `set` operation, and return `value`__
 
   <details>
     <summary>Solution</summary>
@@ -1278,7 +1286,6 @@ function MapEmplace(key, value) {
 
   </details>
   
-
 <h2>Optimization</h2>
   
   A proposal goes through several stages before it becomes a part of the ECMAscript language.
@@ -1291,6 +1298,7 @@ function MapEmplace(key, value) {
   ```
   
   As of right now it is implemented like this:
+
   ```js
   for (var e of allowContentIter(entries)) {
     var eKey = e[0];
@@ -1303,7 +1311,7 @@ function MapEmplace(key, value) {
   This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
   Therefore, we decided to try to optimize this line.
 
-  **Demonstration: Create a new file; Runtime.js with the code below and run it with `./mach run`**
+  __Demonstration: Create a new file; Runtime.js with the code below and run it with `./mach run`__
 
   <details>
     <summary>Runtime script</summary>
@@ -1359,12 +1367,12 @@ function MapEmplace(key, value) {
 
   </details>
 
-
   One solution we had, was to check if the entry was in the map, by using `std_has`.
   The problem with this, is that the function is not currently exposed to self hosted javascript code. The reason for this
   is seemingly because there has not been any need for the `std_has` method in selfhosted code previously.
 
   `Selfhosting.cpp`
+
   ```cpp
 
     // Standard builtins used by self-hosting.
@@ -1441,9 +1449,9 @@ function MapEmplace(key, value) {
   ```
 
   Now the `std_has`method should be available in selfhosted javascript.
-  **TODO provide a test function to verify that has was correctly exposed**
+  __TODO provide a test function to verify that has was correctly exposed__
 
-  ### Optimize the function
+### Optimize the function
 
   With has now exposed to selfhosted code, alter your implementation to use `std_has` instead of a for-of iteration
   and `SameValueZero`.
@@ -1475,19 +1483,19 @@ function MapEmplace(key, value) {
     ```
   </details>
 
+  __TODO explain further on std_has__
 
-  **TODO explain further on std_has**
-
-  **TODO? more advanced, next iteration introducing cpp code**
-
+  __TODO? more advanced, next iteration introducing cpp code__
 
 <details open>
 
    <summary><h2>Testing (test262)</h2></summary>
-   
-   ### Writing tests for test262
-   When it comes to testing implementations, there are som guidelines to follow. 
+
+### Writing tests for test262
+
+   When it comes to testing implementations, there are som guidelines to follow.
    The official guidelines state that an acceptable test in Test262 is the following:
+
    ```
    Any test that exercises observable grammar or semantics, originating with citable, 
    ormative text in the latest draft of the ECMAScript Language Specification, 
@@ -1499,14 +1507,14 @@ function MapEmplace(key, value) {
 
    First we need to identify the so-called testable lines in our specification.
    One way to think about it, is when the behaviour of the specification is observable to the user, it is testable.
-   
+
    An example of easily testable line in our specification is:
    ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
 
    Recall that this line, among other things, checks if `this` is an Object, therefore we can test it by trying it on non-objects.
    Primitive types in JavaScript are not considered objects.
    So an example of the tests you can write for this, could look like this:
-   
+
    ```js
    var m = new Map();
     
@@ -1519,11 +1527,12 @@ function MapEmplace(key, value) {
 
    You can find the rest of the functions for assert [here](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment).
 
-   ### More than just testing
+### More than just testing
 
    Additional to the tests, there is a strict guide for documentation for the test.
-    
+
    You should start the test by declaring the copyright, here you just fill in the year and your name:
+
    ```
    // Copyright (C) *Year *Name. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
@@ -1532,16 +1541,17 @@ function MapEmplace(key, value) {
    The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
    All the info is inside the YAML tags `/*---` and `---*/`.
 
-   We start with the required key `esid`, which is the ECMAScript identifier. 
+   We start with the required key `esid`, which is the ECMAScript identifier.
    This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
 
    ```
    esid: pending
    ```
 
-   Next comes the description which is the other required key. 
+   Next comes the description which is the other required key.
    The description should be short and on one line regarding the purpose of this testcase.
-   In our case, it will look something like: 
+   In our case, it will look something like:
+
    ```
    description: >
         Throws a TypeError if 'this' is not an object
@@ -1564,6 +1574,7 @@ function MapEmplace(key, value) {
    There are many other keys we can look at, but if you want to learn more about them, check out this [link](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter).
 
    Our full test should now look something like this:
+
    ```js
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
@@ -1584,8 +1595,11 @@ function MapEmplace(key, value) {
        m.getOrInsert.call(false, 1, 1);
    });
    ```
-   ### Fill in test cases
+
+### Fill in test cases
+
    We can now fill in with other test cases (non-objects):
+
    ```js
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
@@ -1629,14 +1643,16 @@ function MapEmplace(key, value) {
    ```
 
    You can take a look at other tests written in the test262 folder or try to write some tests yourself.
-   
-   ### Running tests in SpiderMonkey
-   To add the test you simply create the file in `mozilla-unified/js/src/tests/test262/built-ins/Map/`. 
+
+### Running tests in SpiderMonkey
+
+   To add the test you simply create the file in `mozilla-unified/js/src/tests/test262/built-ins/Map/`.
    Preferably creating a folder for the proposal as well.
 
    When this is done, you can run the tests with `./mach jstests built-ins/Map`, or be even more specific if you have created a folder.
-   
+
    You will then see something like this, depending on how many tests are run:
+
    ```sh
    [1|0|0|0]  12% =====>                                                
    [2|0|0|0]  25% ============>                                         
@@ -1652,5 +1668,3 @@ function MapEmplace(key, value) {
 
    A general tip for testing is looking at how similar lines are tested in other implementations.
 </details>
-
-
