@@ -1,31 +1,31 @@
 # Tutorial
 
-Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.emplace proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `emplace` function and testing it with the official test suite, Test262.
+Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
 
 You don’t need prior knowledge of JavaScript engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
 
 ### What’s Covered in This Tutorial?
-- __The `Map.prototype.emplace` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
+- __The `Map.prototype.upsert` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
 - __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
-- __Implementing the Proposal:__ We will implement the emplace function both in self-hosted JavaScript and C++.
+- __Implementing the Proposal:__ We will implement the upsert function both in self-hosted JavaScript and C++.
 - __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript, and how to run custom scripts.
 - __Optimizing Your Code:__ Learn about performance considerations and optimizations.
 - __Contributing to the ECMAScript Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript standard.
 
-By the end of this tutorial, you will have a full implementation of `Map.prototype.emplace` and a solid understanding of how JavaScript engine features are developed.
+By the end of this tutorial, you will have a full implementation of `Map.prototype.upsert` and a solid understanding of how JavaScript engine features are developed.
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
 
 **TODO? explain the process of an Ecmascript proposal, ex. phases 2 -> 2.7 etc**
 
 <details open>
-   <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
+   <summary><h2>The `Map.prototype.upsert` proposal</h2></summary>
 
    **What is it?**
-   Map.prototype.emplace is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
+   Map.prototype.upsert is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
 
    **How does it work?**
-   The "emplace" operation takes two arguments: a key and a handler object. The handler contains two properties:
+   The "upsert" operation takes two arguments: a key and a handler object. The handler contains two properties:
 
 * update: Function to modify value of a key if the key is already existing in the Map.
 * insert: Function that generates a default-value to be set to the belonging value of the checked key.
@@ -56,10 +56,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    }
    ```
 
-   Using emplace:
+   Using upsert:
 
    ```javascript
-   map.emplace(key, {
+   map.upsert(key, {
      update: () => updated,
      insert: () => value
    });
@@ -80,10 +80,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    }
    ```
 
-   Using emplace:
+   Using upsert:
 
    ```javascript
-   map.emplace(key, {
+   map.upsert(key, {
      insert: () => value
    });
    ```
@@ -105,11 +105,11 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    }
    ```
 
-   Using emplace:
+   Using upsert:
 
    ```javascript
    if (map.has(key)) {
-     map.emplace(key, {
+     map.upsert(key, {
        update: (old) => old.doThing()
      });
    }
@@ -252,10 +252,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
   * Then, the new element is added to the array.
   * Finally, the length property is updated to reflect the added element.
 
-   **TODO first task is getting a rough understanding of the emplace spec, write line by line understamding, provide example solution**
+   **TODO first task is getting a rough understanding of the upsert spec, write line by line understamding, provide example solution**
 
 
-### interpretation of the `Map.prototype.emplace` specification
+### interpretation of the `Map.prototype.upsert` specification
 
 The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
 should try to get a rough understanding of what each line in the spec means. Write sudo code, sentences or a combination. 
@@ -276,7 +276,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    When implementing a feature, Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
-   When Implementing the `emplace` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
+   When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
 
    Example workflow:
 
@@ -296,7 +296,7 @@ In the implementation part of this tutorial, each line of the specification will
 
     ```cpp
 
-      JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2,0),
+      JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
     
     ```
 
@@ -317,7 +317,7 @@ In the implementation part of this tutorial, each line of the specification will
     Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      return 42
    }
    ```
@@ -332,7 +332,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   ```sh
   js> const m = new Map()
-  js> m.emplace(0,0)
+  js> m.upsert(0,0)
   42
   ```
 
@@ -344,7 +344,7 @@ In the implementation part of this tutorial, each line of the specification will
    ```
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    }
    ```
@@ -365,7 +365,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -374,7 +374,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    }
@@ -442,7 +442,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -451,7 +451,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -473,7 +473,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -482,7 +482,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -510,7 +510,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -519,7 +519,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -565,7 +565,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -574,7 +574,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -605,7 +605,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -614,7 +614,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -646,7 +646,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -655,7 +655,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -696,7 +696,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -705,7 +705,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -739,7 +739,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -748,7 +748,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -788,7 +788,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```javascript
-   function MapEmplace(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -797,7 +797,7 @@ In the implementation part of this tutorial, each line of the specification will
          this,
          key,
          handler,
-         "MapEmplace"
+         "MapUpsert"
        );
      }
    
@@ -843,7 +843,7 @@ In the implementation part of this tutorial, each line of the specification will
     <summary>Script</summary>
 
    ```js
-    console.log("Running tests for Map.prototype.emplace proposal...");
+    console.log("Running tests for Map.prototype.upsert proposal...");
 
     // Utility function for logging test results
     function logResult(testName, actual, expected) {
@@ -859,7 +859,7 @@ In the implementation part of this tutorial, each line of the specification will
         const map1 = new Map();
         map1.set("key1", "val1");
 
-        map1.emplace("key1", {
+        map1.upsert("key1", {
             update: () => "updated"
         });
 
@@ -871,7 +871,7 @@ In the implementation part of this tutorial, each line of the specification will
         const map1 = new Map();
         map1.set("key1", "val1");
 
-        map1.emplace("key1", {
+        map1.upsert("key1", {
             insert: () => "inserted"
         });
 
@@ -883,7 +883,7 @@ In the implementation part of this tutorial, each line of the specification will
         const map1 = new Map();
         map1.set("key1", "val1");
 
-        map1.emplace("key1", {
+        map1.upsert("key1", {
             update: () => "updated",
             insert: () => "inserted"
         });
@@ -896,7 +896,7 @@ In the implementation part of this tutorial, each line of the specification will
         const map1 = new Map();
 
         try {
-            map1.emplace("nonexistent", {
+            map1.upsert("nonexistent", {
                 update: () => "updated"
             });
         } catch (e) {
@@ -911,7 +911,7 @@ In the implementation part of this tutorial, each line of the specification will
     (function testInsertNonexistentKey() {
         const map1 = new Map();
 
-        map1.emplace("nonexistent", {
+        map1.upsert("nonexistent", {
             insert: () => "inserted"
         });
 
@@ -922,7 +922,7 @@ In the implementation part of this tutorial, each line of the specification will
     (function testInsertAndUpdateNonexistentKey() {
         const map1 = new Map();
 
-        map1.emplace("nonexistent", {
+        map1.upsert("nonexistent", {
             update: () => "updated",
             insert: () => "inserted"
         });
@@ -934,13 +934,13 @@ In the implementation part of this tutorial, each line of the specification will
     (function testIncrementCounter() {
         const counter = new Map();
 
-        counter.emplace("a", {
+        counter.upsert("a", {
             update: (v) => v + 1,
             insert: () => 1
         });
         logResult("Increment counter first time", counter.get("a"), 1);
 
-        counter.emplace("a", {
+        counter.upsert("a", {
             update: (v) => v + 1,
             insert: () => 1
         });
@@ -955,7 +955,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Issues with the original proposal</h2></summary>
 
-The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `emplace`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
+The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
 The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
@@ -974,7 +974,7 @@ By making it overcomplicated and a feature that is not commonly found in other l
    **What is the solution?**
    A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value.  
 
-   **Simple use of "new" emplace:**
+   **Simple use of "new" upsert:**
 
    ```js
     // Currently
@@ -987,18 +987,18 @@ By making it overcomplicated and a feature that is not commonly found in other l
         darkMode = true; //Default value
     }
     
-    // Using emplace
+    // Using upsert
     let prefs = new getUserPrefs();
-        prefs.emplace("useDarkmode", true); // Default to true
+        prefs.upsert("useDarkmode", true); // Default to true
    ```
 
-By using emplace, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting.
+By using upsert, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting.
 
 <details>
 <summary>
 Similar functionality in Python
 </summary>
-As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and it's "setdefault" method. In our case we use emplace on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
+As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and it's "setdefault" method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
 
 ```python
 # Without setdefault
@@ -1140,21 +1140,21 @@ prefs.setdefault("useDarkmode", True)
         * `*someBoldText*`: Make bold text with `*`.
         * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
 
-* The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
+* The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
     ```emu
       <!DOCTYPE html>
       <meta charset="utf8">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
       <script src="./spec.js"></script>
       <pre class="metadata">
-      title: Map.prototype.emplace
+      title: Map.prototype.upsert
       stage: 2
       contributors: Lauritz Angeltveit
       </pre>
 
-      <emu-clause id="sec-map.prototype.emplace">
-        <h1>Map.prototype.emplace ( _key_, _callbackfn_ )</h1>
-        <p>When the emplace method is called the following steps are taken:</p>
+      <emu-clause id="sec-map.prototype.upsert">
+        <h1>Map.prototype.upsert ( _key_, _callbackfn_ )</h1>
+        <p>When the upsert method is called the following steps are taken:</p>
         <emu-alg>
           1. Let _M_ be the *this* value.
           1. Perform ? RequireInternalSlot(_M_, [[MapData]]).
@@ -1209,7 +1209,7 @@ prefs.setdefault("useDarkmode", True)
 
 ```js
 
-function MapEmplace(key, value) {
+function MapUpsert(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -1218,7 +1218,7 @@ function MapEmplace(key, value) {
       this,
       key,
       value,
-      "MapEmplace"
+      "MapUpsert"
     );
   }
 
@@ -1251,7 +1251,7 @@ function MapEmplace(key, value) {
 
 ```js
 
-function MapEmplace(key, value) {
+function MapUpsert(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -1260,7 +1260,7 @@ function MapEmplace(key, value) {
       this,
       key,
       value,
-      "MapEmplace"
+      "MapUpsert"
     );
   }
 
@@ -1296,7 +1296,7 @@ function MapEmplace(key, value) {
 
 ```js
 
-function MapEmplace(key, value) {
+function MapUpsert(key, value) {
   var M = this;
 
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -1305,7 +1305,7 @@ function MapEmplace(key, value) {
       this,
       key,
       value,
-      "MapEmplace"
+      "MapUpsert"
     );
   }
 
@@ -1378,19 +1378,19 @@ function MapEmplace(key, value) {
       console.log(`Runtime: ${runtime} milliseconds \n`);
   }
 
-  // test emplace for e record of entries
-  function withEmplace() {
+  // test upsert for e record of entries
+  function withUpsert() {
       const m = new Map();
 
       var k = 0;
       while (k < iterations) {
-          m.emplace(k, "val");
+          m.upsert(k, "val");
           k++;
       }
   }
 
-  //test without emplace
-  function withoutEmplace() {
+  //test without upsert
+  function withoutUpsert() {
       const m = new Map();
 
       var k = 0;
@@ -1405,8 +1405,8 @@ function MapEmplace(key, value) {
   }
 
   console.log("Starting tests...");
-  measureRuntime(withEmplace, "Test emplace for " + iterations + " iterations");
-  measureRuntime(WithoutEmplace, "Test without emplace for " + iterations + " iterations");
+  measureRuntime(withUpsert, "Test upsert for " + iterations + " iterations");
+  measureRuntime(WithoutUpsert, "Test without upsert for " + iterations + " iterations");
 
   ```
 
@@ -1505,7 +1505,7 @@ function MapEmplace(key, value) {
     <summary>Solution</summary>
 
     ```js
-      function MapEmplace(key, value) {
+      function MapUpsert(key, value) {
         var M = this;
 
         if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -1514,7 +1514,7 @@ function MapEmplace(key, value) {
                 this,
                 key,
                 value,             
-                "MapEmplace"
+                "MapUpsert"
             );
         }
 
@@ -1567,7 +1567,7 @@ function MapEmplace(key, value) {
    var m = new Map();
     
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(false, 1);
+       m.upsert.call(false, 1);
    });
    ```
 
@@ -1610,7 +1610,7 @@ function MapEmplace(key, value) {
 
    ```
    info: |
-        Map.getOrInsert( key , value )
+        Map.upsert( key , value )
         
         1. Let M be the this value
         2. Perform ? RequireInternalSlot(M, [[MapData]])
@@ -1628,7 +1628,7 @@ function MapEmplace(key, value) {
    description: >
        Throws a TypeError if `this` is not an Object.
    info: |
-       Map.getOrInsert ( key, value )
+       Map.upsert ( key, value )
 
        1. Let M be the this value
        2. Perform ? RequireInternalSlot(M, [[MapData]])
@@ -1637,7 +1637,7 @@ function MapEmplace(key, value) {
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(false, 1, 1);
+       m.upsert.call(false, 1, 1);
    });
    ```
    ### Fill in test cases
@@ -1650,7 +1650,7 @@ function MapEmplace(key, value) {
    description: >
        Throws a TypeError if `this` is not an Object.
    info: |
-       Map.getOrInsert ( key, value )
+       Map.upsert ( key, value )
 
        1. Let M be the this value
        2. Perform ? RequireInternalSlot(M, [[MapData]])
@@ -1660,27 +1660,27 @@ function MapEmplace(key, value) {
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(false, 1, 1);
+       m.upsert.call(false, 1, 1);
    });
 
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(1, 1, 1);
+       m.upsert.call(1, 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.getOrInsert.call("", 1, 1);
+       m.upsert.call("", 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(undefined, 1, 1);
+       m.upsert.call(undefined, 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(null, 1, 1);
+       m.upsert.call(null, 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.getOrInsert.call(Symbol(), 1, 1);
+       m.upsert.call(Symbol(), 1, 1);
    });
    ```
 
