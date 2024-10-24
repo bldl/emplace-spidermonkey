@@ -1,18 +1,18 @@
 # Tutorial
 
-Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.emplace proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `emplace` function and testing it with the official test suite, Test262.
+Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.emplace proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `emplace` function and testing it with the official test suite, Test262.
 
-You don’t need prior knowledge of JavaScript engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
+You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
 
 ### What’s Covered in This Tutorial?
-- __The `Map.prototype.emplace` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
+- __The `Map.prototype.emplace` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript™ developers.
 - __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
-- __Implementing the Proposal:__ We will implement the emplace function both in self-hosted JavaScript and C++.
+- __Implementing the Proposal:__ We will implement the emplace function both in self-hosted JavaScript™ and C++.
 - __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript®, and how to run custom scripts.
 - __Optimizing Your Code:__ Learn about performance considerations and optimizations.
 - __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
 
-By the end of this tutorial, you will have a full implementation of `Map.prototype.emplace` and a solid understanding of how JavaScript engine features are developed.
+By the end of this tutorial, you will have a full implementation of `Map.prototype.emplace` and a solid understanding of how JavaScript™ engine features are developed.
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
 
@@ -22,7 +22,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
 
    **What is it?**
-   Map.prototype.emplace is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
+   Map.prototype.emplace is a new method for JavaScript™'s Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
 
    **How does it work?**
    The "emplace" operation takes two arguments: a key and a handler object. The handler contains two properties:
@@ -46,7 +46,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Before:
 
-   ```javascript
+   ```js
    // two lookups
    old = map.get(key);
    if (!old) {
@@ -58,7 +58,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Using emplace:
 
-   ```javascript
+   ```js
    map.emplace(key, {
      update: () => updated,
      insert: () => value
@@ -73,7 +73,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Before:
 
-   ```javascript
+   ```js
    // two lookups
    if (!map1.has(key)) {
      map1.set(key, value);
@@ -82,7 +82,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Using emplace:
 
-   ```javascript
+   ```js
    map.emplace(key, {
      insert: () => value
    });
@@ -96,7 +96,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Before:
 
-   ```javascript
+   ```js
    // three lookups
    if (map.has(key)) {
      old = map.get(key);
@@ -107,7 +107,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Using emplace:
 
-   ```javascript
+   ```js
    if (map.has(key)) {
      map.emplace(key, {
        update: (old) => old.doThing()
@@ -137,7 +137,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
 
   
-  During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript engine`, which will allow for faster builds during development.
+  During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
 
   It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
@@ -213,7 +213,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 1. What is the ECMA-262 Specification?
 
-* ECMA-262 is the official document that defines how JavaScript works. It tells developers and browser makers what JavaScript should do in every situation.
+* ECMA-262 is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
 
 ### 2. How to Navigate the Document
 
@@ -223,13 +223,13 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 3. How to Read the Algorithms
 
-* **Algorithms are like instructions**: The spec breaks down how JavaScript works using step-by-step instructions, almost like a recipe.
+* **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
 * **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
-* **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript checks something, and the next steps depend on the result.
+* **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
 
-* **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript objects. These are properties that JavaScript uses internally but developers can’t directly access.
+* **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
 * **`Return`**: This marks the end of an operation, and tells you the result.
 * **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
@@ -242,8 +242,8 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 6. Start Simple
 
-* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript features such as arrays or functions.
-* **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript engine implementations or additional explanations before checking the more technical spec.
+* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
+* **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 
 ### 7. Example: Understanding `Array.prototype.push`
 
@@ -274,7 +274,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-   When implementing a feature, Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+   When implementing a feature, Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
    When Implementing the `emplace` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
 
@@ -300,13 +300,13 @@ In the implementation part of this tutorial, each line of the specification will
     
     ```
 
-    The javascript type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+    The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
     in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
 
     <details>
       <summary>A closer look at the hook</summary>
-      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted Javascript. Other possible implmenatations are FN, and INLINABLE_FN.
-      - First argument: the name that javascript will use to call the function.
+      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
+      - First argument: the name that JavaScript™ will use to call the function.
       - Second argument: the engine's function implementation.
       - Third argument: Number of arguments.
       - Fourth argument: Number of flags.
@@ -314,9 +314,9 @@ In the implementation part of this tutorial, each line of the specification will
 
     **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
 
-    Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
+    Now in `Map.js` we can create a selfhosted JavaScript™ function. Write the follwoing into `Map.js`.
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      return 42
    }
@@ -343,7 +343,7 @@ In the implementation part of this tutorial, each line of the specification will
    1. Let M be the this value.
    ```
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    }
@@ -356,7 +356,7 @@ In the implementation part of this tutorial, each line of the specification will
    ```
 
    The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object. 
-   In JavaScript, objects may have internal slots, which are "hidden" properties that store information about the object. 
+   In JavaScript™, objects may have internal slots, which are "hidden" properties that store information about the object. 
    In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
    This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
@@ -364,7 +364,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -386,7 +386,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **`callfunction` vs `callcontentfunction`?**
 
-    In self-hosted JavaScript code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
+    In self-hosted JavaScript™ code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
     scripts could modify built-in objects like Map. This practice is referred to as **monkey patching**, where external 
     scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling 
     `map.get()` could result in unexpected or even malicious behavior.
@@ -418,9 +418,9 @@ In the implementation part of this tutorial, each line of the specification will
    Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
    The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
-   strict limitations, as supposed to normal javascript.
+   strict limitations, as supposed to normal JavaScript™.
 
-   **What methods can be used in selfhosted javascript**
+   **What methods can be used in selfhosted JavaScript™**
      - We can use other methods written in selfhosted code (remember, "everything" is an object)
      - We can use methods specified in selfHosting.cpp, which are made available to selfhosted code.
 
@@ -441,7 +441,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -472,7 +472,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -509,7 +509,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -544,7 +544,7 @@ In the implementation part of this tutorial, each line of the specification will
    If the key was found in the map, we want to update the pair. The next step is to check if an update function was
    specified in the the handler.
 
-   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use 
+   In JavaScript™ almost "everything" is an object. All values except primitives are objects. This means we can use 
    selfhosted Object methods in selfhosted Map method implementations.
 
    ```cpp
@@ -564,7 +564,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -604,7 +604,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -645,7 +645,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -695,7 +695,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -738,7 +738,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -787,7 +787,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapEmplace(key, handler) {
      var M = this;
    
@@ -1138,7 +1138,7 @@ prefs.setdefault("useDarkmode", True)
         * Underscores are used to refer to variables (`_varname_`).
         * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification. 
         * `*someBoldText*`: Make bold text with `*`.
-        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
+        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
 
 * The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
     ```emu
@@ -1414,7 +1414,7 @@ function MapEmplace(key, value) {
 
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
-  The problem with this, is that the function is not currently exposed to self hosted javascript code. The reason for this
+  The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
   is seemingly because there has not been any need for the `std_has` method in selfhosted code previously.
 
   `Selfhosting.cpp`
@@ -1493,7 +1493,7 @@ function MapEmplace(key, value) {
 
   ```
 
-  Now the `std_has`method should be available in selfhosted javascript.
+  Now the `std_has`method should be available in selfhosted JavaScript™.
   **TODO provide a test function to verify that has was correctly exposed**
 
   ### Optimize the function
@@ -1560,7 +1560,7 @@ function MapEmplace(key, value) {
    ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
 
    Recall that this line, among other things, checks if `this` is an Object, therefore we can test it by trying it on non-objects.
-   Primitive types in JavaScript are not considered objects.
+   Primitive types in JavaScript™ are not considered objects.
    So an example of the tests you can write for this, could look like this:
    
    ```js
