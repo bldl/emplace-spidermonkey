@@ -305,7 +305,7 @@ In the implementation part of this tutorial, each line of the specification will
 
     <details>
       <summary>A closer look at the hook</summary>
-      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
+      - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
       - First argument: the name that JavaScript™ will use to call the function.
       - Second argument: the engine's function implementation.
       - Third argument: Number of arguments.
@@ -314,7 +314,7 @@ In the implementation part of this tutorial, each line of the specification will
 
     **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
 
-    Now in `Map.js` we can create a selfhosted JavaScript™ function. Write the follwoing into `Map.js`.
+    Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
 
    ```js
    function MapEmplace(key, handler) {
@@ -359,7 +359,7 @@ In the implementation part of this tutorial, each line of the specification will
    In JavaScript™, objects may have internal slots, which are "hidden" properties that store information about the object. 
    In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
-   This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
+   This step is common for most self-hosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
@@ -417,12 +417,12 @@ In the implementation part of this tutorial, each line of the specification will
 
    Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
-   The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
+   The purpose of self-hosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
    strict limitations, as supposed to normal JavaScript™.
 
-   **What methods can be used in selfhosted JavaScript™**
-     - We can use other methods written in selfhosted code (remember, "everything" is an object)
-     - We can use methods specified in selfHosting.cpp, which are made available to selfhosted code.
+   **What methods can be used in self-hosted JavaScript™**
+     - We can use other methods written in self-hosted code (remember, "everything" is an object)
+     - We can use methods specified in selfHosting.cpp, which are made available to self-hosted code.
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -467,7 +467,7 @@ In the implementation part of this tutorial, each line of the specification will
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-   **Different methods of iteration is used the other selfhosted Map methods**
+   **Different methods of iteration is used the other self-hosted Map methods**
 
    <details>
    <summary>Solution</summary>
@@ -545,7 +545,7 @@ In the implementation part of this tutorial, each line of the specification will
    specified in the the handler.
 
    In JavaScript™ almost "everything" is an object. All values except primitives are objects. This means we can use 
-   selfhosted Object methods in selfhosted Map method implementations.
+   self-hosted Object methods in self-hosted Map method implementations.
 
    ```cpp
    // Code snippet from Object.cpp
@@ -1415,7 +1415,7 @@ function MapEmplace(key, value) {
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
   The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
-  is seemingly because there has not been any need for the `std_has` method in selfhosted code previously.
+  is seemingly because there has not been any need for the `std_has` method in self-hosted code previously.
 
   `Selfhosting.cpp`
   ```cpp
@@ -1455,7 +1455,7 @@ function MapEmplace(key, value) {
   ```
   </details>
 
-  We also need to make the has function publicly exposed in `MapObject.h` to use it in selfhosted code.
+  We also need to make the has function publicly exposed in `MapObject.h` to use it in self-hosted code.
 
   In `MapObject.h`, move this line from private to public.
 
@@ -1493,12 +1493,12 @@ function MapEmplace(key, value) {
 
   ```
 
-  Now the `std_has`method should be available in selfhosted JavaScript™.
+  Now the `std_has`method should be available in self-hosted JavaScript™.
   **TODO provide a test function to verify that has was correctly exposed**
 
   ### Optimize the function
 
-  With has now exposed to selfhosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a for-of iteration
   and `SameValueZero`.
 
   <details>
