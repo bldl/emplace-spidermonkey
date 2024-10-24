@@ -1056,18 +1056,23 @@ prefs.setdefault("useDarkmode", True)
       node -v
       npm -v
       ```
+      Are
       </details>
       <details>
       <summary><b>Linux</b></summary>
+      
       1. Open Terminal
       2. Update your package list:
+ 
       ```bash
       sudo apt update
       ```
-      3. Install Node.js by running:
+
+       3. Install Node.js by running:
       ```bash
       sudo apt install node.js spm
       ```
+
       4. Verify the installation:
       ```bash
       node -v
