@@ -255,7 +255,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    **TODO first task is getting a rough understanding of the emplace spec, write line by line understamding, provide example solution**
 
 
-### interpretation of the `Map.prototype.emplace` specification
+### Interpretation of the `Map.prototype.emplace` specification
 
 The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
 should try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
@@ -290,7 +290,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Implementation</h2></summary>
 
-### creating a function
+### Creating a function
 
    Create a hook in `MapObject.cpp`:
 
@@ -337,7 +337,7 @@ In the implementation part of this tutorial, each line of the specification will
   ```
 
 
-### implement the first line
+### Implement the first line
 
    ```
    1. Let M be the this value.
@@ -349,7 +349,7 @@ In the implementation part of this tutorial, each line of the specification will
    }
    ```
 
-### moving on
+### Moving on
 
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
@@ -461,7 +461,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### step 4 - iterating through the map entries
+### Step 4 - iterating through the map entries
 
    ```
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
@@ -773,7 +773,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### implementing the insert handler
+### Implementing the insert handler
 
    ```
    5. Let insertFn be ? Get(handler, "insert").
@@ -828,7 +828,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-   ### test the implementation
+   ### Test the implementation
 
    Recall, you can create files and run them with the command:
 
@@ -1236,7 +1236,7 @@ function MapEmplace(key, value) {
 
   </details>
 
-  ### step 4a - If the key exists, return the value
+  ### Step 4a - If the key exists, return the value
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
@@ -1280,7 +1280,7 @@ function MapEmplace(key, value) {
 
   </details>
 
-  ### step 5 & 6 - insert the new key value pair
+  ### Step 5 & 6 - insert the new key value pair
   
   ```
   5. Set e.[[Value]] to value.
