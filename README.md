@@ -166,8 +166,8 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
   ./mach run
   ```
 
-  Your terminal should now enter the JS Read-Eval-Print-Loop mode. 
-  The functionality is similar to a browsers console and arbitrary JS code can be executed. 
+  Your terminal should now enter the JavaScript™ Read-Eval-Print-Loop mode. 
+  The functionality is similar to a browsers console and arbitrary JavaScript™ code can be executed. 
 
   ```sh
   js>
@@ -203,7 +203,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
     42
   ```
 
-  Self-hosted code is a bit different to normal js, given that you can effectively and easily edit/create functions you want.
+  Self-hosted code is a bit different to normal JavaScript™, given that you can effectively and easily edit/create functions you want.
   This can cause problems, more on this later.
 
 </details>
