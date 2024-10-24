@@ -1,16 +1,19 @@
 # Tutorial
 
+
 Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
 
 You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
 
 ### What’s Covered in This Tutorial?
+
 - __The `Map.prototype.upsert` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript™ developers.
 - __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
 - __Implementing the Proposal:__ We will implement the upsert function both in self-hosted JavaScript™ and C++.
 - __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript®, and how to run custom scripts.
 - __Optimizing Your Code:__ Learn about performance considerations and optimizations.
 - __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
+
 
 By the end of this tutorial, you will have a full implementation of `Map.prototype.upsert` and a solid understanding of how JavaScript™ engine features are developed.
 
@@ -22,6 +25,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    <summary><h2>The `Map.prototype.upsert` proposal</h2></summary>
 
    **What is it?**
+
    Map.prototype.upsert is a new method for JavaScript™'s Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
 
    **How does it work?**
@@ -565,7 +569,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```js
-   function MapU(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
@@ -788,7 +792,7 @@ In the implementation part of this tutorial, each line of the specification will
    <summary>Solution</summary>
 
    ```js
-   function MapU(key, handler) {
+   function MapUpsert(key, handler) {
      var M = this;
    
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
