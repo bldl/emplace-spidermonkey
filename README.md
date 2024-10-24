@@ -1056,8 +1056,8 @@ prefs.setdefault("useDarkmode", True)
       node -v
       npm -v
       ```
-      Are
       </details>
+
       <details>
       <summary><b>Linux</b></summary>
       
@@ -1079,6 +1079,8 @@ prefs.setdefault("useDarkmode", True)
       npm -v
       ```
       </details>
+
+
   * **Installing Ecmarkup**
     * Windows/Mac/Linux
       1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
@@ -1092,7 +1094,36 @@ prefs.setdefault("useDarkmode", True)
       ```
       Now you have installed Ecmarkup! 
 
-  TODO: Troubleshooting
+* **How to write ecmarkup**
+  Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
+
+  ```html
+  <!DOCTYPE html>
+  <meta charset="utf8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+  <script src="./spec.js"></script>
+  <pre class="metadata">
+  title: Your Document Title
+  stage: The proposals stage
+  contributors: Your name
+  </pre>
+
+  <emu-clause id="sec-greater-than-five">
+    <h1>greaterThanFive(_value_)</h1>
+    <p>When the greaterThanFive method is called, the following steps are taken:</p>
+    <emu-alg>
+      1. Let _x_ be _value_.
+      1. If Type(_x_) is not Number, throw a *TypeError* exception.
+      1. If _x_ is NaN, throw a *RangeError* exception.
+      1. If _x_ is less than 0, return *false*.
+      1. If _x_ is greater than 5, return *true*.
+      1. Else:
+        1. Return *false*.
+    </emu-alg>
+  </emu-clause>
+  ```
+
+  **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example. 
 
 * **How to translate from ECMAscript to ecmarkup**
   
@@ -1109,7 +1140,7 @@ prefs.setdefault("useDarkmode", True)
         * `*someBoldText*`: Make bold text with `*`.
         * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
 
-* The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec folder in this proposal)
+* The function `emplace(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
     ```emu
       <!DOCTYPE html>
       <meta charset="utf8">
@@ -1118,7 +1149,7 @@ prefs.setdefault("useDarkmode", True)
       <pre class="metadata">
       title: Map.prototype.emplace
       stage: 2
-      contributors: YOUR NAME HERE
+      contributors: Lauritz Angeltveit
       </pre>
 
       <emu-clause id="sec-map.prototype.emplace">
@@ -1137,8 +1168,19 @@ prefs.setdefault("useDarkmode", True)
       </emu-clause>
     ```
 
-  TODO: Building the spec
+* **Building the spec**
+  To build the spec, use the following command:
+
+    ```bash
+      ecmarkup spec.emu out.html
+    ```
+
+  In this command:
+    * `spec.emu` is the source file where you have written your specification using Ecmarkup.
+    * `out.html` is the output file, which is a runnable HTML document.
+  To verify that your specification has been built correctly, simply drag-and-drop the `out.html` file into a web browser. 
   
+  TODO: Troubleshooting while building the spec.
   TODO: Load the html file to verify successfully connected hyperlinks etc.
 
 </details>
