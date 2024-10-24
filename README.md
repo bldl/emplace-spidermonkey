@@ -258,7 +258,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 ### interpretation of the `Map.prototype.emplace` specification
 
 The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
-should try to get a rough understanding of what each line in the spec means. Write sudo code, sentences or a combination. 
+should try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
 
 **Rewrite the spec in your own words**
@@ -1337,7 +1337,7 @@ function MapEmplace(key, value) {
   A proposal goes through several stages before it becomes a part of the ECMAscript language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
   Therefore optimization becomes crucial when designing and implementing these features.
-  In our case there is especially one line which could use som optimization:
+  In our case there is especially one line which could use some optimization:
 
   ```
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
@@ -1542,7 +1542,7 @@ function MapEmplace(key, value) {
    <summary><h2>Testing (test262)</h2></summary>
    
    ### Writing tests for test262
-   When it comes to testing implementations, there are som guidelines to follow. 
+   When it comes to testing implementations, there are some guidelines to follow. 
    The official guidelines state that an acceptable test in Test262 is the following:
    ```
    Any test that exercises observable grammar or semantics, originating with citable, 
@@ -1707,6 +1707,4 @@ function MapEmplace(key, value) {
    ```
 
    A general tip for testing is looking at how similar lines are tested in other implementations.
-</details>
-
-
+</details
