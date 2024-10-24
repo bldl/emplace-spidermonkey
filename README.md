@@ -322,7 +322,7 @@ In the implementation part of this tutorial, each line of the specification will
    }
    ```
 
-   You should now have a function which returns the number 42! Build to test the implementation.
+   You should now have a function which returns the number 42. Build to test the implementation.
 
    ```sh
   ./mach build
@@ -1092,7 +1092,7 @@ prefs.setdefault("useDarkmode", True)
       ```bash
       ecmarkup --version
       ```
-      Now you have installed Ecmarkup! 
+      Now you have installed Ecmarkup.
 
 * **How to write ecmarkup**
   Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
