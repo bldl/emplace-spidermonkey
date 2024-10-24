@@ -8,15 +8,15 @@ You don’t need prior knowledge of JavaScript engine internals or advanced C++ 
 - __The `Map.prototype.emplace` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
 - __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
 - __Implementing the Proposal:__ We will implement the emplace function both in self-hosted JavaScript and C++.
-- __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript, and how to run custom scripts.
+- __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript®, and how to run custom scripts.
 - __Optimizing Your Code:__ Learn about performance considerations and optimizations.
-- __Contributing to the ECMAScript Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript standard.
+- __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
 
 By the end of this tutorial, you will have a full implementation of `Map.prototype.emplace` and a solid understanding of how JavaScript engine features are developed.
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
 
-**TODO? explain the process of an Ecmascript proposal, ex. phases 2 -> 2.7 etc**
+**TODO? explain the process of an ECMAScript® proposal, ex. phases 2 -> 2.7 etc**
 
 <details open>
    <summary><h2>The `Map.prototype.emplace` proposal</h2></summary>
@@ -1125,13 +1125,13 @@ prefs.setdefault("useDarkmode", True)
 
   **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example. 
 
-* **How to translate from ECMAscript to ecmarkup**
+* **How to translate from ECMAScript® to ecmarkup**
   
-  Translating from ECMAscript to Ecmarkup involves understanding the differences between what each reperesents. ECMAscript is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAscript and other web standards. 
+  Translating from ECMAScript® to Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards. 
 
     1. **Understanding why we need Ecmarkup**
 
-        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAscript with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
+        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
     2. **Basic translation steps**
         * `<emu-alg>`: Defines an algorithm.
         * `<emu-clause>`: Defines a clause/section in the specification.
@@ -1334,7 +1334,7 @@ function MapEmplace(key, value) {
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  A proposal goes through several stages before it becomes a part of the ECMAscript language.
+  A proposal goes through several stages before it becomes a part of the ECMAScript® language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
   Therefore optimization becomes crucial when designing and implementing these features.
   In our case there is especially one line which could use some optimization:
@@ -1546,8 +1546,8 @@ function MapEmplace(key, value) {
    The official guidelines state that an acceptable test in Test262 is the following:
    ```
    Any test that exercises observable grammar or semantics, originating with citable, 
-   ormative text in the latest draft of the ECMAScript Language Specification, 
-   the ECMAScript Internationalization API Specification, the The JSON Data Interchange Syntax, 
+   ormative text in the latest draft of the ECMAScript® Language Specification, 
+   the ECMAScript® Internationalization API Specification, the The JSON Data Interchange Syntax, 
    a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications.
    ```
 
@@ -1588,7 +1588,7 @@ function MapEmplace(key, value) {
    The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
    All the info is inside the YAML tags `/*---` and `---*/`.
 
-   We start with the required key `esid`, which is the ECMAScript identifier. 
+   We start with the required key `esid`, which is the ECMAScript® identifier. 
    This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
 
    ```
