@@ -1,28 +1,32 @@
 # Tutorial
 
-Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
 
-You don’t need prior knowledge of JavaScript engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
+Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
+
+You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
 
 ### What’s Covered in This Tutorial?
-- __The `Map.prototype.upsert` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript developers.
-- __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
-- __Implementing the Proposal:__ We will implement the upsert function both in self-hosted JavaScript and C++.
-- __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript, and how to run custom scripts.
-- __Optimizing Your Code:__ Learn about performance considerations and optimizations.
-- __Contributing to the ECMAScript Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript standard.
 
-By the end of this tutorial, you will have a full implementation of `Map.prototype.upsert` and a solid understanding of how JavaScript engine features are developed.
+- __The `Map.prototype.upsert` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript™ developers.
+- __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
+- __Implementing the Proposal:__ We will implement the upsert function both in self-hosted JavaScript™ and C++.
+- __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript®, and how to run custom scripts.
+- __Optimizing Your Code:__ Learn about performance considerations and optimizations.
+- __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
+
+
+By the end of this tutorial, you will have a full implementation of `Map.prototype.upsert` and a solid understanding of how JavaScript™ engine features are developed.
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
 
-**TODO? explain the process of an Ecmascript proposal, ex. phases 2 -> 2.7 etc**
+**TODO? explain the process of an ECMAScript® proposal, ex. phases 2 -> 2.7 etc**
 
 <details open>
    <summary><h2>The `Map.prototype.upsert` proposal</h2></summary>
 
    **What is it?**
-   Map.prototype.upsert is a new method for JavaScript's Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
+
+   Map.prototype.upsert is a new method for JavaScript™'s Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
 
    **How does it work?**
    The "upsert" operation takes two arguments: a key and a handler object. The handler contains two properties:
@@ -46,7 +50,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Before:
 
-   ```javascript
+   ```js
    // two lookups
    old = map.get(key);
    if (!old) {
@@ -58,7 +62,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Using upsert:
 
-   ```javascript
+   ```js
    map.upsert(key, {
      update: () => updated,
      insert: () => value
@@ -73,7 +77,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Before:
 
-   ```javascript
+   ```js
    // two lookups
    if (!map1.has(key)) {
      map1.set(key, value);
@@ -82,7 +86,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Using upsert:
 
-   ```javascript
+   ```js
    map.upsert(key, {
      insert: () => value
    });
@@ -96,7 +100,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Before:
 
-   ```javascript
+   ```js
    // three lookups
    if (map.has(key)) {
      old = map.get(key);
@@ -107,7 +111,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
    Using upsert:
 
-   ```javascript
+   ```js
    if (map.has(key)) {
      map.upsert(key, {
        update: (old) => old.doThing()
@@ -137,7 +141,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 * [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
 
   
-  During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript engine`, which will allow for faster builds during development.
+  During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
 
   It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
@@ -166,8 +170,8 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
   ./mach run
   ```
 
-  Your terminal should now enter the JS Read-Eval-Print-Loop mode. 
-  The functionality is similar to a browsers console and arbitrary JS code can be executed. 
+  Your terminal should now enter the JavaScript™ Read-Eval-Print-Loop mode. 
+  The functionality is similar to a browsers console and arbitrary JavaScript™ code can be executed. 
 
   ```sh
   js>
@@ -203,7 +207,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
     42
   ```
 
-  Self-hosted code is a bit different to normal js, given that you can effectively and easily edit/create functions you want.
+  Self-hosted code is a bit different to normal JavaScript™, given that you can effectively and easily edit/create functions you want.
   This can cause problems, more on this later.
 
 </details>
@@ -213,7 +217,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 1. What is the ECMA-262 Specification?
 
-* ECMA-262 is the official document that defines how JavaScript works. It tells developers and browser makers what JavaScript should do in every situation.
+* ECMA-262 is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
 
 ### 2. How to Navigate the Document
 
@@ -223,13 +227,13 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 3. How to Read the Algorithms
 
-* **Algorithms are like instructions**: The spec breaks down how JavaScript works using step-by-step instructions, almost like a recipe.
+* **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
 * **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
-* **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript checks something, and the next steps depend on the result.
+* **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
 
-* **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript objects. These are properties that JavaScript uses internally but developers can’t directly access.
+* **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
 * **`Return`**: This marks the end of an operation, and tells you the result.
 * **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
@@ -242,8 +246,8 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 6. Start Simple
 
-* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript features such as arrays or functions.
-* **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript engine implementations or additional explanations before checking the more technical spec.
+* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
+* **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 
 ### 7. Example: Understanding `Array.prototype.push`
 
@@ -255,10 +259,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
    **TODO first task is getting a rough understanding of the upsert spec, write line by line understamding, provide example solution**
 
 
-### interpretation of the `Map.prototype.upsert` specification
+### Interpretation of the `Map.prototype.upsert` specification
 
 The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
-should try to get a rough understanding of what each line in the spec means. Write sudo code, sentences or a combination. 
+should try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
 
 **Rewrite the spec in your own words**
@@ -274,7 +278,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-   When implementing a feature, Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+   When implementing a feature Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
    When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
 
@@ -290,7 +294,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Implementation</h2></summary>
 
-### creating a function
+### Creating a function
 
    Create a hook in `MapObject.cpp`:
 
@@ -300,13 +304,13 @@ In the implementation part of this tutorial, each line of the specification will
     
     ```
 
-    The javascript type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+    The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
     in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
 
     <details>
       <summary>A closer look at the hook</summary>
-      - JS_SELF_HOSTED_FN: The function is implemented in selfhosted Javascript. Other possible implmenatations are FN, and INLINABLE_FN.
-      - First argument: the name that javascript will use to call the function.
+      - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
+      - First argument: the name that JavaScript™ will use to call the function.
       - Second argument: the engine's function implementation.
       - Third argument: Number of arguments.
       - Fourth argument: Number of flags.
@@ -314,15 +318,15 @@ In the implementation part of this tutorial, each line of the specification will
 
     **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
 
-    Now in `Map.js` we can create a selfhosted javascript function. Write the follwoing into `Map.js`.
+    Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      return 42
    }
    ```
 
-   You should now have a function which returns the number 42! Build to test the implementation.
+   You should now have a function which returns the number 42. Build to test the implementation.
 
    ```sh
   ./mach build
@@ -337,34 +341,34 @@ In the implementation part of this tutorial, each line of the specification will
   ```
 
 
-### implement the first line
+### Implement the first line
 
    ```
    1. Let M be the this value.
    ```
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    }
    ```
 
-### moving on
+### Moving on
 
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
    The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object. 
-   In JavaScript, objects may have internal slots, which are "hidden" properties that store information about the object. 
+   In JavaScript™, objects may have internal slots, which are "hidden" properties that store information about the object. 
    In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
-   This step is commmon for most selfhosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
+   This step is common for most self-hosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -386,7 +390,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **`callfunction` vs `callcontentfunction`?**
 
-    In self-hosted JavaScript code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
+    In self-hosted JavaScript™ code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
     scripts could modify built-in objects like Map. This practice is referred to as **monkey patching**, where external 
     scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling 
     `map.get()` could result in unexpected or even malicious behavior.
@@ -417,12 +421,12 @@ In the implementation part of this tutorial, each line of the specification will
 
    Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
-   The purpose of selfhosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
-   strict limitations, as supposed to normal javascript.
+   The purpose of self-hosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
+   strict limitations, as supposed to normal JavaScript™.
 
-   **What methods can be used in selfhosted javascript**
-     - We can use other methods written in selfhosted code (remember, "everything" is an object)
-     - We can use methods specified in selfHosting.cpp, which are made available to selfhosted code.
+   **What methods can be used in self-hosted JavaScript™**
+     - We can use other methods written in self-hosted code (remember, "everything" is an object)
+     - We can use methods specified in selfHosting.cpp, which are made available to self-hosted code.
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -441,7 +445,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -461,18 +465,18 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### step 4 - iterating through the map entries
+### Step 4 - iterating through the map entries
 
    ```
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-   **Different methods of iteration is used the other selfhosted Map methods**
+   **Different methods of iteration is used the other self-hosted Map methods**
 
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -509,7 +513,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -544,8 +548,8 @@ In the implementation part of this tutorial, each line of the specification will
    If the key was found in the map, we want to update the pair. The next step is to check if an update function was
    specified in the the handler.
 
-   In Javascript almost "everything" is an object. All values except primitives are objects. This means we can use 
-   selfhosted Object methods in selfhosted Map method implementations.
+   In JavaScript™ almost "everything" is an object. All values except primitives are objects. This means we can use 
+   self-hosted Object methods in self-hosted Map method implementations.
 
    ```cpp
    // Code snippet from Object.cpp
@@ -564,7 +568,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -604,7 +608,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -645,7 +649,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -695,7 +699,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -738,7 +742,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -773,7 +777,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### implementing the insert handler
+### Implementing the insert handler
 
    ```
    5. Let insertFn be ? Get(handler, "insert").
@@ -787,7 +791,7 @@ In the implementation part of this tutorial, each line of the specification will
    <details>
    <summary>Solution</summary>
 
-   ```javascript
+   ```js
    function MapUpsert(key, handler) {
      var M = this;
    
@@ -828,7 +832,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-   ### test the implementation
+   ### Test the implementation
 
    Recall, you can create files and run them with the command:
 
@@ -1092,7 +1096,7 @@ prefs.setdefault("useDarkmode", True)
       ```bash
       ecmarkup --version
       ```
-      Now you have installed Ecmarkup! 
+      Now you have installed Ecmarkup.
 
 * **How to write ecmarkup**
   Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
@@ -1125,20 +1129,20 @@ prefs.setdefault("useDarkmode", True)
 
   **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example. 
 
-* **How to translate from ECMAscript to ecmarkup**
+* **How to translate from ECMAScript® to ecmarkup**
   
-  Translating from ECMAscript to Ecmarkup involves understanding the differences between what each reperesents. ECMAscript is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAscript and other web standards. 
+  Translating from ECMAScript® to Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards. 
 
     1. **Understanding why we need Ecmarkup**
 
-        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAscript with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
+        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
     2. **Basic translation steps**
         * `<emu-alg>`: Defines an algorithm.
         * `<emu-clause>`: Defines a clause/section in the specification.
         * Underscores are used to refer to variables (`_varname_`).
         * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification. 
         * `*someBoldText*`: Make bold text with `*`.
-        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript language but are crucial for the implementation and behavior of the object.
+        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
 
 * The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
     ```emu
@@ -1236,7 +1240,7 @@ function MapUpsert(key, value) {
 
   </details>
 
-  ### step 4a - If the key exists, return the value
+  ### Step 4a - If the key exists, return the value
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
@@ -1280,7 +1284,7 @@ function MapUpsert(key, value) {
 
   </details>
 
-  ### step 5 & 6 - insert the new key value pair
+  ### Step 5 & 6 - insert the new key value pair
   
   ```
   5. Set e.[[Value]] to value.
@@ -1334,10 +1338,10 @@ function MapUpsert(key, value) {
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  A proposal goes through several stages before it becomes a part of the ECMAscript language.
+  A proposal goes through several stages before it becomes a part of the ECMAScript® language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
   Therefore optimization becomes crucial when designing and implementing these features.
-  In our case there is especially one line which could use som optimization:
+  In our case there is especially one line which could use some optimization:
 
   ```
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
@@ -1414,8 +1418,8 @@ function MapUpsert(key, value) {
 
 
   One solution we had, was to check if the entry was in the map, by using `std_has`.
-  The problem with this, is that the function is not currently exposed to self hosted javascript code. The reason for this
-  is seemingly because there has not been any need for the `std_has` method in selfhosted code previously.
+  The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
+  is seemingly because there has not been any need for the `std_has` method in self-hosted code previously.
 
   `Selfhosting.cpp`
   ```cpp
@@ -1455,7 +1459,7 @@ function MapUpsert(key, value) {
   ```
   </details>
 
-  We also need to make the has function publicly exposed in `MapObject.h` to use it in selfhosted code.
+  We also need to make the has function publicly exposed in `MapObject.h` to use it in self-hosted code.
 
   In `MapObject.h`, move this line from private to public.
 
@@ -1493,12 +1497,12 @@ function MapUpsert(key, value) {
 
   ```
 
-  Now the `std_has`method should be available in selfhosted javascript.
+  Now the `std_has`method should be available in self-hosted JavaScript™.
   **TODO provide a test function to verify that has was correctly exposed**
 
   ### Optimize the function
 
-  With has now exposed to selfhosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a for-of iteration
   and `SameValueZero`.
 
   <details>
@@ -1542,12 +1546,12 @@ function MapUpsert(key, value) {
    <summary><h2>Testing (test262)</h2></summary>
    
    ### Writing tests for test262
-   When it comes to testing implementations, there are som guidelines to follow. 
+   When it comes to testing implementations, there are some guidelines to follow. 
    The official guidelines state that an acceptable test in Test262 is the following:
    ```
    Any test that exercises observable grammar or semantics, originating with citable, 
-   ormative text in the latest draft of the ECMAScript Language Specification, 
-   the ECMAScript Internationalization API Specification, the The JSON Data Interchange Syntax, 
+   ormative text in the latest draft of the ECMAScript® Language Specification, 
+   the ECMAScript® Internationalization API Specification, the The JSON Data Interchange Syntax, 
    a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications.
    ```
 
@@ -1560,7 +1564,7 @@ function MapUpsert(key, value) {
    ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
 
    Recall that this line, among other things, checks if `this` is an Object, therefore we can test it by trying it on non-objects.
-   Primitive types in JavaScript are not considered objects.
+   Primitive types in JavaScript™ are not considered objects.
    So an example of the tests you can write for this, could look like this:
    
    ```js
@@ -1588,7 +1592,7 @@ function MapUpsert(key, value) {
    The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
    All the info is inside the YAML tags `/*---` and `---*/`.
 
-   We start with the required key `esid`, which is the ECMAScript identifier. 
+   We start with the required key `esid`, which is the ECMAScript® identifier. 
    This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
 
    ```
