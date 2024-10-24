@@ -1,11 +1,11 @@
-// Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
+// Copyright (C) 2024 Jonas Haukenes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
 esid: pending
 description: >
     Returns the value from the specified key on different types, when key not present.
 info: |
-    Map.getOrInsert ( key , value )
+    Map.prototype.getOrInsert ( key , value )
 
     ...
     5. Set e.[[Value]] to value.
@@ -16,33 +16,25 @@ feature: [Symbol]
 
 var map = new Map();
 
-map.getOrInsert('bar', 0);
-assert.sameValue(map.get('bar'), 0);
+assert.sameValue(map.getOrInsert('bar', 0), 0);
 
-map.getOrInsert(1, 42);
-assert.sameValue(map.get(1), 42);
+assert.sameValue(map.getOrInsert(1, 42), 42);
 
-map.getOrInsert(NaN, 1);
-assert.sameValue(map.get(NaN), 1);
+assert.sameValue(map.getOrInsert(NaN, 1), 1);
 
 var item = {};
-map.getOrInsert(item, 2);
-assert.sameValue(map.get(item), 2);
+assert.sameValue(map.getOrInsert(item, 2), 2);
 
 item = [];
-map.getOrInsert(item, 3);
-assert.sameValue(map.get(item), 3);
+assert.sameValue(map.getOrInsert(item, 3), 3);
 
 item = Symbol('item');
-map.getOrInsert(item, 4);
-assert.sameValue(map.get(item), 4);
+assert.sameValue(map.getOrInsert(item, 4), 4);
 
 item = null;
-map.getOrInsert(item, 5);
-assert.sameValue(map.get(item), 5);
+assert.sameValue(map.getOrInsert(item, 5), 5);
 
 item = undefined;
-map.getOrInsert(item, 6);
-assert.sameValue(map.get(item), 6);
+assert.sameValue(map.getOrInsert(item, 6), 6);
 
 reportCompare(0, 0);
