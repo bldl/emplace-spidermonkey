@@ -194,11 +194,11 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ### 3. Applying simple changes
 
-  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or add/remove functions.
+  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or `add`/`remove` functions.
 
-  To see the effect of this, we can change the return value of a function.
+  To see the effect of this, we can change the `return` value of a function.
 
-  Open file `Array.js` and change function `ArrayAt` to return 42.
+  Open file `Array.js` and change function `ArrayAt` to `return` 42.
 
   Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
   ```sh
