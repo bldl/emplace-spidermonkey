@@ -1,9 +1,13 @@
 # Tutorial
 
 
-Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
+Welcome to this detailed tutorial, where you'll learn how to implement a new feature in JavaScript™ - the `Map.prototype.upsert` method. This guide is designed to take you step-by-step through the entire process, making it accessible for both beginners and experienced developers.You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along.
 
-You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
+We'll begin with an introduction to the `Map.prototype.upsert` proposal, highlighting why it's beneficial for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll implement the `upsert` function using both JavaScript™ and C++, ensuring that it alligns with the ECMAScript® specification. 
+
+As you progress, optimization techniques will be discussed to ensure your code is efficient and performant. You'll also get an inside look at how to contribute to the ECMAScript® standard, making sure your code aligs with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
+
+By the end of this tutorial, you'll not only have implemented a fully functional `upsert` method but will also ain valuable insights into how new JavaScript™ features are designed, tested and standardized.
 
 ### What’s Covered in This Tutorial?
 
