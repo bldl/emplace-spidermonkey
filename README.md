@@ -297,27 +297,25 @@ In the implementation part of this tutorial, each line of the specification will
 
    Create a hook in `MapObject.cpp`:
 
-    ```cpp
+  ```cpp
+  JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
+  ```
 
-      JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
-    
-    ```
+  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+  in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
 
-    The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
-    in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
+  <details>
+    <summary>A closer look at the hook</summary>
+    - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
+    - First argument: the name that JavaScript™ will use to call the function.
+    - Second argument: the engine's function implementation.
+    - Third argument: Number of arguments.
+    - Fourth argument: Number of flags.
+  </details>
 
-    <details>
-      <summary>A closer look at the hook</summary>
-      - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
-      - First argument: the name that JavaScript™ will use to call the function.
-      - Second argument: the engine's function implementation.
-      - Third argument: Number of arguments.
-      - Fourth argument: Number of flags.
-    </details>
+  **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
 
-    **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
-
-    Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
+  Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
 
    ```js
    function MapUpsert(key, handler) {
