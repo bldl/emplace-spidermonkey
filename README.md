@@ -228,13 +228,13 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
+* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
 * **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
 
 * **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
-* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
+* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, and tells you the result.
 * **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
 
@@ -252,11 +252,10 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 ### 7. Example: Understanding `Array.prototype.push`
 
 * In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
-  * First, the length of the array is checked.
+  * First, the `length` of the array is checked.
   * Then, the new element is added to the array.
-  * Finally, the length property is updated to reflect the added element.
+  * Finally, the `length` property is updated to reflect the added element.
 
-   **TODO first task is getting a rough understanding of the upsert spec, write line by line understamding, provide example solution**
 
 
 ### Interpretation of the `Map.prototype.upsert` specification
