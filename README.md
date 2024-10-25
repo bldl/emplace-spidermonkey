@@ -1284,7 +1284,7 @@ function MapUpsert(key, value) {
 
   </details>
 
-  ### Step 5 & 6 - insert the new key value pair
+  ### Step 5 & 6 - Insert the new key value pair
   
   ```
   5. Set e.[[Value]] to value.
@@ -1293,13 +1293,12 @@ function MapUpsert(key, value) {
 
   If the key was not present in the map, set the new key-value pair and then return the value.
 
-  **use a standard built-in `set` operation, and return `value`**
+  **Use a standard built-in `set` operation, and return `value`**
 
   <details>
     <summary>Solution</summary>
 
 ```js
-
 function MapUpsert(key, value) {
   var M = this;
 
@@ -1328,7 +1327,6 @@ function MapUpsert(key, value) {
 
   return value;
 }
-
 ```
 
   </details>
