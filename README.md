@@ -301,8 +301,8 @@ In the implementation part of this tutorial, each line of the specification will
   JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
   ```
 
-  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
-  in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
+  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All `Map` methods, like `Map::set` and `Map::get`, are defined 
+  in the array `MapObject::methods[]`. The line of code above links the CPP `MapObject` to our self hosted implementation.
 
   <details>
     <summary>A closer look at the hook</summary>
@@ -356,11 +356,11 @@ In the implementation part of this tutorial, each line of the specification will
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
-   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object. 
+   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a `Map` object. 
    In JavaScript™, objects may have internal slots, which are "hidden" properties that store information about the object. 
-   In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
+   In our case, the internal slot `[[MapData]]` holds the actual data of the `Map`. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
-   This step is common for most self-hosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
+   This step is common for most self-hosted `MapObject` methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
@@ -402,7 +402,7 @@ In the implementation part of this tutorial, each line of the specification will
 
     **When to Use Which?**
     __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method 
-    you're calling is guaranteed to be unaltered, you can use callFunction for better performance.
+    you're calling is guaranteed to be unaltered, you can use `callFunction` for better performance.
 
     __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external 
     scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of 
@@ -411,7 +411,7 @@ In the implementation part of this tutorial, each line of the specification will
     **General Rule:**
     Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods 
     might have been altered by content (e.g., when interacting with objects like Map or Array).
-    In the context of your tutorial, if you're interacting with the map (M), you should use callContentFunction to ensure 
+    In the context of your tutorial, if you're interacting with the map (M), you should use `callContentFunction` to ensure 
     you're working with the original, unmodified method.
 
     **TODO: this rule is poorly explained/incorrect asessment**
@@ -540,13 +540,13 @@ In the implementation part of this tutorial, each line of the specification will
    </details>
 
    ```
-   4ai. If HasProperty(handler, "update") is true, then
+   4ai. If HasProperty(handler, "update") is `true`, then
    ```
-   If the key was found in the map, we want to update the pair. The next step is to check if an update function was
-   specified in the the handler.
+   If the `key` was found in the `Map`, we want to `update` the pair. The next step is to check if an `update` function was
+   specified in the the `handler`.
 
    In JavaScript™ almost "everything" is an object. All values except primitives are objects. This means we can use 
-   self-hosted Object methods in self-hosted Map method implementations.
+   self-hosted `Object` methods in self-hosted `Map` method implementations.
 
    ```cpp
    // Code snippet from Object.cpp
@@ -733,7 +733,7 @@ In the implementation part of this tutorial, each line of the specification will
    4aii. Return e.[[Value]].
    ```
 
-   Now that we have updated the map, the updated value should be returned.
+   Now that we have updated the `Map`, the updated value should be returned.
    **return the var `updated`.**
 
    <details>
@@ -958,7 +958,7 @@ In the implementation part of this tutorial, each line of the specification will
 
 The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
-The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
+The process of checking if a `key` exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
 In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
@@ -970,10 +970,10 @@ By making it overcomplicated and a feature that is not commonly found in other l
    <summary><h2>Explaining the new proposal</h2></summary>
 
    **What is the motivation for a new propsosal?**
-   A common problem when using a Map is how to handle doing an update when you're not sure if the key already exists in the Map. This can be handled by first checking if the key is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the Map that could otherwise be handled in a single call.
+   A common problem when using a `Map` is how to handle doing an `update` when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
-   A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value.  
+   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists the value associated with the `key` is returned. Otherwise the `key` is inserted in to the `Map` with the provided default value, then returning the newly inputted value.  
 
    **Simple use of "new" upsert:**
 
@@ -993,13 +993,13 @@ By making it overcomplicated and a feature that is not commonly found in other l
         prefs.upsert("useDarkmode", true); // Default to true
    ```
 
-By using upsert, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting.
+By using `upsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is obviously because the `key` already exists and will `return` the existing `key` instead of inserting or overwriting.
 
 <details>
 <summary>
 Similar functionality in Python
 </summary>
-As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and it's "setdefault" method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
+As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and its setdefault method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
 
 ```python
 # Without setdefault
@@ -1414,7 +1414,7 @@ function MapUpsert(key, value) {
   </details>
 
 
-  One solution we had, was to check if the entry was in the map, by using `std_has`.
+  One solution we had, was to check if the entry was in the `Map`, by using `std_has`.
   The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
   is seemingly because there has not been any need for the `std_has` method in self-hosted code previously.
 
@@ -1456,7 +1456,7 @@ function MapUpsert(key, value) {
   ```
   </details>
 
-  We also need to make the has function publicly exposed in `MapObject.h` to use it in self-hosted code.
+  We also need to make the `has` function publicly exposed in `MapObject.h` to use it in self-hosted code.
 
   In `MapObject.h`, move this line from private to public.
 
@@ -1499,7 +1499,7 @@ function MapUpsert(key, value) {
 
   ### Optimize the function
 
-  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a `for-of` iteration
   and `SameValueZero`.
 
   <details>
