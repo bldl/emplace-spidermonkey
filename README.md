@@ -1099,6 +1099,7 @@ prefs.setdefault("useDarkmode", True)
       Now you have installed Ecmarkup.
 
 * **How to write ecmarkup**
+
   Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
 
   ```html
@@ -1331,6 +1332,17 @@ function MapUpsert(key, value) {
 
   </details>
   
+  ### Finished version of new proposal specification.
+  The spec text now looks like this:
+  ```
+  1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  3. Let entries be the List that is M.[[MapData]].
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  5. Set e.[[Value]] to value.
+  6. Return e.[[Value]].
+  ```
 </details>
 
 <details open>
