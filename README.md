@@ -22,13 +22,14 @@ flowchart TD
   A[The Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
   B --> C[Learning To Read ECMA-262 Specification];
   C --> D[Searchfox As Tool];
-  D --> E[The Initial &#40 key, handler &#41 Proposal];
+  D --> E[The Initial 'key, handler' Proposal];
   E --> F[Implement The Proposal];
   F --> G{Satisified With The Proposal?};
   G --> |no| H[Identify The Issues And Create A New Proposal];
   G --> |yes| I[Optimize The Proposal];
   H --> J[Create The New Specification];
-  J --> F;
+  J --> F[Testing The Proposal];
+  F;
 ```
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
