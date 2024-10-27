@@ -28,7 +28,7 @@ flowchart TD
   G --> |no| H[Identify The Issues And Create A New Proposal];
   G --> |yes| I[Optimize The Proposal];
   H --> J[Create The New Specification];
-  J --> F[Testing The Proposal];
+  I --> F[Testing The Proposal];
   F;
 ```
 
