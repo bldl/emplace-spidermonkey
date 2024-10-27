@@ -22,11 +22,11 @@ flowchart TD
   A[The Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
   B --> C[Learning To Read ECMA-262 Specification];
   C --> D[Searchfox As Tool];
-  D --> E[The Initial (key, handler) Proposal];
+  D --> E[The Initial \( key, handler \) Proposal];
   E --> F[Implement The Proposal];
   F --> G{Satisified With The Proposal?};
-  G -- no --> H[Identify The Issues And Create A New Proposal];
-  G -- yes --> I[Optimize The Proposal];
+  G --> |no| H[Identify The Issues And Create A New Proposal];
+  G --> |yes| I[Optimize The Proposal];
   H --> J[Create The New Specification];
   J --> F;
 ```
