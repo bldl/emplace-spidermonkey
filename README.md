@@ -19,7 +19,7 @@ By the end of this tutorial, you will have a full implementation of `Map.prototy
 
 ```mermaid
 flowchart TD
-  title Project Timeline
+  title Project Timeline;
   A[The `Map.prototype.upsert`proposal] --> B[Installing Mozilla Unified];
   B --> C[Learning To Read ECMA-262 Specification];
   C --> D[Searchfox as tool];
