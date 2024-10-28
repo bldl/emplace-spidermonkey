@@ -26,10 +26,10 @@ flowchart TD
   E --> F[Implement The Proposal];
   F --> G{Satisified With The Proposal?};
   G --> |no| H[Identify The Issues And Create A New Proposal];
-  G --> |yes| I[Optimize The Proposal];
-  H --> J[Create The New Specification];
-  I --> F[Testing The Proposal];
-  F;
+  H --> I[Create The New Specification];
+  I --> F;
+  G --> |yes| J[Optimize The Proposal];
+  J --> K[Testing The Proposal];
 ```
 
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
