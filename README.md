@@ -1,5 +1,12 @@
 # Tutorial
 
+### ECMAScript®
+
+JavaScript™ is standardized by ECMAScript® and specified in the ECMA-262 language specification, which is maintained by Ecma International through the TC39 committee. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like V8 (used in Chrome and Node.js), JavaScriptCore (Safari), and SpiderMonkey (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
+
+SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ feature proposal, providing insights into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
+
+### Introduction
 
 Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
 
