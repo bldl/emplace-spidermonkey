@@ -17,6 +17,21 @@ You don’t need prior knowledge of JavaScript™ engine internals or advanced C
 
 By the end of this tutorial, you will have a full implementation of `Map.prototype.upsert` and a solid understanding of how JavaScript™ engine features are developed.
 
+```mermaid
+flowchart TD
+  A[The Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
+  B --> C[Learning To Read ECMA-262 Specification];
+  C --> D[Searchfox As Tool];
+  D --> E[The Initial 'key, handler' Proposal];
+  E --> F[Implement The Proposal];
+  F --> G{Satisified With The Proposal?};
+  G --> |no| H[Identify The Issues And Create A New Proposal];
+  H --> I[Create The New Specification];
+  I --> F;
+  G --> |yes| J[Optimize The Proposal];
+  J --> K[Testing The Proposal];
+```
+
 **TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
 
 **TODO? explain the process of an ECMAScript® proposal, ex. phases 2 -> 2.7 etc**
