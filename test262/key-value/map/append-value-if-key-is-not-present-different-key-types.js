@@ -1,16 +1,17 @@
+// Copyright (C) 2015 the V8 project authors. All rights reserved.
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: pending
+esid: sec-map.prototype.getOrInsert
 description: >
-    Returns the value from the specified key on different types, when key not present.
+  Inserts the value for the specified key on different types, when key not present.
 info: |
-    Map.prototype.getOrInsert ( key , value )
+  Map.prototype.getOrInsert ( key , value )
 
-    ...
-    5. Set e.[[Value]] to value.
-    6. Return e.[[Value]].
-    ...
+  ...
+  5. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+  6. Append p to M.[[MapData]].
+  ...
 feature: [Symbol]
 ---*/
 
@@ -44,5 +45,3 @@ assert.sameValue(map.get(item), 5);
 item = undefined;
 map.getOrInsert(item, 6);
 assert.sameValue(map.get(item), 6);
-
-reportCompare(0, 0);

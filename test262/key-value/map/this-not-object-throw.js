@@ -1,15 +1,16 @@
+// Copyright (C) 2015 the V8 project authors. All rights reserved.
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
 esid: pending
 description: >
-    Throws a TypeError if `this` is not an Object.
+  Throws a TypeError if `this` is not an Object.
 info: |
-    Map.getOrInsert ( key , value )
+  Map.prototype.getOrInsert ( key , value )
 
-    1. Let M be the this value
-    2. Perform ? RequireInternalSlot(M, [[MapData]])
-    ...
+  1. Let M be the this value
+  2. Perform ? RequireInternalSlot(M, [[MapData]])
+  ...
 features: [Symbol]
 ---*/
 
@@ -38,6 +39,3 @@ assert.throws(TypeError, function () {
 assert.throws(TypeError, function () {
     m.getOrInsert.call(Symbol(), 1, 1);
 });
-
-
-reportCompare(0, 0);

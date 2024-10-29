@@ -1,26 +1,25 @@
+// Copyright (C) 2015 the V8 project authors. All rights reserved.
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: pending
+esid: sec-map.prototype.getOrInsert
 description: >
-    Throws a TypeError if `this` is a Set Object
+  Throws a TypeError if `this` is a Set Object
 info: |
-    Map.getOrInsert ( key , value )
+  Map.prototype.getOrInsert ( key , value )
 
-    ...
-    2. Perform ? RequireInternalSLot(M, [[MapData]])
-    ...
+  ...
+  1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]])
+  ...
 features: [Set]
 ---*/
 
-var map = new Map();
-
 assert.throws(TypeError, function () {
-    map.getOrInsert.call(new Set(), 1, 1);
+  Map.prototype.getOrInsert.call(new Set(), 1, 1);
 });
 
 assert.throws(TypeError, function () {
-    map.getOrInsert.call(new Set(), 1, 1);
+  var map = new Map();
+  map.getOrInsert.call(new Set(), 1, 1);
 });
-
-reportCompare(0, 0);
