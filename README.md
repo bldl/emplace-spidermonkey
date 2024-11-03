@@ -1271,8 +1271,13 @@ prefs.setdefault("useDarkmode", True)
 <details open>
   <summary><h2>Implementing the new proposal</h2></summary>
 
+  In this section, we will adapt our implementation to match the updated proposal specifications. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
+
   ### Step 1-4 - the logic remains the same
 
+  The first four steps remain unchanged from the original proposal.
+
+  __The Specification States:__
 
   ```
 
@@ -1283,9 +1288,7 @@ prefs.setdefault("useDarkmode", True)
 
   ```
 
-  These lines are similar to the previous proposal specification. The code remains unchanged.
-
-  **Use the code from the old implementation and changes the `handler` parameter to `value`**
+  These lines are similar to the previous proposal specification and they remain seemingly unchanged. Only a few altercations are introduced. We need to update the argument `handler` to `value`.
 
   <details>
     <summary>Solution</summary>
@@ -1317,17 +1320,23 @@ function MapUpsert(key, value) {
 
 ```
 
+We are now ready to proceed and update the logic of the function.
+
   </details>
 
   ### Step 4a - If the key exists, return the value
+
+  In this step, we implement the condition to handle the case when the key already exists in the Map.
+
+  __Specification Line:__
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
 
-  This is where the logic changes in the newer proposal. The new proposal does not care about updates.
+In the updated logic, we are only concerned with returning the existing value if the key is found, rather than handling updates. This is a streamlined approach that differs from our previous implementation.
 
-  **If the key exists, return it's value with a standard built-in get operation**
+Use the built-in `std_Map_get` function to return the existing value.
 
   <details>
     <summary>Solution</summary>
@@ -1361,18 +1370,22 @@ function MapUpsert(key, value) {
 
 ```
 
+With this code in place, our MapUpsert function will return the existing value if the key is found in the Map. If the key does not exist, the function will continue to the next steps, where we will handle inserting a new entry.
+
   </details>
 
   ### Step 5 & 6 - insert the new key value pair
+
+  Now, we address the scenario where the key does not already exist in the Map. If the specified key is not found in the previous iteration step, insert the new value and return it.
+
+  __The Specification States:__
   
   ```
   5. Set e.[[Value]] to value.
   6. Return e.[[Value]].
   ```
 
-  If the key was not present in the map, set the new key-value pair and then return the value.
-
-  **use a standard built-in `set` operation, and return `value`**
+  In this case, we will add the new key-value pair to the Map and then return the value. We can achieve this by using the built-in set operation, which allows us to add entries directly and efficiently.
 
   <details>
     <summary>Solution</summary>
@@ -1411,6 +1424,8 @@ function MapUpsert(key, value) {
 ```
 
   </details>
+
+With these fairly simple steps our new implementation is now more streamlined with a simpler and more 'attractive' api.
   
 </details>
 
@@ -1439,7 +1454,7 @@ function MapUpsert(key, value) {
   This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
   Therefore, we decided to try to optimize this line.
 
-  **Demonstration: Create a new file; Runtime.js with the code below and run it with `./mach run`**
+  **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
 
   <details>
     <summary>Runtime script</summary>
