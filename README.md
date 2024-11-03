@@ -642,13 +642,17 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+  **Get the `update` function from the `handler`**
   
+  If the key exists and the update function is specified, the next step is to retrive the `update` function.
+
+  __Specification Line:__
 
    ```
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-   **get the update handler if its specified**
+  Store the `update` function as a variable `updateFn`.
 
    <details>
    <summary>Solution</summary>
@@ -682,6 +686,12 @@ In the implementation part of this tutorial, each line of the specification will
      }
    }
    ```
+
+  **Call the update function**
+
+  Now that we’ve verified the existence of an update function in the handler object, the next step is to invoke this function to get the updated value.
+
+  __Specification Line:__
 
    </details>
 
@@ -689,7 +699,9 @@ In the implementation part of this tutorial, each line of the specification will
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
-   **Use `callFunction` to call updateFN, store it as `var updated`**
+  In this context, we need to call the `update` function on the current value associated with the map entry. This involves passing `e.[[Value]]` (the existing value), `key`, and `M` as arguments to the function.
+
+  To perform this function call in self-hosted JavaScript™, we’ll use `callFunction`, which allows us to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry.
 
    <details>
    <summary>Solution</summary>
@@ -717,7 +729,7 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
+           var updated = callFunction(updateFN, M, eValue, key);
            //...
          }
        }
@@ -727,11 +739,19 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+  **Update the value in the map**
+
+  Once we have the updated value from calling the `update` function, we can proceed to replace the current value in the map entry.
+
+  __Specification Line:__
+
    ```
    4ai3. Set e.[[Value]] to updated.
    ```
 
-   **Perform a `set` operation on the Map to update it (remember the standard built-in map operations).**
+  This step involves using the `std_Map_set` function, a standard self-hosted operation that allows us to safely set a new value for a specified key in the map. Since `std_Map_set` is a built-in function available to self-hosted code, we’ll call it to update the entry with our newly computed updated value.
+
+   **Recall the standard built-in map operations specified in `SelfHosting.cpp`:**
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -741,6 +761,8 @@ In the implementation part of this tutorial, each line of the specification will
        JS_FN("std_Map_set", MapObject::set, 2, 0),
    ```
 
+   Use `callFunction` and `std_Map_entries` to set the new update value.
+
    <details>
    <summary>Solution</summary>
 
@@ -768,12 +790,18 @@ In the implementation part of this tutorial, each line of the specification will
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
            var updated = callFunction(updateFN, M, Value, key);
-           callContentFunction(std_Map_set, M, key, updated);
+           callFunction(std_Map_set, M, key, updated);
          }
        }
      }
    }
    ```
+
+  **Return the value**
+
+  We have now updated the value, and can return it.
+
+  __Specification Line:__
 
    </details>
 
@@ -781,8 +809,7 @@ In the implementation part of this tutorial, each line of the specification will
    4aii. Return e.[[Value]].
    ```
 
-   Now that we have updated the map, the updated value should be returned.
-   **return the var `updated`.**
+  Return the updated value.
 
    <details>
    <summary>Solution</summary>
@@ -811,7 +838,7 @@ In the implementation part of this tutorial, each line of the specification will
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
            var updated = callFunction(updateFN, M, Value, key);
-           callContentFunction(std_Map_set, M, key, updated);
+           callFunction(std_Map_set, M, key, updated);
          }
    
          return updated;
@@ -824,6 +851,10 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### Step 5 - Implementing The `Insert` Handler
 
+  In this step, we’ll handle the scenario where the specified key doesn’t exist in the map.
+
+  __The Specification States__
+
    ```
    5. Let insertFn be ? Get(handler, "insert").
    6. Let inserted be ? Call(insertFn, handler, « e.[[Value]], key, M »).
@@ -831,7 +862,9 @@ In the implementation part of this tutorial, each line of the specification will
    8. Return e.[[Value]].
    ```
 
-   **With the knowledge from implementing update, use similar techniques to implement insert.**
+  This section is similar to our approach for updating an existing entry, except here, we’re adding a new entry to the map. If the key isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial value for this new key-value pair.
+
+  The section uses similar techniques to the `update` scenario. Use the knowledge and experience you have gained up to this point to implement the `insert` handler.
 
    <details>
    <summary>Solution</summary>
@@ -860,7 +893,7 @@ In the implementation part of this tutorial, each line of the specification will
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
            var updated = callFunction(updateFN, M, Value, key);
-           callContentFunction(std_Map_set, M, key, updated);
+           callFunction(std_Map_set, M, key, updated);
          }
    
          return updated;
@@ -869,7 +902,7 @@ In the implementation part of this tutorial, each line of the specification will
    
      var insertFN = handler['insert'];
      var inserted = callFunction(insertFN, key, M);
-     callContentFunction(std_Map_set, M, key, inserted);
+     callFunction(std_Map_set, M, key, inserted);
    
      return inserted;
    }
@@ -877,16 +910,17 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-   ### Test the implementation
+  ### Test the implementation
 
-   Recall, you can create files and run them with the command:
+  Now that we have implemented the function, it's essential that test it to verify it behaves as intended.
+
+  Recall, you can create files and run them with the command:
 
     ```sh
     ./mach run MyFileName.js
     ```
 
-  **Create a script to test your implementation or use the sample script below**
-
+  Create a script to test your implementation or use the sample script below:
 
   <details>
     <summary>Script</summary>
@@ -1320,7 +1354,7 @@ function MapUpsert(key, value) {
     var eValue = e[1];
 
     if (SameValueZero(eKey, key)) {
-      return callContentFunction(std_Map_get, M, key);
+      return callFunction(std_Map_get, M, key);
     }
   }
 }
@@ -1365,11 +1399,11 @@ function MapUpsert(key, value) {
     var eValue = e[1];
 
     if (SameValueZero(eKey, key)) {
-      return callContentFunction(std_Map_get, M, key);
+      return callFunction(std_Map_get, M, key);
     }
   }
 
-  callContentFunction(std_Map_set, M, key, value);
+  callFunction(std_Map_set, M, key, value);
 
   return value;
 }
@@ -1567,11 +1601,11 @@ function MapUpsert(key, value) {
             );
         }
 
-        if (callContentFunction(std_Map_has, M, key)) {
+        if (callFunction(std_Map_has, M, key)) {
           return callFunction(std_Map_get, M, key);
         }
 
-        callContentFunction(std_Map_set, M, key, value);
+        callFunction(std_Map_set, M, key, value);
           return value;
       }
     ```
