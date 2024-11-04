@@ -1,16 +1,17 @@
+// Copyright (C) 2015 the V8 project authors. All rights reserved.
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
 esid: pending
 description: >
-    Returns the value set before getOrInsert from the specified key on different types.
+  Returns the value set before getOrInsert from the specified key on different types.
 info: |
-    Map.getOrInsert ( key , value )
+  Map.prototype.getOrInsert ( key , value )
 
-    ...
-    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-        4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]]
-    ...
+  ...
+  4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+    a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+  ...
 features: [Symbol]
 ---*/
 

@@ -8,9 +8,15 @@ SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in
 
 ### Introduction
 
+
 Welcome to this detailed tutorial on how to implement and understand the [`Map.prototype.upsert proposal`](https://github.com/tc39/proposal-upsert). This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, [Test262](https://github.com/tc39/test262).
 
-You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
+
+We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both JavaScript™ and C++, ensuring alignment with the ECMAScript® specification. 
+
+The main focus will initially be on developing a functional solution. Once basic functionality is verified, optimization techniques will be applied to ensure your code is efficient and performant. You'll also gain insight into contributing to the ECMAScript® standard, aligning your code with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
+
+By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained valuable insights into the process of designing, testing and standardizing JavaScript™ features.
 
 ### What’s Covered in This Tutorial?
 
@@ -1196,7 +1202,13 @@ function MapUpsert(key, value) {
 
 <details open>
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
-
+  In this section, we will cover how to install and use Ecmarkup to write specifications for proposals. 
+  Ecmarkup is a markup language that is designed for technical specifications. 
+  This allows the authors to visualize and format complex algorithms, clauses and terms in a way that is both readable and structured. 
+  Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript®-standards. 
+  
+  We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
+  Furthermore, we will check out how to format spec text using Ecmarkup before guiding you through how to build your specification into a HTML document. 
 
 * **Installing Node.js and Node Package Manager**
     <details>
@@ -1301,9 +1313,9 @@ function MapUpsert(key, value) {
 
   **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example.
 
-* **How to translate from ECMAScript® to ecmarkup**
+* **How to format spec text using Ecmarkup**
 
-  Translating from ECMAScript® to Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards.
+  Formatting spec text using Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards.
 
     1. **Understanding why we need Ecmarkup**
 
