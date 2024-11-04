@@ -1163,8 +1163,8 @@ function MapUpsert(key, value) {
 
   </details>
   
-  ### Finished version of new proposal specification.
-  The spec text now looks like this:
+  ### The complete new proposal specification.
+  The spec text now looks like this, and you should have a finished implementation as well.
   ```
   1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
