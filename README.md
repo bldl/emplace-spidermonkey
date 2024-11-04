@@ -41,22 +41,22 @@ flowchart TD
 
    **What is it?**
 
-   Map.prototype.upsert is a new method for JavaScript™'s Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
+   `Map.prototype.upsert` is a new method for JavaScript™'s `Map`-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either `insert` or `update` new key-value pairs.
 
    **How does it work?**
-   The "upsert" operation takes two arguments: a key and a handler object. The handler contains two properties:
+   The "upsert" operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
 
-* update: Function to modify value of a key if the key is already existing in the Map.
-* insert: Function that generates a default-value to be set to the belonging value of the checked key.
+* `update`: Function to modify value of a `key` if it is already existing in the `Map`.
+* `insert`: Function that generates a default-value to be set to the belonging `value` of the checked `key`.
 
    **The function follow these steps:**
 
-   1. The Map is checked for the key passed as argument. If the key is found:
-       * It checks the handler for "update" function. If found this is used to update the value belonging to the key to then return it
-   2. If it is not found, the insert function from the handler is used to generate a new value, assign this to the passed key and then return the new value.
+   1. The `Map` is checked for the `key` passed as argument. If found:
+       * It checks the `handler` for `update` function. If found this is used to `update` the `value` belonging to the `key` to then `return` it
+   2. If it is not found, the `insert` function from the `handler` is used to generate a new `value`, assign this to the passed `key` and then `return` the new `value`.
    3. Either way, the belonging value will be returned.
 
-   **What is the motivation?** Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
+   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
 
    <details>
    <summary>
@@ -209,11 +209,11 @@ flowchart TD
 
 ### 3. Applying simple changes
 
-  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or add/remove functions.
+  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or `add`/`remove` functions.
 
-  To see the effect of this, we can change the return value of a function.
+  To see the effect of this, we can change the `return` value of a function.
 
-  Open file `Array.js` and change function `ArrayAt` to return 42.
+  Open file `Array.js` and change function `ArrayAt` to `return` 42.
 
   Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
   ```sh
@@ -243,13 +243,13 @@ flowchart TD
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
+* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
 * **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
 
 * **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
-* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
+* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, and tells you the result.
 * **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
 
@@ -267,11 +267,10 @@ flowchart TD
 ### 7. Example: Understanding `Array.prototype.push`
 
 * In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
-  * First, the length of the array is checked.
+  * First, the `length` of the array is checked.
   * Then, the new element is added to the array.
-  * Finally, the length property is updated to reflect the added element.
+  * Finally, the `length` property is updated to reflect the added element.
 
-   **TODO first task is getting a rough understanding of the upsert spec, write line by line understamding, provide example solution**
 
 
 ### Interpretation of the `Map.prototype.upsert` specification
@@ -313,27 +312,25 @@ In the implementation part of this tutorial, each line of the specification will
 
    Create a hook in `MapObject.cpp`:
 
-    ```cpp
+  ```cpp
+  JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
+  ```
 
-      JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
-    
-    ```
+  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All `Map` methods, like `Map::set` and `Map::get`, are defined 
+  in the array `MapObject::methods[]`. The line of code above links the CPP `MapObject` to our self hosted implementation.
 
-    The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
-    in the array `MapObject::methods[]`. The line of code above links the CPP MapObject to our self hosted implementation.
+  <details>
+    <summary>A closer look at the hook</summary>
+    - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
+    - First argument: the name that JavaScript™ will use to call the function.
+    - Second argument: the engine's function implementation.
+    - Third argument: Number of arguments.
+    - Fourth argument: Number of flags.
+  </details>
 
-    <details>
-      <summary>A closer look at the hook</summary>
-      - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
-      - First argument: the name that JavaScript™ will use to call the function.
-      - Second argument: the engine's function implementation.
-      - Third argument: Number of arguments.
-      - Fourth argument: Number of flags.
-    </details>
+  **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
 
-    **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
-
-    Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
+  Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
 
    ```js
    function MapUpsert(key, handler) {
@@ -374,11 +371,11 @@ In the implementation part of this tutorial, each line of the specification will
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
 
-   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a Map object. 
+   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a `Map` object. 
    In JavaScript™, objects may have internal slots, which are "hidden" properties that store information about the object. 
-   In our case, the internal slot `[[MapData]]` holds the actual data of the Map. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
+   In our case, the internal slot `[[MapData]]` holds the actual data of the `Map`. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
-   This step is common for most self-hosted MapObject methods. The solution for this step already exists in the code. Look at `MapForEach`.
+   This step is common for most self-hosted `MapObject` methods. The solution for this step already exists in the code. Look at `MapForEach`.
 
    <details>
    <summary>Solution</summary>
@@ -420,7 +417,7 @@ In the implementation part of this tutorial, each line of the specification will
 
     **When to Use Which?**
     __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method 
-    you're calling is guaranteed to be unaltered, you can use callFunction for better performance.
+    you're calling is guaranteed to be unaltered, you can use `callFunction` for better performance.
 
     __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external 
     scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of 
@@ -429,7 +426,7 @@ In the implementation part of this tutorial, each line of the specification will
     **General Rule:**
     Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods 
     might have been altered by content (e.g., when interacting with objects like Map or Array).
-    In the context of your tutorial, if you're interacting with the map (M), you should use callContentFunction to ensure 
+    In the context of your tutorial, if you're interacting with the map (M), you should use `callContentFunction` to ensure 
     you're working with the original, unmodified method.
 
     **TODO: this rule is poorly explained/incorrect asessment**
@@ -558,13 +555,13 @@ In the implementation part of this tutorial, each line of the specification will
    </details>
 
    ```
-   4ai. If HasProperty(handler, "update") is true, then
+   4ai. If HasProperty(handler, "update") is `true`, then
    ```
-   If the key was found in the map, we want to update the pair. The next step is to check if an update function was
-   specified in the the handler.
+   If the `key` was found in the `Map`, we want to `update` the pair. The next step is to check if an `update` function was
+   specified in the the `handler`.
 
    In JavaScript™ almost "everything" is an object. All values except primitives are objects. This means we can use 
-   self-hosted Object methods in self-hosted Map method implementations.
+   self-hosted `Object` methods in self-hosted `Map` method implementations.
 
    ```cpp
    // Code snippet from Object.cpp
@@ -751,7 +748,7 @@ In the implementation part of this tutorial, each line of the specification will
    4aii. Return e.[[Value]].
    ```
 
-   Now that we have updated the map, the updated value should be returned.
+   Now that we have updated the `Map`, the updated value should be returned.
    **return the var `updated`.**
 
    <details>
@@ -976,7 +973,7 @@ In the implementation part of this tutorial, each line of the specification will
 
 The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
-The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
+The process of checking if a `key` exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
 In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
@@ -988,10 +985,10 @@ By making it overcomplicated and a feature that is not commonly found in other l
    <summary><h2>Explaining the new proposal</h2></summary>
 
    **What is the motivation for a new propsosal?**
-   A common problem when using a Map is how to handle doing an update when you're not sure if the key already exists in the Map. This can be handled by first checking if the key is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the Map that could otherwise be handled in a single call.
+   A common problem when using a `Map` is how to handle doing an `update` when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
-   A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value.  
+   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists the value associated with the `key` is returned. Otherwise the `key` is inserted in to the `Map` with the provided default value, then returning the newly inputted value.  
 
    **Simple use of "new" upsert:**
 
@@ -1011,13 +1008,13 @@ By making it overcomplicated and a feature that is not commonly found in other l
         prefs.upsert("useDarkmode", true); // Default to true
    ```
 
-By using upsert, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting.
+By using `upsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is obviously because the `key` already exists and will `return` the existing `key` instead of inserting or overwriting.
 
 <details>
 <summary>
 Similar functionality in Python
 </summary>
-As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and it's "setdefault" method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
+As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and its setdefault method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
 
 ```python
 # Without setdefault
@@ -1432,7 +1429,7 @@ function MapUpsert(key, value) {
   </details>
 
 
-  One solution we had, was to check if the entry was in the map, by using `std_has`.
+  One solution we had, was to check if the entry was in the `Map`, by using `std_has`.
   The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
   is seemingly because there has not been any need for the `std_has` method in self-hosted code previously.
 
@@ -1474,7 +1471,7 @@ function MapUpsert(key, value) {
   ```
   </details>
 
-  We also need to make the has function publicly exposed in `MapObject.h` to use it in self-hosted code.
+  We also need to make the `has` function publicly exposed in `MapObject.h` to use it in self-hosted code.
 
   In `MapObject.h`, move this line from private to public.
 
@@ -1517,7 +1514,7 @@ function MapUpsert(key, value) {
 
   ### Optimize the function
 
-  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a `for-of` iteration
   and `SameValueZero`.
 
   <details>
