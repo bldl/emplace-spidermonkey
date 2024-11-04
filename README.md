@@ -282,8 +282,7 @@ flowchart TD
 
 ### Interpretation of the `Map.prototype.upsert` specification
 
-The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, you 
-should try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
+The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
 
 **Rewrite the spec in your own words**
