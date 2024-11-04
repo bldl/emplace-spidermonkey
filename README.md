@@ -2,13 +2,13 @@
 
 ### ECMAScript®
 
-JavaScript™ is standardized by ECMAScript® and specified in the ECMA-262 language specification, which is maintained by Ecma International through the TC39 committee. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like V8 (used in Chrome and Node.js), JavaScriptCore (Safari), and SpiderMonkey (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
+JavaScript™ is standardized by ECMAScript® and specified in the [ECMA-262 language specification](https://ecma-international.org/publications-and-standards/standards/ecma-262/), which is maintained by Ecma International through the [TC39 committee](https://tc39.es/). ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like [V8](https://v8.dev/) (used in Chrome and Node.js), [JavaScriptCore](https://developer.apple.com/documentation/javascriptcore) (Safari), and [SpiderMonkey](https://spidermonkey.dev/) (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
 
 SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ feature proposal, providing insights into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
 
 ### Introduction
 
-Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
+Welcome to this detailed tutorial on how to implement and understand the [`Map.prototype.upsert proposal`](https://github.com/tc39/proposal-upsert). This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, [Test262](https://github.com/tc39/test262).
 
 You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
 
@@ -239,7 +239,7 @@ flowchart TD
 
 ### 1. What is the ECMA-262 Specification?
 
-* ECMA-262 is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
+* [ECMA-262](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA) is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
 
 ### 2. How to Navigate the Document
 
@@ -250,7 +250,7 @@ flowchart TD
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
+* **Steps to follow**: For example, the spec describes how [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push) works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
 * **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
@@ -271,7 +271,7 @@ flowchart TD
 * Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
 * **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 
-### 7. Example: Understanding `Array.prototype.push`
+### 7. Example: Understanding [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push)
 
 * In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
   * First, the `length` of the array is checked.
@@ -282,7 +282,7 @@ flowchart TD
 
 ### Interpretation of the `Map.prototype.upsert` specification
 
-The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
+The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, you 
 should try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
 
@@ -299,7 +299,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-   When implementing a feature Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+   When implementing a feature [Searchfox](https://searchfox.org/) is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
    When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
 
@@ -328,7 +328,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   <details>
     <summary>A closer look at the hook</summary>
-    - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implmenatations are FN, and INLINABLE_FN.
+    - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implementations are FN, and INLINABLE_FN.
     - First argument: the name that JavaScript™ will use to call the function.
     - Second argument: the engine's function implementation.
     - Third argument: Number of arguments.
@@ -405,7 +405,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### Step 3 - engine space and user space
+### Step 3 - Engine space and user space
 
   **`callfunction` vs `callcontentfunction`?**
 
@@ -622,7 +622,7 @@ In the implementation part of this tutorial, each line of the specification will
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-   **get the update handler if its specified**
+   **Get the update handler if its specified**
 
    <details>
    <summary>Solution</summary>
@@ -982,7 +982,7 @@ The original proposal introduced a flexible solution by allowing both an `update
 
 The process of checking if a `key` exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
-In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
+In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called [`setdefault`](https://docs.python.org/2/library/stdtypes.html#dict.setdefault). This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
 By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
@@ -1257,7 +1257,7 @@ function MapUpsert(key, value) {
     </details>
 
 
-* **Installing Ecmarkup**
+* **Installing [Ecmarkup](https://tc39.es/ecmarkup/)**
     * Windows/Mac/Linux
         1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
         2. Run the following command to install Ecmarkup globally:
@@ -1365,7 +1365,7 @@ function MapUpsert(key, value) {
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  A proposal goes through several stages before it becomes a part of the ECMAScript® language.
+  A proposal goes through several [stages](https://www.proposals.es/stages) before it becomes a part of the ECMAScript® language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
   Therefore optimization becomes crucial when designing and implementing these features.
   In our case there is especially one line which could use some optimization:
@@ -1570,9 +1570,9 @@ function MapUpsert(key, value) {
 
 <details open>
 
-   <summary><h2>Testing (test262)</h2></summary>
+   <summary><h2>Testing (Test262)</h2></summary>
    
-   ### Writing tests for test262
+   ### Writing tests for [Test262](https://github.com/tc39/test262)
    When it comes to testing implementations, there are some guidelines to follow. 
    The official guidelines state that an acceptable test in Test262 is the following:
    ```
