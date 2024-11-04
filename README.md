@@ -8,13 +8,13 @@ SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in
 
 ### Introduction
 
-Welcome to this detailed tutorial, where you'll learn how to implement a new feature in JavaScript™ - the `Map.prototype.upsert` method. This guide is designed to take you step-by-step through the entire process, making it accessible for both beginners and experienced developers.You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along.
+Welcome to this detailed tutorial, where you'll learn how to implement a new feature in JavaScript™: the `Map.prototype.upsert` method. This guide takes you step-by-step through the entire process, making it accessible for both beginners and experienced developers. No prior knowledge of JavaScript™ engine internals or advanced C++ programming is needed to follow along.
 
-We'll begin with an introduction to the `Map.prototype.upsert` proposal, highlighting why it's beneficial for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll implement the `upsert` function using both JavaScript™ and C++, ensuring that it alligns with the ECMAScript® specification. 
+We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` function using both JavaScript™ and C++, ensuring alignment with the ECMAScript® specification. 
 
-As you progress, optimization techniques will be discussed to ensure your code is efficient and performant. You'll also get an inside look at how to contribute to the ECMAScript® standard, making sure your code aligs with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
+The focus will initially be on developing a functional solution. Once basic functionality is verified, optimization techniques will be applied to ensure your code is efficient and performant. You'll also gain insight into contributing to the ECMAScript® standard, aligning your code with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
 
-By the end of this tutorial, you'll not only have implemented a fully functional `upsert` method but will also ain valuable insights into how new JavaScript™ features are designed, tested and standardized.
+By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained valuable insights into the process of designing, testing and standardizing JavaScript™ features.
 
 ### What’s Covered in This Tutorial?
 
