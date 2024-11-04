@@ -3,7 +3,7 @@
 // This code is governed by the BSD license found in the LICENSE file.
 
 /*---
-esid: sec-ecmascript-standard-built-in-objects
+esid: pending
 description: >
   Map.prototype.getOrInsert does not implement [[Construct]], is not new-able
 info: |
@@ -27,3 +27,5 @@ assert.sameValue(isConstructor(Map.prototype.getOrInsert), false, 'isConstructor
 assert.throws(TypeError, () => {
   let m = new Map(); new m.getOrInsert();
 });
+
+reportCompare(0, 0);

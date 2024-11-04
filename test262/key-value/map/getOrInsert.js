@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Jonas Haukenes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: sec-map.prototype.getOrInsert
+esid: pending
 description: >
   Property type and descriptor.
 info: |
@@ -24,3 +24,5 @@ verifyProperty(Map.prototype, 'getOrInsert', {
   enumerable: false,
   configurable: true,
 });
+
+reportCompare(0, 0);

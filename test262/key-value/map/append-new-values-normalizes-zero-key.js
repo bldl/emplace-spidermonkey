@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Jonas Haukenes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: sec-map.prototype.getOrInsert
+esid: pending
 description: >
   Append a new value in the map normalizing +0 and -0.
 info: |
@@ -25,3 +25,5 @@ assert.sameValue(map.get(0), 42);
 map = new Map();
 map.getOrInsert(+0, 43);
 assert.sameValue(map.get(0), 43);
+
+reportCompare(0, 0);

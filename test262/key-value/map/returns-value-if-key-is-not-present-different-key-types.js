@@ -38,3 +38,5 @@ assert.sameValue(map.getOrInsert(item, 5), 5);
 
 item = undefined;
 assert.sameValue(map.getOrInsert(item, 6), 6);
+
+reportCompare(0, 0);

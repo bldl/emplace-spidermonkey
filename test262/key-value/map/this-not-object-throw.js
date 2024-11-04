@@ -39,3 +39,5 @@ assert.throws(TypeError, function () {
 assert.throws(TypeError, function () {
     m.getOrInsert.call(Symbol(), 1, 1);
 });
+
+reportCompare(0, 0);

@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: sec-map.prototype.getOrInsert
+esid: pending
 description: >
   Throws a TypeError if `this` is a WeakMap object.
 info: |
@@ -23,3 +23,5 @@ assert.throws(TypeError, function() {
   var map = new Map();
   map.getOrInsert.call(new WeakMap(), 1, 1);
 });
+
+reportCompare(0, 0);

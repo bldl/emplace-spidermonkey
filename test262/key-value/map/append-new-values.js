@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Jonas Haukenes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: sec-map.prototype.getOrInsert
+esid: pending
 description: >
   Append a new value as the last element of entries.
 info: |
@@ -47,3 +47,5 @@ assert.sameValue(result.key, null);
 result = results.pop();
 assert.sameValue(result.value, 2);
 assert.sameValue(result.key, s);
+
+reportCompare(0, 0);

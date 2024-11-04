@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: sec-map.prototype.getOrInsert
+esid: pending
 description: >
   Inserts the value for the specified key on different types, when key not present.
 info: |
@@ -45,3 +45,5 @@ assert.sameValue(map.get(item), 5);
 item = undefined;
 map.getOrInsert(item, 6);
 assert.sameValue(map.get(item), 6);
+
+reportCompare(0, 0);
