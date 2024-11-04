@@ -1197,7 +1197,14 @@ function MapUpsert(key, value) {
 
 <details open>
     <summary><h2>Writing the new spec in ecmarkup</h2></summary>
-
+  In this section, we will cover how to install and use Ecmarkup to write specifications for proposals. 
+  Ecmarkup is a markup language that is designed for technical specifications. 
+  This allows the authors to visualize and format complex algorithms, clauses and terms in a way that is both readable and structured. 
+  Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript-standards. 
+    
+  
+  We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
+  Furthermore, we will check out how to translate ECMAScript® to ecmarkup before guiding you through how to build your specification into a HTML document. 
 
 * **Installing Node.js and Node Package Manager**
     <details>
