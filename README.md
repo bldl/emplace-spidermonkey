@@ -173,6 +173,11 @@ flowchart TD
 
   It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
+**Having trouble?**
+
+[Here](https://firefox-source-docs.mozilla.org/setup/common_build_errors.html) are some of the most common build errors.
+__Note!__ Many errors can be related to your Python build. Ensure you are using the correct python path and/or configuration.
+
 ### 2. Running SpiderMonkey
 
   After the installation is completed a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
