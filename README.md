@@ -1633,7 +1633,6 @@ With these fairly simple steps our new implementation is now more streamlined wi
   ```
 
   Now the `std_has`method should be available in self-hosted JavaScript™.
-  **TODO provide a test function to verify that has was correctly exposed**
 
   ```js
   function MapTestHas(key) {
