@@ -431,8 +431,8 @@ In the implementation part of this tutorial, each line of the specification will
   Before we proceed further in the tutorial it's imperitive to better our understanding of self-hosted JavaScript™. 
 
   All selfhosted JavaScript™ operates in __strict mode,__ preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe,
-  we have to follow some rules. A potentially critical problem when writing self-hosted code is __mokey patching.__ This phenomenom ocurs when our implementation makes a functiond call to an external function
-  which has been overwritten by user scripts. This problem can be mitigated by using __function invocation.__ Use `callFunction` and `callContentFunction` to call function within the specific object scope.
+  we have to follow some rules. A potentially critical problem when writing self-hosted code is __mokey patching.__ This phenomenom ocurs when our implementation makes a function call to an external function
+  which has been overwritten by user scripts. This problem can be mitigated by using __function invocation.__ Use `callFunction` and `callContentFunction` to call function within the specific object scope. 
   Furthermore, self-hosted code also has limited access to the C++ builtins. Only a select set, defined in `Selfhosting.cpp` is accessible. 
 
   **What functions can be used in self-hosted JavaScript™?**
@@ -701,7 +701,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   In this context, we need to call the `update` function on the current value associated with the map entry. This involves passing `e.[[Value]]` (the existing value), `key`, and `M` as arguments to the function.
 
-  To perform this function call in self-hosted JavaScript™, we’ll use `callFunction`, which allows us to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry.
+  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
    <details>
    <summary>Solution</summary>
@@ -729,7 +729,7 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, eValue, key);
+           var updated = callContentFunction(updateFN, M, eValue, key);
            //...
          }
        }
@@ -789,7 +789,7 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
+           var updated = callContentFunction(updateFN, M, eValue, key);
            callFunction(std_Map_set, M, key, updated);
          }
        }
@@ -837,11 +837,11 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
+           var updated = callContentFunction(updateFN, M, eValue, key);
            callFunction(std_Map_set, M, key, updated);
          }
    
-         return updated;
+         return callFunction(std_Map_get, M, key);
        }
      }
    }
@@ -864,7 +864,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   This section is similar to our approach for updating an existing entry, except here, we’re adding a new entry to the map. If the key isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial value for this new key-value pair.
 
-  The section uses similar techniques to the `update` scenario. Use the knowledge and experience you have gained up to this point to implement the `insert` handler.
+  The section uses similar techniques to the `update` scenario. Use the knowledge and experience you have gained so far to implement the `insert` handler.
 
    <details>
    <summary>Solution</summary>
@@ -892,11 +892,11 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
+           var updated = callContentFunction(updateFN, M, eValue, key);
            callFunction(std_Map_set, M, key, updated);
          }
    
-         return updated;
+         return callFunction(std_Map_get, M, key);
        }
      }
    
@@ -904,7 +904,7 @@ In the implementation part of this tutorial, each line of the specification will
      var inserted = callFunction(insertFN, key, M);
      callFunction(std_Map_set, M, key, inserted);
    
-     return inserted;
+     return callFunction(std_Map_get, M, key);
    }
    ```
 
