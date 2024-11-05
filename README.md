@@ -949,7 +949,7 @@ In the implementation part of this tutorial, each line of the specification will
     <summary>Script</summary>
 
    ```js
-  console.log("Running tests for Map.prototype.emplace proposal...");
+  console.log("Running tests for Map.prototype.upsert proposal...");
 
   // Utility function for logging test results
   function logResult(testName, actual, expected) {
@@ -965,7 +965,7 @@ In the implementation part of this tutorial, each line of the specification will
       const m = new Map();
       m.set("key", "val");
 
-      m.emplace("key", {
+      m.upsert("key", {
           update: () => "updated"
       });
 
@@ -977,7 +977,7 @@ In the implementation part of this tutorial, each line of the specification will
       const m = new Map();
       m.set("key", "val");
 
-      m.emplace("key", {
+      m.upsert("key", {
           insert: () => "inserted"
       });
 
@@ -989,7 +989,7 @@ In the implementation part of this tutorial, each line of the specification will
       const m = new Map();
       m.set("key", "val");
 
-      m.emplace("key", {
+      m.upsert("key", {
           update: () => "updated",
           insert: () => "inserted"
       });
@@ -1002,7 +1002,7 @@ In the implementation part of this tutorial, each line of the specification will
       const m = new Map();
 
       try {
-          m.emplace("nonexistent", {
+          m.upsert("nonexistent", {
               update: () => "updated"
           });
       } catch (e) {
@@ -1017,7 +1017,7 @@ In the implementation part of this tutorial, each line of the specification will
   (function testInsertNonexistentKey() {
       const m = new Map();
 
-      m.emplace("nonexistent", {
+      m.upsert("nonexistent", {
           insert: () => "inserted"
       });
 
@@ -1028,7 +1028,7 @@ In the implementation part of this tutorial, each line of the specification will
   (function testInsertAndUpdateNonexistentKey() {
       const m = new Map();
 
-      m.emplace("nonexistent", {
+      m.upsert("nonexistent", {
           update: () => "updated",
           insert: () => "inserted"
       });
@@ -1040,13 +1040,13 @@ In the implementation part of this tutorial, each line of the specification will
   (function testIncrementCounter() {
       const counter = new Map();
 
-      counter.emplace("a", {
+      counter.upsert("a", {
           update: (v) => v + 1,
           insert: () => 1
       });
       logResult("Increment counter first time", counter.get("a"), 1);
 
-      counter.emplace("a", {
+      counter.upsert("a", {
           update: (v) => v + 1,
           insert: () => 1
       });
