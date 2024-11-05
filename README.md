@@ -160,7 +160,7 @@ flowchart TD
 
   We will start by installing SpiderMonkey and all required tools.
 
-  Before you start installing, we advice you to open a terminal and navigate to the desired location of the `mozilla_unified` folder.
+  Before you start installing, open a terminal and navigate to the desired location of the `mozilla_unified` folder.
 
   The installation process depends on your operating system, therefore you can click on the link under that matches yours.
 
@@ -1627,7 +1627,7 @@ function MapUpsert(key, value) {
 
    Additional to the tests, there is a strict guide for documentation for the test.
     
-   You should start the test by declaring the copyright, here you just fill in the year and your name:
+   You start the test by declaring the copyright, here you just fill in the year and your name:
    ```
    // Copyright (C) *Year *Name. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
