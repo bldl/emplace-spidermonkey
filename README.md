@@ -326,29 +326,34 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Implementation</h2></summary>
 
+  In this section, we’ll walk through the process of implementing the Map.prototype.upsert method step-by-step. We will examine each line of the specification in detail and you will gain a deep understanding of the implementation process. By the end, you’ll have a fully functional upsert method in JavaScript™, along with insight in where to find resources and information which gives you a strong foundation to implement additional functions on your own in the future.
+
 ### Creating a function
 
-   Create a hook in `MapObject.cpp`:
+  The first step to implementing a function in SpiderMonkey is to create a hook in C++. This hook serves as the connection between SpiderMonkey’s C++ core and our self-hosted JavaScript™ code.
+
+  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All Map methods, like Map::set and Map::get, are defined 
+  in the array `MapObject::methods[]`. To add `upsert` we need to define a hook in this array.
+  
+  __Create a hook in `MapObject.cpp`:__
 
   ```cpp
-  JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
+
+    JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
+  
   ```
 
-  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All `Map` methods, like `Map::set` and `Map::get`, are defined 
-  in the array `MapObject::methods[]`. The line of code above links the CPP `MapObject` to our self hosted implementation.
+  This line sets up the hook with the following details:
 
-  <details>
-    <summary>A closer look at the hook</summary>
-    - JS_SELF_HOSTED_FN: The function is implemented in self-hosted JavaScript™. Other possible implementations are FN, and INLINABLE_FN.
-    - First argument: the name that JavaScript™ will use to call the function.
-    - Second argument: the engine's function implementation.
-    - Third argument: Number of arguments.
-    - Fourth argument: Number of flags.
-  </details>
+  - __JS_SELF_HOSTED_FN:__ Indicates the function is implemented in self-hosted JavaScript™ (meaning the main logic is in JavaScript™ rather than C++).
+  - __First argument:__ `upsert` — the function name as it will appear in JavaScript™.
+  - __Second argument:__ `MapUpsert` — the name of the JavaScript™ implementation (which we’ll define shortly)
+  - __Third argument:__ `2` Number of arguments.
+  - __Fourth argument:__ `0` Number of flags.
 
-  **Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`**
+    __Copy the Line above and paste it into `MapObject.cpp` under `MapObject::Methods`__
 
-  Now in `Map.js` we can create a self-hosted JavaScript™ function. Write the follwoing into `Map.js`.
+  With the C++ hook in place, we can define the actual function in JavaScript™. Open `Map.js`, and add the following code:
 
    ```js
    function MapUpsert(key, handler) {
@@ -356,13 +361,17 @@ In the implementation part of this tutorial, each line of the specification will
    }
    ```
 
-   You should now have a function which returns the number 42. Build to test the implementation.
+  This is a simple placeholder function. It doesn’t perform any upsert logic yet; it just returns the number 42. This step allows us to check that our function is correctly hooked up and accessible in the JavaScript™ runtime.
 
-   ```sh
+  To confirm everything is connected, build the project and run the JavaScript™ shell:
+
+  ```sh
   ./mach build
   ...
   ./mach run
   ```
+
+  Once the shell opens, you can test your upsert function:
 
   ```sh
   js> const m = new Map()
@@ -370,20 +379,40 @@ In the implementation part of this tutorial, each line of the specification will
   42
   ```
 
+  If you see 42 as the output, then you’ve successfully created a function hook and defined an initial JavaScript™ implementation. This means we’re ready to move forward with implementing the actual upsert functionality.
 
-### Implement the first line
 
-   ```
-   1. Let M be the this value.
-   ```
+### Step 1 - Implement The First Line
 
-   ```js
-   function MapUpsert(key, handler) {
-     var M = this;
-   }
-   ```
+  Now that we have our upsert function hooked up and accessible in the JavaScript™ runtime, it’s time to start implementing the logic as specified in the ECMAScript® proposal.
 
-### Moving on
+  **Setting Up this in the Function**
+  Some lines in the specification are more intutive than others. The first line of the specification instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called. This is a foundational step in almost any method, as it ensures we’re working with the correct object.
+
+  **Specification Line:**
+
+  ```
+  1. Let M be the this value.
+  ```
+
+  In the code, we can implement this line simply by assigning this to a variable called M. This will allow us to refer to the Map instance consistently throughout the function: 
+
+  ```js
+  function MapUpsert(key, handler) {
+    var M = this;
+  }
+  ```
+
+  We have now captured the `this` object, which should be an instance of a `MapObject` and we can now start to manipulate this object in the upcomming steps.
+
+### Step 2 - Verify The Object Type
+
+  With the `this` context now captured in `M`, our next step is to validate that `M` is actually a `MapObject`. This is crucial because JavaScript™ objects can sometimes be altered or misused, and we need to ensure that `upsert` is being called on a valid Map instance. This verification process will prevent errors and misuse, keeping the method consistent with the ECMAScript® specification.
+
+  **Verifying the Map’s Internal Structure**  
+  The ECMAScript® specification uses internal slots to define hidden properties within objects. In this step, we’re asked to confirm that the object `M` has the `[[MapData]]` internal slot, which holds the actual key-value data for the Map. By checking for this internal slot, we can be confident that `M` is indeed a Map and not some other type of object.
+
+  __Specification Line:__
 
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
@@ -394,6 +423,7 @@ In the implementation part of this tutorial, each line of the specification will
    In our case, the internal slot `[[MapData]]` holds the actual data of the `Map`. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
    This step is common for most self-hosted `MapObject` methods. The solution for this step already exists in the code. Look at `MapForEach`.
+
 
    <details>
    <summary>Solution</summary>
@@ -416,61 +446,49 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### Step 3 - Engine space and user space
 
-  **`callfunction` vs `callcontentfunction`?**
+### Step 3 - Self-Hosted JavaScript™ vs. JavaScript™
 
-    In self-hosted JavaScript™ code, directly calling methods like `map.get()` is not allowed because user-defined (content) 
-    scripts could modify built-in objects like Map. This practice is referred to as **monkey patching**, where external 
-    scripts can modify or replace native methods. For example, if a script overwrites `Map.prototype.get()`, calling 
-    `map.get()` could result in unexpected or even malicious behavior.
+  Before we proceed further in the tutorial it's imperitive to better our understanding of self-hosted JavaScript™. 
 
-    To avoid this, SpiderMonkey provides two function-calling mechanisms in self-hosted code:
+  All selfhosted JavaScript™ operates in __strict mode,__ preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe,
+  we have to follow some rules. A potentially critical problem when writing self-hosted code is __mokey patching.__ This phenomenom ocurs when our implementation makes a function call to an external function
+  which has been overwritten by user scripts. This problem can be mitigated by using __function invocation.__ Use `callFunction` and `callContentFunction` to call function within the specific object scope. 
+  Furthermore, self-hosted code also has limited access to the C++ builtins. Only a select set, defined in `Selfhosting.cpp` is accessible. 
 
-    **callFunction:** This allows calling non-altered (or safe) built-in functions directly. It's optimized for performance 
-    because it assumes that the method hasn't been altered (i.e., it’s the native, built-in function).
-    **callContentFunction:** This is the safer approach and should be used when there's a potential risk that the method or 
-    object you're interacting with could have been altered by content scripts. It bypasses any modified versions of the 
-    method and calls the native, built-in function safely.
+  **What functions can be used in self-hosted JavaScript™?**
+  Self-hosted code can use:
+  - Other self-hosted functions (remember 'almost' everything is an `Object`).
+  - Functions made accessible in `SelfHosting.cpp`.
+  - Some abstract operations and additional utility functions.
 
-    **When to Use Which?**
-    __callFunction__ is faster but assumes that the function hasn’t been monkey-patched by external scripts. If the method 
-    you're calling is guaranteed to be unaltered, you can use `callFunction` for better performance.
 
-    __callContentFunction__ should be used if there’s any chance that the object or method has been altered by external 
-    scripts. It's more reliable because it guarantees that the original, built-in function will be called, regardless of 
-    any changes made by user scripts.
+  Read more about self-hosted code [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
+  
+  __The snippet below is from `SelfHosting.cpp` and displays the available `MapObject` builtins:__
 
-    **General Rule:**
-    Use __callContentFunction__ when dealing with the this object or when there's any risk that built-in objects or methods 
-    might have been altered by content (e.g., when interacting with objects like Map or Array).
-    In the context of your tutorial, if you're interacting with the map (M), you should use `callContentFunction` to ensure 
-    you're working with the original, unmodified method.
+  ```cpp
 
-    **TODO: this rule is poorly explained/incorrect asessment**
+  // Standard builtins used by self-hosting.
+  // Code snippet from SelfHosting.cpp
+  ...
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+  ...
 
-   Read more [here](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
+  ```
 
-   The purpose of self-hosted code is a combination of simplicity and efficiency (applies for some cases). But it comes with 
-   strict limitations, as supposed to normal JavaScript™.
+  **Moving on with the implementation**
+  So far we have stored the `this` object and verified that is infact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the map as a List.
 
-   **What methods can be used in self-hosted JavaScript™**
-     - We can use other methods written in self-hosted code (remember, "everything" is an object)
-     - We can use methods specified in selfHosting.cpp, which are made available to self-hosted code.
+  __Specification Line:__
 
-   ```cpp
-   // Standard builtins used by self-hosting.
-   // Code snippet from SelfHosting.cpp
-       JS_FN("std_Map_entries", MapObject::entries, 0, 0),
-       JS_FN("std_Map_get", MapObject::get, 1, 0),
-       JS_FN("std_Map_set", MapObject::set, 2, 0),
-   ```
+  ```
+  3. Let entries be the List that is M.[[MapData]].
+  ```
 
-   ```
-   3. Let entries be the List that is M.[[MapData]].
-   ```
-
-   **Use std_Map_entries to get the list of entry records**
+  Use `callFunction` and the standard built-in `std_Map_entries` to retrive a list of all `Key` - `Value` entries in the map. Store it as a variable named `entries`.
 
    <details>
    <summary>Solution</summary>
@@ -497,11 +515,16 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### Step 4 - iterating through the map entries
 
+  Now that we’ve set up our initial structure and verified our `MapObject`, the next step is to iterate through the entries within the map. This allows us to examine each key-value pair to determine 
+  if the specified key already exists, which will help us decide whether to update an existing value or insert a new one. To achieve this we first have to set up an iteration of the `entries` list.
+
+  __Specification Line:__
+
    ```
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-   **Different methods of iteration is used the other self-hosted Map methods**
+  Different methods of iteration is used in the other self-hosted Map methods. The specification states that we should use a `for-of loop`. Look at existing methods and create the for-loop.  
 
    <details>
    <summary>Solution</summary>
@@ -532,13 +555,17 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+  **Check if `key` already exists**
+
+  As mentioned above, the purpose of the iteration is to check wether or not the key already exists. This can be done by comparing the `key` with `eKey`.
+
+  __Specification Line:__
+
    ```
    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
    ```
 
-    The purpose of iterating through the entries in the map is to check whether or not the key already exists in the map.
-    This can be done by comparing the keys with SameValueZero.
-   **Use the function SameValueZero to compare the key arg with the key from the iteration entry**
+  The `SameValueZero` function helps us check for equality between the `key` provided to `MapUpsert` and the key in the current entry. This comparison ensures that we handle only the correct `key-value` pair.
 
    <details>
    <summary>Solution</summary>
@@ -572,14 +599,21 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+   If the `SameValueZero` operation returns `true` on an entry, the key exists in the map. By logic of the specification, we cannot insert on an existing `key-value` pair, but we can update it if an update handler is specified.
+
+  **Check for the `update` handler**
+
+  With the key identified in the map, the next step is to determine if the `handler` object includes an `update` function. This function will allow us to update the value associated with the existing key in the map.
+
+  __Specification Line:__
+
    ```
    4ai. If HasProperty(handler, "update") is `true`, then
    ```
-   If the `key` was found in the `Map`, we want to `update` the pair. The next step is to check if an `update` function was
-   specified in the the `handler`.
 
-   In JavaScript™ almost "everything" is an object. All values except primitives are objects. This means we can use 
-   self-hosted `Object` methods in self-hosted `Map` method implementations.
+  In self-hosted JavaScript™, most objects are treated similarly to regular JavaScript™ objects, so we can use standard object methods for these checks. For example, `hasOwnProperty` can verify if `update` is a property of `handler`. 
+   
+  Here’s a snippet from the `Object.cpp` file displaying some self-hosted functions:
 
    ```cpp
    // Code snippet from Object.cpp
@@ -593,7 +627,7 @@ In the implementation part of this tutorial, each line of the specification will
    };
    ```
 
-   **Check if `handler` has the property `"update"`**
+  Using `hasOwnProperty` on `handler`, we can now verify if the `update` property is defined. This step ensures that we only proceed with the update if `handler` actually provides an `update` function.
 
    <details>
    <summary>Solution</summary>
@@ -629,11 +663,17 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+  **Get the `update` function from the `handler`**
+  
+  If the key exists and the update function is specified, the next step is to retrive the `update` function.
+
+  __Specification Line:__
+
    ```
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-   **Get the update handler if its specified**
+  Store the `update` function as a variable `updateFn`.
 
    <details>
    <summary>Solution</summary>
@@ -667,6 +707,12 @@ In the implementation part of this tutorial, each line of the specification will
      }
    }
    ```
+
+  **Call the update function**
+
+  Now that we’ve verified the existence of an update function in the handler object, the next step is to invoke this function to get the updated value.
+
+  __Specification Line:__
 
    </details>
 
@@ -674,7 +720,9 @@ In the implementation part of this tutorial, each line of the specification will
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
-   **Use `callFunction` to call updateFN, store it as `var updated`**
+  In this context, we need to call the `update` function on the current value associated with the map entry. This involves passing `e.[[Value]]` (the existing value), `key`, and `M` as arguments to the function.
+
+  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
    <details>
    <summary>Solution</summary>
@@ -702,7 +750,7 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
+           var updated = callContentFunction(updateFN, M, eValue, key);
            //...
          }
        }
@@ -712,11 +760,19 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+  **Update the value in the map**
+
+  Once we have the updated value from calling the `update` function, we can proceed to replace the current value in the map entry.
+
+  __Specification Line:__
+
    ```
    4ai3. Set e.[[Value]] to updated.
    ```
 
-   **Perform a `set` operation on the Map to update it (remember the standard built-in map operations).**
+  This step involves using the `std_Map_set` function, a standard self-hosted operation that allows us to safely set a new value for a specified key in the map. Since `std_Map_set` is a built-in function available to self-hosted code, we’ll call it to update the entry with our newly computed updated value.
+
+   **Recall the standard built-in map operations specified in `SelfHosting.cpp`:**
 
    ```cpp
    // Standard builtins used by self-hosting.
@@ -726,6 +782,8 @@ In the implementation part of this tutorial, each line of the specification will
        JS_FN("std_Map_set", MapObject::set, 2, 0),
    ```
 
+   Use `callFunction` and `std_Map_entries` to set the new update value.
+
    <details>
    <summary>Solution</summary>
 
@@ -752,13 +810,19 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
-           callContentFunction(std_Map_set, M, key, updated);
+           var updated = callContentFunction(updateFN, M, eValue, key);
+           callFunction(std_Map_set, M, key, updated);
          }
        }
      }
    }
    ```
+
+  **Return the value**
+
+  We have now updated the value, and can return it.
+
+  __Specification Line:__
 
    </details>
 
@@ -766,8 +830,7 @@ In the implementation part of this tutorial, each line of the specification will
    4aii. Return e.[[Value]].
    ```
 
-   Now that we have updated the `Map`, the updated value should be returned.
-   **return the var `updated`.**
+  Return the updated value.
 
    <details>
    <summary>Solution</summary>
@@ -795,11 +858,11 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
-           callContentFunction(std_Map_set, M, key, updated);
+           var updated = callContentFunction(updateFN, M, eValue, key);
+           callFunction(std_Map_set, M, key, updated);
          }
    
-         return updated;
+         return callFunction(std_Map_get, M, key);
        }
      }
    }
@@ -807,7 +870,11 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### Implementing the insert handler
+### Step 5 - Implementing The `Insert` Handler
+
+  In this step, we’ll handle the scenario where the specified key doesn’t exist in the map.
+
+  __The Specification States__
 
    ```
    5. Let insertFn be ? Get(handler, "insert").
@@ -816,7 +883,9 @@ In the implementation part of this tutorial, each line of the specification will
    8. Return e.[[Value]].
    ```
 
-   **With the knowledge from implementing update, use similar techniques to implement insert.**
+  This section is similar to our approach for updating an existing entry, except here, we’re adding a new entry to the map. If the key isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial value for this new key-value pair.
+
+  The section uses similar techniques to the `update` scenario. Use the knowledge and experience you have gained so far to implement the `insert` handler.
 
    <details>
    <summary>Solution</summary>
@@ -844,34 +913,35 @@ In the implementation part of this tutorial, each line of the specification will
        if (SameValueZero(key, eKey)) {
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
            var updateFN = handler['update'];
-           var updated = callFunction(updateFN, M, Value, key);
-           callContentFunction(std_Map_set, M, key, updated);
+           var updated = callContentFunction(updateFN, M, eValue, key);
+           callFunction(std_Map_set, M, key, updated);
          }
    
-         return updated;
+         return callFunction(std_Map_get, M, key);
        }
      }
    
      var insertFN = handler['insert'];
      var inserted = callFunction(insertFN, key, M);
-     callContentFunction(std_Map_set, M, key, inserted);
+     callFunction(std_Map_set, M, key, inserted);
    
-     return inserted;
+     return callFunction(std_Map_get, M, key);
    }
    ```
 
    </details>
 
-   ### Test the implementation
+  ### Test the implementation
 
-   Recall, you can create files and run them with the command:
+  Now that we have implemented the function, it's essential that test it to verify it behaves as intended.
+
+  Recall, you can create files and run them with the command:
 
     ```sh
     ./mach run MyFileName.js
     ```
 
-  **Create a script to test your implementation or use the sample script below**
-
+  Create a script to test your implementation or use the sample script below:
 
   <details>
     <summary>Script</summary>
@@ -1056,9 +1126,14 @@ prefs.setdefault("useDarkmode", True)
 <details open>
   <summary><h2>Implementing the new proposal</h2></summary>
 
-  ### Step 1-4 - The logic remains the same
-    
-These lines are similar to the previous proposal specification. The code remains almost unchanged.
+  In this section, we will adapt our implementation to match the updated proposal specifications. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
+
+  ### Step 1-4 - the logic remains the same
+
+  The first four steps remain unchanged from the original proposal.
+
+  __The Specification States:__
+
   ```
 
   1. Let M be the this value.
@@ -1068,7 +1143,7 @@ These lines are similar to the previous proposal specification. The code remains
 
   ```
 
-  **Use the code from the old implementation and change the `handler` parameter to `value`**
+  These lines are similar to the previous proposal specification and they remain seemingly unchanged. Only a few altercations are introduced. We need to update the argument `handler` to `value`.
 
   <details>
     <summary>Solution</summary>
@@ -1100,17 +1175,23 @@ function MapUpsert(key, value) {
 
 ```
 
+We are now ready to proceed and update the logic of the function.
+
   </details>
 
   ### Step 4a - If the key exists, return the value
 
-This is where the logic changes in the newer proposal. The new proposal does not care about updates.
+  In this step, we implement the condition to handle the case when the key already exists in the Map.
+
+  __Specification Line:__
 
   ```
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
 
-  **If the key exists, return it's value with a standard built-in get operation**
+In the updated logic, we are only concerned with returning the existing value if the key is found, rather than handling updates. This is a streamlined approach that differs from our previous implementation.
+
+Use the built-in `std_Map_get` function to return the existing value.
 
   <details>
     <summary>Solution</summary>
@@ -1137,25 +1218,29 @@ function MapUpsert(key, value) {
     var eValue = e[1];
 
     if (SameValueZero(eKey, key)) {
-      return callContentFunction(std_Map_get, M, key);
+      return callFunction(std_Map_get, M, key);
     }
   }
 }
 
 ```
 
+With this code in place, our MapUpsert function will return the existing value if the key is found in the Map. If the key does not exist, the function will continue to the next steps, where we will handle inserting a new entry.
+
   </details>
 
-  ### Step 5 & 6 - Insert the new key value pair
+  ### Step 5 & 6 - insert the new key value pair
 
-If the key was not present in the map, set the new key-value pair and then return the value.
+  Now, we address the scenario where the key does not already exist in the Map. If the specified key is not found in the previous iteration step, insert the new value and return it.
 
+  __The Specification States:__
+  
   ```
   5. Set e.[[Value]] to value.
   6. Return e.[[Value]].
   ```
 
-  **Use a standard built-in `set` operation, and return `value`**
+  In this case, we will add the new key-value pair to the Map and then return the value. We can achieve this by using the built-in set operation, which allows us to add entries directly and efficiently.
 
   <details>
     <summary>Solution</summary>
@@ -1181,17 +1266,19 @@ function MapUpsert(key, value) {
     var eValue = e[1];
 
     if (SameValueZero(eKey, key)) {
-      return callContentFunction(std_Map_get, M, key);
+      return callFunction(std_Map_get, M, key);
     }
   }
 
-  callContentFunction(std_Map_set, M, key, value);
+  callFunction(std_Map_set, M, key, value);
 
   return value;
 }
 ```
 
   </details>
+
+With these fairly simple steps our new implementation is now more streamlined with a simpler and more 'attractive' api.
   
   ### The complete new proposal specification.
   The spec text now looks like this, and you should have a finished implementation as well.
@@ -1404,7 +1491,7 @@ function MapUpsert(key, value) {
   This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
   Therefore, we decided to try to optimize this line.
 
-  **Demonstration: Create a new file; Runtime.js with the code below and run it with `./mach run`**
+  **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
 
   <details>
     <summary>Runtime script</summary>
@@ -1566,11 +1653,11 @@ function MapUpsert(key, value) {
             );
         }
 
-        if (callContentFunction(std_Map_has, M, key)) {
+        if (callFunction(std_Map_has, M, key)) {
           return callFunction(std_Map_get, M, key);
         }
 
-        callContentFunction(std_Map_set, M, key, value);
+        callFunction(std_Map_set, M, key, value);
           return value;
       }
     ```
