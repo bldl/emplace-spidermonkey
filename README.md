@@ -1545,7 +1545,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   console.log("Starting tests...");
   measureRuntime(withUpsert, "Test upsert for " + iterations + " iterations");
-  measureRuntime(WithoutUpsert, "Test without upsert for " + iterations + " iterations");
+  measureRuntime(withoutUpsert, "Test without upsert for " + iterations + " iterations");
 
   ```
 
