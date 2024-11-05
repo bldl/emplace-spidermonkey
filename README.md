@@ -264,18 +264,20 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 * **Steps to follow**: For example, the spec describes how [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push) works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
 * **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
-### 4. Key Symbols and What They Mean
+### 4. Some Key Symbols and What They Mean
 
 * **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
-* **`Return`**: This marks the end of an operation, and tells you the result.
-* **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
+* **`Return`**: This marks the end of an operation, specifying the result to be returned.
+* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a  data structure that groups together related fields as key-value pairs. Each field is identified by a name (the key) and stores a secific value. 
+* **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather then in code syntax, to describe the behavior that an implementation should follow.
 
 ### 5. Finding Information on Other Symbols
 
-* The specification also uses symbols like `< >` for describing syntactic elements and different notations for describing the structure of code. To understand these symbols:
-  * Look at the section called **"Notation"** in the specification, which explains the meaning of each symbol in detail.
-  * For example, `<T>` in Backus-Naur Form (BNF) means a non-terminal element, which is used to describe parts of the language structure.
+The specification text uses a range of notations and symbols to describe its syntax and structure. To understand these symbols, you can look into this specific section in the specification:
+
+* [Notational Conventions](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-notational-conventions): This section explains the different types of symbols, and how they are used to define the language. 
+* For example, in the [Nonterminal Symbols and Productions](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-nonterminal-symbols-and-productions) section, you can read about nonterminal symbol, which are shown in _italic type_, and learn how to read the syntactic definition of a **WhileStatement**. 
 
 ### 6. Start Simple
 
