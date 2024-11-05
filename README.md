@@ -1076,6 +1076,13 @@ By making it overcomplicated and a feature that is not commonly found in other l
 <details open>
    <summary><h2>Explaining the new proposal</h2></summary>
 
+  In the original [proposal](https://github.com/tc39/proposal-upsert) the idea of two versions was presented. 
+  - (1)Takes the arguments `key` and `value`. 
+  - (2)Takes the the arguments `key` and `callbackfn`
+
+  Both the respective versions with `value` and `callbackfn` serves the same principle as a get or insert method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
+
+
    **What is the motivation for a new propsosal?**
    A common problem when using a `Map` is how to handle doing an `update` when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
@@ -1124,6 +1131,22 @@ prefs.setdefault("useDarkmode", True)
 ```
 
 </details>
+
+To implement the updated proposal, we first need to adapt the specification. 
+
+### A Draft of The Specification For The New Proposal.
+  The spec text now looks like this, and you should have a finished implementation as well.
+  ```
+  1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  3. Let entries be the List that is M.[[MapData]].
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  5. Set e.[[Value]] to value.
+  6. Return e.[[Value]].
+  ```
+
+  The next section will be based on this draft of the new specification. Later in the tutorial we will look into how we can write the specification in ecmarkup.
 
 </details>
 
@@ -1284,17 +1307,6 @@ function MapUpsert(key, value) {
 
 With these fairly simple steps our new implementation is now more streamlined with a simpler and more 'attractive' api.
   
-  ### The complete new proposal specification.
-  The spec text now looks like this, and you should have a finished implementation as well.
-  ```
-  1. Let M be the this value.
-  2. Perform ? RequireInternalSlot(M, [[MapData]]).
-  3. Let entries be the List that is M.[[MapData]].
-  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
-  5. Set e.[[Value]] to value.
-  6. Return e.[[Value]].
-  ```
 </details>
 
 <details open>
