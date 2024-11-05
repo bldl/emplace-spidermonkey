@@ -27,59 +27,57 @@ namespace js {
 class HashableValue {
   Value value;
 
- public:
+public:
   HashableValue() : value(UndefinedValue()) {}
   explicit HashableValue(JSWhyMagic whyMagic) : value(MagicValue(whyMagic)) {}
 
-  [[nodiscard]] bool setValue(JSContext* cx, HandleValue v);
-  HashNumber hash(const mozilla::HashCodeScrambler& hcs) const;
+  [[nodiscard]] bool setValue(JSContext *cx, HandleValue v);
+  HashNumber hash(const mozilla::HashCodeScrambler &hcs) const;
 
   // Value equality. Separate BigInt instances may compare equal.
-  bool equals(const HashableValue& other) const;
+  bool equals(const HashableValue &other) const;
 
   // Bitwise equality.
-  bool operator==(const HashableValue& other) const {
+  bool operator==(const HashableValue &other) const {
     return value == other.value;
   }
-  bool operator!=(const HashableValue& other) const {
+  bool operator!=(const HashableValue &other) const {
     return !(*this == other);
   }
 
-  const Value& get() const { return value; }
+  const Value &get() const { return value; }
   operator Value() const { return get(); }
 
-  void trace(JSTracer* trc) {
+  void trace(JSTracer *trc) {
     TraceManuallyBarrieredEdge(trc, &value, "HashableValue");
   }
 };
 
-template <typename Wrapper>
-class WrappedPtrOperations<HashableValue, Wrapper> {
- public:
-  Value get() const { return static_cast<const Wrapper*>(this)->get().get(); }
+template <typename Wrapper> class WrappedPtrOperations<HashableValue, Wrapper> {
+public:
+  Value get() const { return static_cast<const Wrapper *>(this)->get().get(); }
 };
 
 template <typename Wrapper>
 class MutableWrappedPtrOperations<HashableValue, Wrapper>
     : public WrappedPtrOperations<HashableValue, Wrapper> {
- public:
-  [[nodiscard]] bool setValue(JSContext* cx, HandleValue v) {
-    return static_cast<Wrapper*>(this)->get().setValue(cx, v);
+public:
+  [[nodiscard]] bool setValue(JSContext *cx, HandleValue v) {
+    return static_cast<Wrapper *>(this)->get().setValue(cx, v);
   }
 };
 
-template <>
-struct InternalBarrierMethods<HashableValue> {
-  static bool isMarkable(const HashableValue& v) { return v.get().isGCThing(); }
+template <> struct InternalBarrierMethods<HashableValue> {
+  static bool isMarkable(const HashableValue &v) { return v.get().isGCThing(); }
 
-  static void preBarrier(const HashableValue& v) {
+  static void preBarrier(const HashableValue &v) {
     if (isMarkable(v)) {
       gc::ValuePreWriteBarrier(v.get());
     }
   }
 
 #ifdef DEBUG
-  static void assertThingIsNotGray(const HashableValue& v) {
+  static void assertThingIsNotGray(const HashableValue &v) {
     JS::AssertValueIsNotGray(v.get());
   }
 #endif
@@ -89,15 +87,15 @@ struct HashableValueHasher {
   using Key = PreBarriered<HashableValue>;
   using Lookup = HashableValue;
 
-  static HashNumber hash(const Lookup& v,
-                         const mozilla::HashCodeScrambler& hcs) {
+  static HashNumber hash(const Lookup &v,
+                         const mozilla::HashCodeScrambler &hcs) {
     return v.hash(hcs);
   }
-  static bool match(const Key& k, const Lookup& l) { return k.get().equals(l); }
-  static bool isEmpty(const Key& v) {
+  static bool match(const Key &k, const Lookup &l) { return k.get().equals(l); }
+  static bool isEmpty(const Key &v) {
     return v.get().get().isMagic(JS_HASH_KEY_EMPTY);
   }
-  static void makeEmpty(Key* vp) { vp->set(HashableValue(JS_HASH_KEY_EMPTY)); }
+  static void makeEmpty(Key *vp) { vp->set(HashableValue(JS_HASH_KEY_EMPTY)); }
 };
 
 using ValueMap = OrderedHashMap<PreBarriered<HashableValue>, HeapPtr<Value>,
@@ -106,13 +104,12 @@ using ValueMap = OrderedHashMap<PreBarriered<HashableValue>, HeapPtr<Value>,
 using ValueSet = OrderedHashSet<PreBarriered<HashableValue>,
                                 HashableValueHasher, CellAllocPolicy>;
 
-template <typename ObjectT>
-class OrderedHashTableRef;
+template <typename ObjectT> class OrderedHashTableRef;
 
 struct UnbarrieredHashPolicy;
 
 class MapObject : public NativeObject {
- public:
+public:
   enum IteratorKind { Keys, Values, Entries };
   static_assert(
       Keys == ITEM_KIND_KEY,
@@ -130,27 +127,28 @@ class MapObject : public NativeObject {
 
   enum { DataSlot, NurseryKeysSlot, HasNurseryMemorySlot, SlotCount };
 
-  [[nodiscard]] static bool getKeysAndValuesInterleaved(
-      HandleObject obj, JS::MutableHandle<GCVector<JS::Value>> entries);
-  [[nodiscard]] static bool entries(JSContext* cx, unsigned argc, Value* vp);
-  static MapObject* create(JSContext* cx, HandleObject proto = nullptr);
+  [[nodiscard]] static bool
+  getKeysAndValuesInterleaved(HandleObject obj,
+                              JS::MutableHandle<GCVector<JS::Value>> entries);
+  [[nodiscard]] static bool entries(JSContext *cx, unsigned argc, Value *vp);
+  static MapObject *create(JSContext *cx, HandleObject proto = nullptr);
 
   // Publicly exposed Map calls for JSAPI access (webidl maplike/setlike
   // interfaces, etc.)
-  static uint32_t size(JSContext* cx, HandleObject obj);
-  [[nodiscard]] static bool get(JSContext* cx, HandleObject obj,
+  static uint32_t size(JSContext *cx, HandleObject obj);
+  [[nodiscard]] static bool get(JSContext *cx, HandleObject obj,
                                 HandleValue key, MutableHandleValue rval);
-  [[nodiscard]] static bool has(JSContext* cx, HandleObject obj,
-                                HandleValue key, bool* rval);
-  [[nodiscard]] static bool delete_(JSContext* cx, HandleObject obj,
-                                    HandleValue key, bool* rval);
+  [[nodiscard]] static bool has(JSContext *cx, HandleObject obj,
+                                HandleValue key, bool *rval);
+  [[nodiscard]] static bool delete_(JSContext *cx, HandleObject obj,
+                                    HandleValue key, bool *rval);
   // Set call for public JSAPI exposure. Does not actually return map object
   // as stated in spec, expects caller to return a value. for instance, with
   // webidl maplike/setlike, should return interface object.
-  [[nodiscard]] static bool set(JSContext* cx, HandleObject obj,
+  [[nodiscard]] static bool set(JSContext *cx, HandleObject obj,
                                 HandleValue key, HandleValue val);
-  [[nodiscard]] static bool clear(JSContext* cx, HandleObject obj);
-  [[nodiscard]] static bool iterator(JSContext* cx, IteratorKind kind,
+  [[nodiscard]] static bool clear(JSContext *cx, HandleObject obj);
+  [[nodiscard]] static bool iterator(JSContext *cx, IteratorKind kind,
                                      HandleObject obj, MutableHandleValue iter);
 
   // OrderedHashMap with the same memory layout as ValueMap but without wrappers
@@ -174,7 +172,7 @@ class MapObject : public NativeObject {
   //
   // Returns a pointer to the map if it still has nursery memory associated with
   // it, or nullptr.
-  static MapObject* sweepAfterMinorGC(JS::GCContext* gcx, MapObject* mapobj);
+  static MapObject *sweepAfterMinorGC(JS::GCContext *gcx, MapObject *mapobj);
 
   size_t sizeOfData(mozilla::MallocSizeOf mallocSizeOf);
 
@@ -182,18 +180,19 @@ class MapObject : public NativeObject {
     return getFixedSlotOffset(DataSlot);
   }
 
-  const ValueMap* getData() { return getTableUnchecked(); }
+  const ValueMap *getData() { return getTableUnchecked(); }
 
-  [[nodiscard]] static bool get(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool set(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool getOrSet(JSContext* cx, unsigned argc, Value* vp);
+  [[nodiscard]] static bool get(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool has(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool set(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool getOrInsert(JSContext *cx, unsigned argc,
+                                        Value *vp);
 
   static bool isOriginalSizeGetter(Native native) {
     return native == static_cast<Native>(MapObject::size);
   }
 
- private:
+private:
   static const ClassSpec classSpec_;
   static const JSClassOps classOps_;
 
@@ -202,60 +201,61 @@ class MapObject : public NativeObject {
   static const JSPropertySpec staticProperties[];
   static const JSFunctionSpec staticMethods[];
 
-  PreBarrieredTable* nurseryTable() {
+  PreBarrieredTable *nurseryTable() {
     MOZ_ASSERT(IsInsideNursery(this));
     return maybePtrFromReservedSlot<PreBarrieredTable>(DataSlot);
   }
-  ValueMap* tenuredTable() {
+  ValueMap *tenuredTable() {
     MOZ_ASSERT(!IsInsideNursery(this));
     return getTableUnchecked();
   }
-  ValueMap* getTableUnchecked() {
+  ValueMap *getTableUnchecked() {
     return maybePtrFromReservedSlot<ValueMap>(DataSlot);
   }
 
-  static inline bool setWithHashableKey(JSContext* cx, MapObject* obj,
+  static inline bool setWithHashableKey(JSContext *cx, MapObject *obj,
                                         Handle<HashableValue> key,
                                         Handle<Value> value);
 
-  static inline bool getOrSet(JSContext* cx, MapObject* obj,
-                              Handle<HashableValue> key, Handle<Value> value,
-                              MutableHandleValue rval);
+  static inline bool getOrInsert(JSContext *cx, MapObject *obj,
+                                 Handle<HashableValue> key, Handle<Value> value,
+                                 MutableHandleValue rval);
 
-  static bool finishInit(JSContext* cx, HandleObject ctor, HandleObject proto);
+  static bool finishInit(JSContext *cx, HandleObject ctor, HandleObject proto);
 
-  static const ValueMap& extract(HandleObject o);
-  static const ValueMap& extract(const CallArgs& args);
-  static void trace(JSTracer* trc, JSObject* obj);
-  static void finalize(JS::GCContext* gcx, JSObject* obj);
-  [[nodiscard]] static bool construct(JSContext* cx, unsigned argc, Value* vp);
+  static const ValueMap &extract(HandleObject o);
+  static const ValueMap &extract(const CallArgs &args);
+  static void trace(JSTracer *trc, JSObject *obj);
+  static void finalize(JS::GCContext *gcx, JSObject *obj);
+  [[nodiscard]] static bool construct(JSContext *cx, unsigned argc, Value *vp);
 
   static bool is(HandleValue v);
   static bool is(HandleObject o);
 
-  [[nodiscard]] static bool iterator_impl(JSContext* cx, const CallArgs& args,
+  [[nodiscard]] static bool iterator_impl(JSContext *cx, const CallArgs &args,
                                           IteratorKind kind);
 
-  [[nodiscard]] static bool size_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool size(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool get_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool has_impl(JSContext* cx, const CallArgs& args);
+  [[nodiscard]] static bool size_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool size(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool get_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool has_impl(JSContext *cx, const CallArgs &args);
   // [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool set_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool getOrSet_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool delete_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool delete_(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool keys_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool keys(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool values_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool values(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool entries_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool clear_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool clear(JSContext* cx, unsigned argc, Value* vp);
+  [[nodiscard]] static bool set_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool getOrInsert_impl(JSContext *cx,
+                                             const CallArgs &args);
+  [[nodiscard]] static bool delete_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool delete_(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool keys_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool keys(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool values_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool values(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool entries_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool clear_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool clear(JSContext *cx, unsigned argc, Value *vp);
 };
 
 class MapIteratorObject : public NativeObject {
- public:
+public:
   static const JSClass class_;
 
   enum { TargetSlot, RangeSlot, KindSlot, SlotCount };
@@ -270,30 +270,30 @@ class MapIteratorObject : public NativeObject {
                 "KindSlot must match self-hosting define for item kind slot.");
 
   static const JSFunctionSpec methods[];
-  static MapIteratorObject* create(JSContext* cx, HandleObject mapobj,
-                                   const ValueMap* data,
+  static MapIteratorObject *create(JSContext *cx, HandleObject mapobj,
+                                   const ValueMap *data,
                                    MapObject::IteratorKind kind);
-  static void finalize(JS::GCContext* gcx, JSObject* obj);
-  static size_t objectMoved(JSObject* obj, JSObject* old);
+  static void finalize(JS::GCContext *gcx, JSObject *obj);
+  static size_t objectMoved(JSObject *obj, JSObject *old);
 
-  void init(MapObject* mapObj, MapObject::IteratorKind kind) {
+  void init(MapObject *mapObj, MapObject::IteratorKind kind) {
     initFixedSlot(TargetSlot, JS::ObjectValue(*mapObj));
     initFixedSlot(RangeSlot, JS::PrivateValue(nullptr));
     initFixedSlot(KindSlot, JS::Int32Value(int32_t(kind)));
   }
 
-  [[nodiscard]] static bool next(MapIteratorObject* mapIterator,
-                                 ArrayObject* resultPairObj);
+  [[nodiscard]] static bool next(MapIteratorObject *mapIterator,
+                                 ArrayObject *resultPairObj);
 
-  static JSObject* createResultPair(JSContext* cx);
+  static JSObject *createResultPair(JSContext *cx);
 
- private:
+private:
   inline MapObject::IteratorKind kind() const;
-  MapObject* target() const;
+  MapObject *target() const;
 };
 
 class SetObject : public NativeObject {
- public:
+public:
   enum IteratorKind { Keys, Values, Entries };
 
   static_assert(
@@ -312,29 +312,29 @@ class SetObject : public NativeObject {
 
   enum { DataSlot, NurseryKeysSlot, HasNurseryMemorySlot, SlotCount };
 
-  [[nodiscard]] static bool keys(JSContext* cx, HandleObject obj,
+  [[nodiscard]] static bool keys(JSContext *cx, HandleObject obj,
                                  JS::MutableHandle<GCVector<JS::Value>> keys);
-  [[nodiscard]] static bool values(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool add(JSContext* cx, HandleObject obj,
+  [[nodiscard]] static bool values(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool add(JSContext *cx, HandleObject obj,
                                 HandleValue key);
 
   // Publicly exposed Set calls for JSAPI access (webidl maplike/setlike
   // interfaces, etc.)
-  static SetObject* create(JSContext* cx, HandleObject proto = nullptr);
-  static uint32_t size(JSContext* cx, HandleObject obj);
-  [[nodiscard]] static bool size(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool add(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool has(JSContext* cx, HandleObject obj,
-                                HandleValue key, bool* rval);
-  [[nodiscard]] static bool clear(JSContext* cx, HandleObject obj);
-  [[nodiscard]] static bool iterator(JSContext* cx, IteratorKind kind,
+  static SetObject *create(JSContext *cx, HandleObject proto = nullptr);
+  static uint32_t size(JSContext *cx, HandleObject obj);
+  [[nodiscard]] static bool size(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool add(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool has(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool has(JSContext *cx, HandleObject obj,
+                                HandleValue key, bool *rval);
+  [[nodiscard]] static bool clear(JSContext *cx, HandleObject obj);
+  [[nodiscard]] static bool iterator(JSContext *cx, IteratorKind kind,
                                      HandleObject obj, MutableHandleValue iter);
-  [[nodiscard]] static bool delete_(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool delete_(JSContext* cx, HandleObject obj,
-                                    HandleValue key, bool* rval);
+  [[nodiscard]] static bool delete_(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool delete_(JSContext *cx, HandleObject obj,
+                                    HandleValue key, bool *rval);
 
-  [[nodiscard]] static bool copy(JSContext* cx, unsigned argc, Value* vp);
+  [[nodiscard]] static bool copy(JSContext *cx, unsigned argc, Value *vp);
 
   using UnbarrieredTable =
       OrderedHashSet<Value, UnbarrieredHashPolicy, CellAllocPolicy>;
@@ -347,7 +347,7 @@ class SetObject : public NativeObject {
   //
   // Returns a pointer to the set if it still has nursery memory associated with
   // it, or nullptr.
-  static SetObject* sweepAfterMinorGC(JS::GCContext* gcx, SetObject* setobj);
+  static SetObject *sweepAfterMinorGC(JS::GCContext *gcx, SetObject *setobj);
 
   size_t sizeOfData(mozilla::MallocSizeOf mallocSizeOf);
 
@@ -355,13 +355,13 @@ class SetObject : public NativeObject {
     return getFixedSlotOffset(DataSlot);
   }
 
-  ValueSet* getData() { return getTableUnchecked(); }
+  ValueSet *getData() { return getTableUnchecked(); }
 
   static bool isOriginalSizeGetter(Native native) {
     return native == static_cast<Native>(SetObject::size);
   }
 
- private:
+private:
   static const ClassSpec classSpec_;
   static const JSClassOps classOps_;
 
@@ -369,39 +369,39 @@ class SetObject : public NativeObject {
   static const JSFunctionSpec methods[];
   static const JSPropertySpec staticProperties[];
 
-  ValueSet* getTableUnchecked() {
+  ValueSet *getTableUnchecked() {
     return maybePtrFromReservedSlot<ValueSet>(DataSlot);
   }
 
-  static bool finishInit(JSContext* cx, HandleObject ctor, HandleObject proto);
+  static bool finishInit(JSContext *cx, HandleObject ctor, HandleObject proto);
 
-  static ValueSet& extract(HandleObject o);
-  static ValueSet& extract(const CallArgs& args);
-  static void trace(JSTracer* trc, JSObject* obj);
-  static void finalize(JS::GCContext* gcx, JSObject* obj);
-  static bool construct(JSContext* cx, unsigned argc, Value* vp);
+  static ValueSet &extract(HandleObject o);
+  static ValueSet &extract(const CallArgs &args);
+  static void trace(JSTracer *trc, JSObject *obj);
+  static void finalize(JS::GCContext *gcx, JSObject *obj);
+  static bool construct(JSContext *cx, unsigned argc, Value *vp);
 
   static bool is(HandleValue v);
   static bool is(HandleObject o);
 
   static bool isBuiltinAdd(HandleValue add);
 
-  [[nodiscard]] static bool iterator_impl(JSContext* cx, const CallArgs& args,
+  [[nodiscard]] static bool iterator_impl(JSContext *cx, const CallArgs &args,
                                           IteratorKind kind);
 
-  [[nodiscard]] static bool size_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool has_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool add_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool delete_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool values_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool entries_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool entries(JSContext* cx, unsigned argc, Value* vp);
-  [[nodiscard]] static bool clear_impl(JSContext* cx, const CallArgs& args);
-  [[nodiscard]] static bool clear(JSContext* cx, unsigned argc, Value* vp);
+  [[nodiscard]] static bool size_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool has_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool add_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool delete_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool values_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool entries_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool entries(JSContext *cx, unsigned argc, Value *vp);
+  [[nodiscard]] static bool clear_impl(JSContext *cx, const CallArgs &args);
+  [[nodiscard]] static bool clear(JSContext *cx, unsigned argc, Value *vp);
 };
 
 class SetIteratorObject : public NativeObject {
- public:
+public:
   static const JSClass class_;
 
   enum { TargetSlot, RangeSlot, KindSlot, SlotCount };
@@ -416,37 +416,36 @@ class SetIteratorObject : public NativeObject {
                 "KindSlot must match self-hosting define for item kind slot.");
 
   static const JSFunctionSpec methods[];
-  static SetIteratorObject* create(JSContext* cx, HandleObject setobj,
-                                   ValueSet* data,
+  static SetIteratorObject *create(JSContext *cx, HandleObject setobj,
+                                   ValueSet *data,
                                    SetObject::IteratorKind kind);
-  static void finalize(JS::GCContext* gcx, JSObject* obj);
-  static size_t objectMoved(JSObject* obj, JSObject* old);
+  static void finalize(JS::GCContext *gcx, JSObject *obj);
+  static size_t objectMoved(JSObject *obj, JSObject *old);
 
-  void init(SetObject* setObj, SetObject::IteratorKind kind) {
+  void init(SetObject *setObj, SetObject::IteratorKind kind) {
     initFixedSlot(TargetSlot, JS::ObjectValue(*setObj));
     initFixedSlot(RangeSlot, JS::PrivateValue(nullptr));
     initFixedSlot(KindSlot, JS::Int32Value(int32_t(kind)));
   }
 
-  [[nodiscard]] static bool next(SetIteratorObject* setIterator,
-                                 ArrayObject* resultObj);
+  [[nodiscard]] static bool next(SetIteratorObject *setIterator,
+                                 ArrayObject *resultObj);
 
-  static JSObject* createResult(JSContext* cx);
+  static JSObject *createResult(JSContext *cx);
 
- private:
+private:
   inline SetObject::IteratorKind kind() const;
-  SetObject* target() const;
+  SetObject *target() const;
 };
 
-using SetInitGetPrototypeOp = NativeObject* (*)(JSContext*,
-                                                Handle<GlobalObject*>);
+using SetInitGetPrototypeOp = NativeObject *(*)(JSContext *,
+                                                Handle<GlobalObject *>);
 using SetInitIsBuiltinOp = bool (*)(HandleValue);
 
 template <SetInitGetPrototypeOp getPrototypeOp, SetInitIsBuiltinOp isBuiltinOp>
-[[nodiscard]] static bool IsOptimizableInitForSet(JSContext* cx,
-                                                  HandleObject setObject,
-                                                  HandleValue iterable,
-                                                  bool* optimized) {
+[[nodiscard]] static bool
+IsOptimizableInitForSet(JSContext *cx, HandleObject setObject,
+                        HandleValue iterable, bool *optimized) {
   MOZ_ASSERT(!*optimized);
 
   if (!iterable.isObject()) {
@@ -459,7 +458,7 @@ template <SetInitGetPrototypeOp getPrototypeOp, SetInitIsBuiltinOp isBuiltinOp>
   }
 
   // Get the canonical prototype object.
-  Rooted<NativeObject*> setProto(cx, getPrototypeOp(cx, cx->global()));
+  Rooted<NativeObject *> setProto(cx, getPrototypeOp(cx, cx->global()));
   if (!setProto) {
     return false;
   }
@@ -481,7 +480,7 @@ template <SetInitGetPrototypeOp getPrototypeOp, SetInitIsBuiltinOp isBuiltinOp>
     return true;
   }
 
-  ForOfPIC::Chain* stubChain = ForOfPIC::getOrCreate(cx);
+  ForOfPIC::Chain *stubChain = ForOfPIC::getOrCreate(cx);
   if (!stubChain) {
     return false;
   }
