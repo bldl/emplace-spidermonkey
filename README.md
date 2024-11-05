@@ -949,109 +949,111 @@ In the implementation part of this tutorial, each line of the specification will
     <summary>Script</summary>
 
    ```js
-    console.log("Running tests for Map.prototype.upsert proposal...");
+  console.log("Running tests for Map.prototype.upsert proposal...");
 
-    // Utility function for logging test results
-    function logResult(testName, actual, expected) {
-        console.log(`Test: ${testName}`);
-        console.log(`Expected: ${expected}`);
-        console.log(`Actual: ${actual}`);
-        console.log(actual === expected ? "Passed" : "Failed");
-        console.log('------------------------------');
-    }
+  // Utility function for logging test results
+  function logResult(testName, actual, expected) {
+      console.log(`Test: ${testName}`);
+      console.log(`Expected: ${expected}`);
+      console.log(`Actual: ${actual}`);
+      console.log(actual === expected ? "Passed" : "Failed");
+      console.log('------------------------------');
+  }
 
-    // Test 1: Update on existing key
-    (function testUpdateExistingKey() {
-        const map1 = new Map();
-        map1.set("key1", "val1");
+  // Test 1: Update on existing key
+  (function testUpdateExistingKey() {
+      const m = new Map();
+      m.set("key", "val");
 
-        map1.upsert("key1", {
-            update: () => "updated"
-        });
+      m.upsert("key", {
+          update: () => "updated"
+      });
 
-        logResult("Update on existing key", map1.get("key1"), "updated");
-    })();
+      logResult("Update on existing key", m.get("key"), "updated");
+  })();
 
-    // Test 2: Insert on existing key (should not change existing value)
-    (function testInsertExistingKey() {
-        const map1 = new Map();
-        map1.set("key1", "val1");
+  // Test 2: Insert on existing key (should not change existing value)
+  (function testInsertExistingKey() {
+      const m = new Map();
+      m.set("key", "val");
 
-        map1.upsert("key1", {
-            insert: () => "inserted"
-        });
+      m.upsert("key", {
+          insert: () => "inserted"
+      });
 
-        logResult("Insert on existing key (no change)", map1.get("key1"), "val1");
-    })();
+      logResult("Insert on existing key (no change)", m.get("key"), "val");
+  })();
 
-    // Test 3: Insert and update on existing key
-    (function testInsertAndUpdateExistingKey() {
-        const map1 = new Map();
-        map1.set("key1", "val1");
+  // Test 3: Insert and update on existing key
+  (function testInsertAndUpdateExistingKey() {
+      const m = new Map();
+      m.set("key", "val");
 
-        map1.upsert("key1", {
-            update: () => "updated",
-            insert: () => "inserted"
-        });
+      m.upsert("key", {
+          update: () => "updated",
+          insert: () => "inserted"
+      });
 
-        logResult("Insert and update on existing key", map1.get("key1"), "updated");
-    })();
+      logResult("Insert and update on existing key", m.get("key"), "updated");
+  })();
 
-    // Test 4: Update nonexistent key (should not update, no effect)
-    (function testUpdateNonexistentKey() {
-        const map1 = new Map();
+  // Test 4: Update nonexistent key (should not update, no effect)
+  (function testUpdateNonexistentKey() {
+      const m = new Map();
 
-        try {
-            map1.upsert("nonexistent", {
-                update: () => "updated"
-            });
-        } catch (e) {
-            console.log("Test: Update nonexistent key");
-            console.log("Expected failure: cannot update nonexistent key");
-            console.log('------------------------------');
-        }
+      try {
+          m.upsert("nonexistent", {
+              update: () => "updated"
+          });
+      } catch (e) {
+          console.log("Test: Update nonexistent key");
+          console.log("Expected Error: " + e.message);
+          console.log('------------------------------');
+      }
 
-    })();
+  })();
 
-    // Test 5: Insert nonexistent key
-    (function testInsertNonexistentKey() {
-        const map1 = new Map();
+  // Test 5: Insert nonexistent key
+  (function testInsertNonexistentKey() {
+      const m = new Map();
 
-        map1.upsert("nonexistent", {
-            insert: () => "inserted"
-        });
+      m.upsert("nonexistent", {
+          insert: () => "inserted"
+      });
 
-        logResult("Insert nonexistent key", map1.get("nonexistent"), "inserted");
-    })();
+      logResult("Insert nonexistent key", m.get("nonexistent"), "inserted");
+  })();
 
-    // Test 6: Insert and update nonexistent key (insert should happen)
-    (function testInsertAndUpdateNonexistentKey() {
-        const map1 = new Map();
+  // Test 6: Insert and update nonexistent key (insert should happen)
+  (function testInsertAndUpdateNonexistentKey() {
+      const m = new Map();
 
-        map1.upsert("nonexistent", {
-            update: () => "updated",
-            insert: () => "inserted"
-        });
+      m.upsert("nonexistent", {
+          update: () => "updated",
+          insert: () => "inserted"
+      });
 
-        logResult("Insert and update nonexistent key", map1.get("nonexistent"), "inserted");
-    })();
+      logResult("Insert and update nonexistent key", m.get("nonexistent"), "inserted");
+  })();
 
-    // Test 7: Increment counter twice
-    (function testIncrementCounter() {
-        const counter = new Map();
+  // Test 7: Increment counter twice
+  (function testIncrementCounter() {
+      const counter = new Map();
 
-        counter.upsert("a", {
-            update: (v) => v + 1,
-            insert: () => 1
-        });
-        logResult("Increment counter first time", counter.get("a"), 1);
+      counter.upsert("a", {
+          update: (v) => v + 1,
+          insert: () => 1
+      });
+      logResult("Increment counter first time", counter.get("a"), 1);
 
-        counter.upsert("a", {
-            update: (v) => v + 1,
-            insert: () => 1
-        });
-        logResult("Increment counter second time", counter.get("a"), 2);
-    })();
+      counter.upsert("a", {
+          update: (v) => v + 1,
+          insert: () => 1
+      });
+      logResult("Increment counter second time", counter.get("a"), 2);
+  })();
+
+
    ```
   </details>
 
@@ -1426,7 +1428,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
         * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
 
 * The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
-    ```emu
+    ```html
       <!DOCTYPE html>
       <meta charset="utf8">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
@@ -1545,7 +1547,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   console.log("Starting tests...");
   measureRuntime(withUpsert, "Test upsert for " + iterations + " iterations");
-  measureRuntime(WithoutUpsert, "Test without upsert for " + iterations + " iterations");
+  measureRuntime(withoutUpsert, "Test without upsert for " + iterations + " iterations");
 
   ```
 
@@ -1633,7 +1635,6 @@ With these fairly simple steps our new implementation is now more streamlined wi
   ```
 
   Now the `std_has`method should be available in self-hosted JavaScript™.
-  **TODO provide a test function to verify that has was correctly exposed**
 
   ### Optimize the function
 
