@@ -1,9 +1,22 @@
 # Tutorial
 
+### ECMAScript®
 
-Welcome to this detailed tutorial on how to implement and understand the `Map.prototype.upsert proposal`. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, Test262.
+JavaScript™ is standardized by ECMAScript® and specified in the [ECMA-262 language specification](https://ecma-international.org/publications-and-standards/standards/ecma-262/), which is maintained by Ecma International through the [TC39 committee](https://tc39.es/). ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like [V8](https://v8.dev/) (used in Chrome and Node.js), [JavaScriptCore](https://developer.apple.com/documentation/javascriptcore) (Safari), and [SpiderMonkey](https://spidermonkey.dev/) (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
 
-You don’t need prior knowledge of JavaScript™ engine internals or advanced C++ programming to follow along. We'll walk you through each part of the process step-by-step.
+SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ feature proposal, providing insights into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
+
+### Introduction
+
+
+Welcome to this detailed tutorial on how to implement and understand the [`Map.prototype.upsert proposal`](https://github.com/tc39/proposal-upsert). This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, [Test262](https://github.com/tc39/test262).
+
+
+We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both JavaScript™ and C++, ensuring alignment with the ECMAScript® specification. 
+
+The main focus will initially be on developing a functional solution. Once basic functionality is verified, optimization techniques will be applied to ensure your code is efficient and performant. You'll also gain insight into contributing to the ECMAScript® standard, aligning your code with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
+
+By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained valuable insights into the process of designing, testing and standardizing JavaScript™ features.
 
 ### What’s Covered in This Tutorial?
 
@@ -41,22 +54,22 @@ flowchart TD
 
    **What is it?**
 
-   Map.prototype.upsert is a new method for JavaScript™'s Map-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either insert or update new key-value pairs.
+   `Map.prototype.upsert` is a new method for JavaScript™'s `Map`-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either `insert` or `update` new key-value pairs.
 
    **How does it work?**
-   The "upsert" operation takes two arguments: a key and a handler object. The handler contains two properties:
+   The "upsert" operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
 
-* update: Function to modify value of a key if the key is already existing in the Map.
-* insert: Function that generates a default-value to be set to the belonging value of the checked key.
+* `update`: Function to modify value of a `key` if it is already existing in the `Map`.
+* `insert`: Function that generates a default-value to be set to the belonging `value` of the checked `key`.
 
    **The function follow these steps:**
 
-   1. The Map is checked for the key passed as argument. If the key is found:
-       * It checks the handler for "update" function. If found this is used to update the value belonging to the key to then return it
-   2. If it is not found, the insert function from the handler is used to generate a new value, assign this to the passed key and then return the new value.
+   1. The `Map` is checked for the `key` passed as argument. If found:
+       * It checks the `handler` for `update` function. If found this is used to `update` the `value` belonging to the `key` to then `return` it
+   2. If it is not found, the `insert` function from the `handler` is used to generate a new `value`, assign this to the passed `key` and then `return` the new `value`.
    3. Either way, the belonging value will be returned.
 
-   **What is the motivation?** Adding and updating values of a Map are tasks that developers often perform in conjunction. There are currently no Map prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
+   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
 
    <details>
    <summary>
@@ -147,7 +160,7 @@ flowchart TD
 
   We will start by installing SpiderMonkey and all required tools.
 
-  Before you start installing, we advice you to open a terminal and navigate to the desired location of the `mozilla_unified` folder.
+  Before you start installing, open a terminal and navigate to the desired location of the `mozilla_unified` folder.
 
   The installation process depends on your operating system, therefore you can click on the link under that matches yours.
 
@@ -159,6 +172,11 @@ flowchart TD
   During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
 
   It doesn't matter if you choose to use `hg` or `git` to grab the source code.
+
+**Having trouble?**
+
+[Here](https://firefox-source-docs.mozilla.org/setup/common_build_errors.html) are some of the most common build errors.
+__Note!__ Many errors can be related to your Python build. Ensure you are using the correct python path and/or configuration.
 
 ### 2. Running SpiderMonkey
 
@@ -209,11 +227,11 @@ flowchart TD
 
 ### 3. Applying simple changes
 
-  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or add/remove functions.
+  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or `add`/`remove` functions.
 
-  To see the effect of this, we can change the return value of a function.
+  To see the effect of this, we can change the `return` value of a function.
 
-  Open file `Array.js` and change function `ArrayAt` to return 42.
+  Open file `Array.js` and change function `ArrayAt` to `return` 42.
 
   Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
   ```sh
@@ -232,7 +250,7 @@ flowchart TD
 
 ### 1. What is the ECMA-262 Specification?
 
-* ECMA-262 is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
+* [ECMA-262](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA) is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
 
 ### 2. How to Navigate the Document
 
@@ -243,13 +261,13 @@ flowchart TD
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how `Array.prototype.push` works with small, numbered steps: first, it checks the current length, then adds the new element, and finally updates the array’s length.
+* **Steps to follow**: For example, the spec describes how [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push) works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
 * **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
 
 ### 4. Key Symbols and What They Mean
 
 * **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
-* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), return that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and return the error right away.
+* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, and tells you the result.
 * **Keywords**: Words like `if`, `else`, or `function` follow specific rules, which are detailed in the specification.
 
@@ -263,21 +281,20 @@ flowchart TD
 
 * Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
 * **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
+* You can also check out https://timothygu.me/es-howto/ or https://v8.dev/blog/tags/understanding-ecmascript for other helpful guides on how to read the ECMA-262 Language Specification. 
 
-### 7. Example: Understanding `Array.prototype.push`
+### 7. Example: Understanding [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push)
 
 * In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
-  * First, the length of the array is checked.
+  * First, the `length` of the array is checked.
   * Then, the new element is added to the array.
-  * Finally, the length property is updated to reflect the added element.
+  * Finally, the `length` property is updated to reflect the added element.
 
-   **TODO first task is getting a rough understanding of the upsert spec, write line by line understamding, provide example solution**
 
 
 ### Interpretation of the `Map.prototype.upsert` specification
 
-The ESCMAScript262 specification text can look intitmidating at first glance. Before starting the implementation, you 
-should try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
+The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
 
 **Rewrite the spec in your own words**
@@ -293,7 +310,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-   When implementing a feature Searchfox is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+   When implementing a feature [Searchfox](https://searchfox.org/) is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
    When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
 
@@ -400,10 +417,13 @@ In the implementation part of this tutorial, each line of the specification will
    ```
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
+
+   The purpose of the operation `RequireInternalSlot(M, [[MapData]])` is to ensure that `M` is indeed a `Map` object. 
+   In JavaScript™, objects may have internal slots, which are "hidden" properties that store information about the object. 
+   In our case, the internal slot `[[MapData]]` holds the actual data of the `Map`. By verifying the presence of the internal slot, the method is making sure we actually are dealing with the correct object. This helps with preventing misusage of the function we are dealing with.  
    
-   This step is common for most self-hosted `MapObject` methods, the solution for this step already exists in the code. 
-   
-   __Look at existing methods in `Map.js` to find the solution__
+   This step is common for most self-hosted `MapObject` methods. The solution for this step already exists in the code. Look at `MapForEach`.
+
 
    <details>
    <summary>Solution</summary>
@@ -426,6 +446,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
+
 ### Step 3 - Self-Hosted JavaScript™ vs. JavaScript™
 
   Before we proceed further in the tutorial it's imperitive to better our understanding of self-hosted JavaScript™. 
@@ -441,8 +462,8 @@ In the implementation part of this tutorial, each line of the specification will
   - Functions made accessible in `SelfHosting.cpp`.
   - Some abstract operations and additional utility functions.
 
-  Read more about self-hosted code [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
 
+  Read more about self-hosted code [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
   
   __The snippet below is from `SelfHosting.cpp` and displays the available `MapObject` builtins:__
 
@@ -587,9 +608,9 @@ In the implementation part of this tutorial, each line of the specification will
   __Specification Line:__
 
    ```
-   4ai. If HasProperty(handler, "update") is true, then
+   4ai. If HasProperty(handler, "update") is `true`, then
    ```
-   
+
   In self-hosted JavaScript™, most objects are treated similarly to regular JavaScript™ objects, so we can use standard object methods for these checks. For example, `hasOwnProperty` can verify if `update` is a property of `handler`. 
    
   Here’s a snippet from the `Object.cpp` file displaying some self-hosted functions:
@@ -1040,9 +1061,9 @@ In the implementation part of this tutorial, each line of the specification will
 
 The original proposal introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
 
-The process of checking if a key exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a value if the given key is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
+The process of checking if a `key` exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
-In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called `setdefault`. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
+In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called [`setdefault`](https://docs.python.org/2/library/stdtypes.html#dict.setdefault). This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
 By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
@@ -1052,10 +1073,10 @@ By making it overcomplicated and a feature that is not commonly found in other l
    <summary><h2>Explaining the new proposal</h2></summary>
 
    **What is the motivation for a new propsosal?**
-   A common problem when using a Map is how to handle doing an update when you're not sure if the key already exists in the Map. This can be handled by first checking if the key is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the Map that could otherwise be handled in a single call.
+   A common problem when using a `Map` is how to handle doing an `update` when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
-   A method that will check whether the given key already exists in the Map. If the key already exists the value associated with the key is returned. Otherwise the key is inserted in to the map with the provided default value, then returning the newly inputted value.  
+   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists the value associated with the `key` is returned. Otherwise the `key` is inserted in to the `Map` with the provided default value, then returning the newly inputted value.  
 
    **Simple use of "new" upsert:**
 
@@ -1075,13 +1096,13 @@ By making it overcomplicated and a feature that is not commonly found in other l
         prefs.upsert("useDarkmode", true); // Default to true
    ```
 
-By using upsert, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing value. This is obviously because the key already exists and will return the existing key instead of inserting or overwriting.
+By using `upsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is obviously because the `key` already exists and will `return` the existing `key` instead of inserting or overwriting.
 
 <details>
 <summary>
 Similar functionality in Python
 </summary>
-As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and it's "setdefault" method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
+As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and its setdefault method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
 
 ```python
 # Without setdefault
@@ -1099,172 +1120,6 @@ prefs.setdefault("useDarkmode", True)
 ```
 
 </details>
-
-</details>
-
-<details open>
-    <summary><h2>Writing the new spec in ecmarkup</h2></summary>
-
-  
-  * **Installing Node.js and Node Package Manager**
-      <details>
-      <summary>
-      <b>Windows</b>
-      </summary>
-
-      1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version).
-
-      2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
-
-      3. Verify installation by opening Command Prompt and typing:
-
-      ```bash
-      node -v
-      npm -v
-      ```
-      This should return the versions of Node.js and npm.
-      
-      </details>
-
-      <details>
-      <summary><b>Mac</b></summary>
-      
-      1. Open Terminal
-      2. Install Node.js via Homebrew by running the following command:
-      ```bash
-      brew install node
-      ```
-      3. Verify installation by typing:
-      ```bash
-      node -v
-      npm -v
-      ```
-      </details>
-
-      <details>
-      <summary><b>Linux</b></summary>
-      
-      1. Open Terminal
-      2. Update your package list:
- 
-      ```bash
-      sudo apt update
-      ```
-
-       3. Install Node.js by running:
-      ```bash
-      sudo apt install node.js spm
-      ```
-
-      4. Verify the installation:
-      ```bash
-      node -v
-      npm -v
-      ```
-      </details>
-
-
-  * **Installing Ecmarkup**
-    * Windows/Mac/Linux
-      1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
-      2. Run the following command to install Ecmarkup globally:
-      ```bash
-      npm install -g ecmarkup
-      ```
-      3. Verify that Ecmarkup has been installed by typing:
-      ```bash
-      ecmarkup --version
-      ```
-      Now you have installed Ecmarkup.
-
-* **How to write ecmarkup**
-  Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
-
-  ```html
-  <!DOCTYPE html>
-  <meta charset="utf8">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
-  <script src="./spec.js"></script>
-  <pre class="metadata">
-  title: Your Document Title
-  stage: The proposals stage
-  contributors: Your name
-  </pre>
-
-  <emu-clause id="sec-greater-than-five">
-    <h1>greaterThanFive(_value_)</h1>
-    <p>When the greaterThanFive method is called, the following steps are taken:</p>
-    <emu-alg>
-      1. Let _x_ be _value_.
-      1. If Type(_x_) is not Number, throw a *TypeError* exception.
-      1. If _x_ is NaN, throw a *RangeError* exception.
-      1. If _x_ is less than 0, return *false*.
-      1. If _x_ is greater than 5, return *true*.
-      1. Else:
-        1. Return *false*.
-    </emu-alg>
-  </emu-clause>
-  ```
-
-  **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example. 
-
-* **How to translate from ECMAScript® to ecmarkup**
-  
-  Translating from ECMAScript® to Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards. 
-
-    1. **Understanding why we need Ecmarkup**
-
-        Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
-    2. **Basic translation steps**
-        * `<emu-alg>`: Defines an algorithm.
-        * `<emu-clause>`: Defines a clause/section in the specification.
-        * Underscores are used to refer to variables (`_varname_`).
-        * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification. 
-        * `*someBoldText*`: Make bold text with `*`.
-        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
-
-* The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
-    ```emu
-      <!DOCTYPE html>
-      <meta charset="utf8">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
-      <script src="./spec.js"></script>
-      <pre class="metadata">
-      title: Map.prototype.upsert
-      stage: 2
-      contributors: Lauritz Angeltveit
-      </pre>
-
-      <emu-clause id="sec-map.prototype.upsert">
-        <h1>Map.prototype.upsert ( _key_, _callbackfn_ )</h1>
-        <p>When the upsert method is called the following steps are taken:</p>
-        <emu-alg>
-          1. Let _M_ be the *this* value.
-          1. Perform ? RequireInternalSlot(_M_, [[MapData]]).
-          1. If IsCallable(_callbackfn_) is false, throw a *TypeError* exception.
-          1. For each Record { [[Key]], [[Value]] } _e_ that is an element of _M_.[[MapData]], do:
-            1. If _e_.[[Key]] is not empty and SameValueZero(_e_.[[Key]], _key_) is *true*, return _e_.[[Value]].
-          1. Let _inserted_ be ? Call(_callbackfn_, _key_).
-          1. Set _e_.[[Value]] to _inserted_.
-          1. Return _e_.[[Value]].
-        </emu-alg>
-      </emu-clause>
-    ```
-
-* **Building the spec**
-  To build the spec, use the following command:
-
-    ```bash
-      ecmarkup spec.emu out.html
-    ```
-
-  In this command:
-    * `spec.emu` is the source file where you have written your specification using Ecmarkup.
-    * `out.html` is the output file, which is a runnable HTML document.
-  To verify that your specification has been built correctly, simply drag-and-drop the `out.html` file into a web browser. 
-  
-  TODO: Troubleshooting while building the spec.
-  TODO: Load the html file to verify successfully connected hyperlinks etc.
 
 </details>
 
@@ -1391,7 +1246,6 @@ With this code in place, our MapUpsert function will return the existing value i
     <summary>Solution</summary>
 
 ```js
-
 function MapUpsert(key, value) {
   var M = this;
 
@@ -1420,19 +1274,202 @@ function MapUpsert(key, value) {
 
   return value;
 }
-
 ```
 
   </details>
 
 With these fairly simple steps our new implementation is now more streamlined with a simpler and more 'attractive' api.
   
+  ### The complete new proposal specification.
+  The spec text now looks like this, and you should have a finished implementation as well.
+  ```
+  1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  3. Let entries be the List that is M.[[MapData]].
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  5. Set e.[[Value]] to value.
+  6. Return e.[[Value]].
+  ```
+</details>
+
+<details open>
+    <summary><h2>Writing the new spec in ecmarkup</h2></summary>
+  In this section, we will cover how to install and use Ecmarkup to write specifications for proposals. 
+  Ecmarkup is a markup language that is designed for technical specifications. 
+  This allows the authors to visualize and format complex algorithms, clauses and terms in a way that is both readable and structured. 
+  Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript®-standards. 
+  
+  We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
+  Furthermore, we will check out how to format spec text using Ecmarkup before guiding you through how to build your specification into a HTML document. 
+
+* **Installing Node.js and Node Package Manager**
+    <details>
+    <summary>
+    <b>Windows</b>
+    </summary>
+
+    1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version).
+
+    2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
+
+    3. Verify installation by opening Command Prompt and typing:
+
+    ```bash
+    node -v
+    npm -v
+    ```
+  This should return the versions of Node.js and npm.
+
+    </details>
+
+    <details>
+    <summary><b>Mac</b></summary>
+
+    1. Open Terminal
+    2. Install Node.js via Homebrew by running the following command:
+    ```bash
+    brew install node
+    ```
+    3. Verify installation by typing:
+    ```bash
+    node -v
+    npm -v
+    ```
+    </details>
+
+    <details>
+    <summary><b>Linux</b></summary>
+
+    1. Open Terminal
+    2. Update your package list:
+
+    ```bash
+    sudo apt update
+    ```
+
+    3. Install Node.js by running:
+    ```bash
+    sudo apt install node.js spm
+    ```
+
+    4. Verify the installation:
+    ```bash
+    node -v
+    npm -v
+    ```
+    </details>
+
+
+* **Installing [Ecmarkup](https://tc39.es/ecmarkup/)**
+    * Windows/Mac/Linux
+        1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
+        2. Run the following command to install Ecmarkup globally:
+      ```bash
+      npm install -g ecmarkup
+      ```
+        3. Verify that Ecmarkup has been installed by typing:
+      ```bash
+      ecmarkup --version
+      ```
+      Now you have installed Ecmarkup.
+
+* **How to write ecmarkup**
+
+  Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
+
+  ```html
+  <!DOCTYPE html>
+  <meta charset="utf8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+  <script src="./spec.js"></script>
+  <pre class="metadata">
+  title: Your Document Title
+  stage: The proposals stage
+  contributors: Your name
+  </pre>
+
+  <emu-clause id="sec-greater-than-five">
+    <h1>greaterThanFive(_value_)</h1>
+    <p>When the greaterThanFive method is called, the following steps are taken:</p>
+    <emu-alg>
+      1. Let _x_ be _value_.
+      1. If Type(_x_) is not Number, throw a *TypeError* exception.
+      1. If _x_ is NaN, throw a *RangeError* exception.
+      1. If _x_ is less than 0, return *false*.
+      1. If _x_ is greater than 5, return *true*.
+      1. Else:
+        1. Return *false*.
+    </emu-alg>
+  </emu-clause>
+  ```
+
+  **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example.
+
+* **How to format spec text using Ecmarkup**
+
+  Formatting spec text using Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards.
+
+    1. **Understanding why we need Ecmarkup**
+
+       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
+    2. **Basic translation steps**
+        * `<emu-alg>`: Defines an algorithm.
+        * `<emu-clause>`: Defines a clause/section in the specification.
+        * Underscores are used to refer to variables (`_varname_`).
+        * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification.
+        * `*someBoldText*`: Make bold text with `*`.
+        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
+
+* The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
+    ```emu
+      <!DOCTYPE html>
+      <meta charset="utf8">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+      <script src="./spec.js"></script>
+      <pre class="metadata">
+      title: Map.prototype.upsert
+      stage: 2
+      contributors: Lauritz Angeltveit
+      </pre>
+
+      <emu-clause id="sec-map.prototype.upsert">
+        <h1>Map.prototype.upsert ( _key_, _callbackfn_ )</h1>
+        <p>When the upsert method is called the following steps are taken:</p>
+        <emu-alg>
+          1. Let _M_ be the *this* value.
+          1. Perform ? RequireInternalSlot(_M_, [[MapData]]).
+          1. If IsCallable(_callbackfn_) is false, throw a *TypeError* exception.
+          1. For each Record { [[Key]], [[Value]] } _e_ that is an element of _M_.[[MapData]], do:
+            1. If _e_.[[Key]] is not empty and SameValueZero(_e_.[[Key]], _key_) is *true*, return _e_.[[Value]].
+          1. Let _inserted_ be ? Call(_callbackfn_, _key_).
+          1. Set _e_.[[Value]] to _inserted_.
+          1. Return _e_.[[Value]].
+        </emu-alg>
+      </emu-clause>
+    ```
+
+* **Building the spec**
+  To build the spec, use the following command:
+
+    ```bash
+      ecmarkup spec.emu out.html
+    ```
+
+  In this command:
+    * `spec.emu` is the source file where you have written your specification using Ecmarkup.
+    * `out.html` is the output file, which is a runnable HTML document.
+      To verify that your specification has been built correctly, simply drag-and-drop the `out.html` file into a web browser.
+
+  TODO: Troubleshooting while building the spec.
+  TODO: Load the html file to verify successfully connected hyperlinks etc.
+
 </details>
 
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  A proposal goes through several stages before it becomes a part of the ECMAScript® language.
+  A proposal goes through several [stages](https://www.proposals.es/stages) before it becomes a part of the ECMAScript® language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
   Therefore optimization becomes crucial when designing and implementing these features.
   In our case there is especially one line which could use some optimization:
@@ -1511,7 +1548,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   </details>
 
 
-  One solution we had, was to check if the entry was in the map, by using `std_has`.
+  One solution we had, was to check if the entry was in the `Map`, by using `std_has`.
   The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
   is seemingly because there has not been any need for the `std_has` method in self-hosted code previously.
 
@@ -1553,7 +1590,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   ```
   </details>
 
-  We also need to make the has function publicly exposed in `MapObject.h` to use it in self-hosted code.
+  We also need to make the `has` function publicly exposed in `MapObject.h` to use it in self-hosted code.
 
   In `MapObject.h`, move this line from private to public.
 
@@ -1596,7 +1633,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   ### Optimize the function
 
-  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a for-of iteration
+  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a `for-of` iteration
   and `SameValueZero`.
 
   <details>
@@ -1637,9 +1674,9 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
 <details open>
 
-   <summary><h2>Testing (test262)</h2></summary>
+   <summary><h2>Testing (Test262)</h2></summary>
    
-   ### Writing tests for test262
+   ### Writing tests for [Test262](https://github.com/tc39/test262)
    When it comes to testing implementations, there are some guidelines to follow. 
    The official guidelines state that an acceptable test in Test262 is the following:
    ```
@@ -1677,7 +1714,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
    Additional to the tests, there is a strict guide for documentation for the test.
     
-   You should start the test by declaring the copyright, here you just fill in the year and your name:
+   You start the test by declaring the copyright, here you just fill in the year and your name:
    ```
    // Copyright (C) *Year *Name. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
