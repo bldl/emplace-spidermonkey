@@ -262,7 +262,7 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
 * **Steps to follow**: For example, the spec describes how [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push) works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
-* **Conditions**: You’ll often see steps like “If X is true...” which means that JavaScript™ checks something, and the next steps depend on the result.
+* **Conditions**: You’ll often see if-statements, that will tell you how to proceed if the statement evaluates to true or false.
 
 ### 4. Key Symbols and What They Mean
 
