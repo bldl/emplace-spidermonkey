@@ -292,9 +292,26 @@ The specification text uses a range of notations and symbols to describe its syn
   * Then, the new element is added to the array.
   * Finally, the `length` property is updated to reflect the added element.
 
-
-
 ### Interpretation of the `Map.prototype.upsert` specification
+
+```
+1. Let M be the this value.
+  2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  3. Let entries be the List that is M.[[MapData]].
+  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+      4ai. If HasProperty(handler, "update") is `true`, then
+        4ai1. Let updateFn be ? Get(handler, "update").
+        4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
+        4ai3. Set e.[[Value]] to updated.
+      4aii. Return e.[[Value]].
+  5. Let insertFn be ? Get(handler, "insert").
+  6. Let inserted be ? Call(insertFn, handler, « e.[[Value]], key, M »).
+  7. Set e.[[Value]] to inserted.
+  8. Return e.[[Value]].
+```
+
+An html version of the specification can be found [here.](https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html)
 
 The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
