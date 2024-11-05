@@ -1148,6 +1148,8 @@ To implement the updated proposal, we first need to adapt the specification.
 
   The next section will be based on this draft of the new specification. Later in the tutorial we will look into how we can write the specification in ecmarkup.
 
+  An html version of the specification can be found [here.](https://bldl.github.io/upsert-tutorial/key-value-callback-spec/Map.prototype.getOrInsert.html)
+
 </details>
 
 <details open>
