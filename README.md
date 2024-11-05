@@ -1635,6 +1635,24 @@ With these fairly simple steps our new implementation is now more streamlined wi
   Now the `std_has`method should be available in self-hosted JavaScript™.
   **TODO provide a test function to verify that has was correctly exposed**
 
+  ```js
+  function MapTestHas(key) {
+    var M = this;
+
+    if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+      return callFunction(      
+        CallMapMethodIfWrapped, 
+        this,
+        key,            
+        "MapTestHas"
+        );
+    }
+
+        
+    return callFunction(std_Map_has, M, key);
+  }
+    ```
+
   ### Optimize the function
 
   With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a `for-of` iteration
