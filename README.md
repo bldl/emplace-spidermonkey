@@ -1426,7 +1426,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
         * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
 
 * The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
-    ```emu
+    ```html
       <!DOCTYPE html>
       <meta charset="utf8">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
