@@ -251,21 +251,21 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 ### 2. How to Navigate the Document
 
 * **Start with the Table of Contents**: This is where you’ll find major sections like grammar, types, and functions. It helps you jump to the part you’re interested in.
-* **Use Search**: The specification is large. If you’re looking for a specific topic, like “Promise” or “Array,” use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly.
+* **Use Search**: The specification is large. If you’re looking for a specific topic, like `Promise` or `Array`, use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly.
 * **Annexes (Extras)**: At the end of the document, you’ll find extra sections that explain older features or give additional context.
 
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
 * **Steps to follow**: For example, the spec describes how <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a> works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
-* **Conditions**: You’ll often see if-statements, that will tell you how to proceed if the statement evaluates to true or false.
+* **Conditions**: You’ll often see `if`-statements, that will tell you how to proceed if the statement evaluates to `true` or `false`.
 
 ### 4. Some Key Symbols and What They Mean
 
 * **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, specifying the result to be returned.
-* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a  data structure that groups together related fields as key-value pairs. Each field is identified by a name (the key) and stores a secific value. 
+* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a  data structure that groups together related fields as key-value pairs. Each field is identified by a name (`key`) and stores a secific `value`. 
 * **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather then in code syntax, to describe the behavior that an implementation should follow.
 
 ### 5. Finding Information on Other Symbols
@@ -309,8 +309,8 @@ The specification text uses a range of notations and symbols to describe its syn
 
 An html version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html" target="_blank">here.</a>
 
-The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
-The goal is gain an overview of what we are trying to achieve.
+The ECMAScript 262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
+The goal is to gain an overview of what we are trying to achieve.
 
 **Rewrite the spec in your own words**
 Example: 
@@ -325,14 +325,14 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-   When implementing a feature <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+  <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a helpful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like `Map` are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
-   When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
+   When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the ECMA-262 Specification with Searchfox and look at existing code.
 
    Example workflow:
 
    1. --some line from the specification--
-   2. Find some other function with the same spec line in the Ecma-262 specification
+   2. Find some other function with the same spec line in the ECMA-262 specification
    3. Look up the function in Searchfox
    4. Borrow from the other function.
 
