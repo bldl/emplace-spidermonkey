@@ -309,10 +309,10 @@ The aim is to develop a clear understanding of the functionality we want to achi
 
 **Key Points to Focus On:**
 
-__- Scope and Validation:__ The first few lines establish the this value (`M`) and ensure it’s a valid instance of `Map`.
-__- Iterating Over Entries:__ The method iterates through the `Map` entries to check if the specified `key` already exists.
-__- Conditional Update or Insert:__ If the key exists, it checks for an `update` function in the `handler` and applies it to update the value. If the key does not exist, it uses the `insert` function to create a new entry.
-__- Returning the Result:__ Finally, it returns the updated or inserted value.
+- __Scope and Validation:__ The first few lines establish the this value (`M`) and ensure it’s a valid instance of `Map`.
+- __Iterating Over Entries:__ The method iterates through the `Map` entries to check if the specified `key` already exists.
+- __Conditional Update or Insert:__ If the key exists, it checks for an `update` function in the `handler` and applies it to update the value. If the key does not exist, it uses the `insert` function to create a new entry.
+- __Returning the Result:__ Finally, it returns the updated or inserted value.
 
 By breaking down the specification in this way, you'll have a roadmap for implementing each part of the `upsert` method. This approach will help make the implementation process smoother and ensure that you understand how each step contributes to the overall functionality.
 
@@ -331,14 +331,14 @@ In the implementation part of this tutorial, each line of the specification will
 
   <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a helpful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like `Map` are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
-   When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the ECMA-262 Specification with Searchfox and look at existing code.
+  When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the ECMA-262 Specification with Searchfox and look at existing code.
 
-   Example workflow:
+  Example workflow:
 
-   1. --some line from the specification--
-   2. Find some other function with the same spec line in the ECMA-262 specification
-   3. Look up the function in Searchfox
-   4. Borrow from the other function.
+  1. *some line from the specification*.
+  2. Find some other function with the same or similar spec line in the ECMA-262 specification.
+  3. Look up the function in Searchfox.
+  4. Borrow from the other function.
 
 </details>
 
