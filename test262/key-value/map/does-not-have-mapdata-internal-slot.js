@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: pending
+esid: proposal-upsert
 description: >
     Throws a TypeError if `this` object does not have a [[MapData]] internal slot.
 info: |

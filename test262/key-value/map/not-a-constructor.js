@@ -3,7 +3,7 @@
 // This code is governed by the BSD license found in the LICENSE file.
 
 /*---
-esid: pending
+esid: proposal-upsert
 description: >
   Map.prototype.getOrInsert does not implement [[Construct]], is not new-able
 info: |

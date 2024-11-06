@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: pending
+esid: proposal-upsert
 description: >
   Returns the value set before getOrInsert from the specified key on different types.
 info: |
