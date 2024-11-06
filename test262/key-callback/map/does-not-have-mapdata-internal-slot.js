@@ -11,6 +11,8 @@ info: |
     ...
     2. Perform ? RequireInternalSLot(M, [[MapData]])
     ...
+
+    features: [arrow-function]
 ---*/
 
 var map = new Map();

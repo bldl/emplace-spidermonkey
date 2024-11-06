@@ -12,7 +12,7 @@ info: |
   7. Let p be the Record { [[Key]]: key, [[Value]]: value }.
   8. Append p to M.[[MapData]].
   ...
-feature: [Symbol]
+feature: [Symbol, arrow-function]
 ---*/
 
 var map = new Map();

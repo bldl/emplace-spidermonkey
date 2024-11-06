@@ -13,7 +13,7 @@ info: |
   8. Append p to M.[[MapData]].
   9. Return p.[[Value]].
   ...
-feature: [Symbol]
+feature: [Symbol, arrow-function]
 ---*/
 
 var map = new Map();
