@@ -165,8 +165,7 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 **Having trouble?**
 
-<a href="https://firefox-source-docs.mozilla.org/setup/common_build_errors.html" target="_blank">Here</a> are some of the most common build errors.
-__Note!__ Many errors can be related to your Python build. Ensure you are using the correct python path and/or configuration.
+<a href="https://firefox-source-docs.mozilla.org/setup/common_build_errors.html" target="_blank">Here</a> are some of the most common build errors. __Note!__ Many errors can be related to your Python build. Ensure you are using the correct python path and/or configuration.
 
 ### 2. Running SpiderMonkey
 
@@ -240,7 +239,7 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 
 ### 1. What is the ECMA-262 Specification?
 
-* <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA" target="_blank">ECMA-262</a> is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
+* <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA" target="_blank">ECMA-262</a> is the official document that defines how JavaScript™ works. It provides detailed guidelines for developers and browser vendors on how JavaScript™ should behave in every situation, ensuring consistency and compatibility across different platforms and implementations.
 
 ### 2. How to Navigate the Document
 
@@ -251,7 +250,7 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a> works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
+* **Steps to follow**: The specification breaks down methods like <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a> into clear, numbered steps. For instance, it describes how the method first checks the current `length`, then adds the new element, and finally updates the array's `length`.
 * **Conditions**: You’ll often see `if`-statements, that will tell you how to proceed if the statement evaluates to `true` or `false`.
 
 ### 4. Some Key Symbols and What They Mean
@@ -259,8 +258,8 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 * **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, specifying the result to be returned.
-* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a  data structure that groups together related fields as key-value pairs. Each field is identified by a name (`key`) and stores a secific `value`. 
-* **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather then in code syntax, to describe the behavior that an implementation should follow.
+* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a secific `value`. 
+* **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather than in code syntax, to describe the behavior that an implementation should follow.
 
 ### 5. Finding Information on Other Symbols
 
@@ -282,7 +281,7 @@ The specification text uses a range of notations and symbols to describe its syn
   * Then, the new element is added to the array.
   * Finally, the `length` property is updated to reflect the added element.
 
-### Interpretation of the `Map.prototype.upsert` specification
+## The `Map.prototype.upsert` Specification
 
 ```
 1. Let M be the this value.
