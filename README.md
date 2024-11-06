@@ -165,9 +165,9 @@ flowchart TD
 * <a href="https://firefox-source-docs.mozilla.org/setup/windows_build.html" target="_blank">Build Mozilla Firefox on Windows</a>
 
   
-  During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
+During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
 
-  It doesn't matter if you choose to use `hg` or `git` to grab the source code.
+It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 **Having trouble?**
 
