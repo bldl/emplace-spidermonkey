@@ -55,7 +55,7 @@ flowchart TD
    `Map.prototype.upsert` is a new method for JavaScript™'s `Map`-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either `insert` or `update` new key-value pairs.
 
    **How does it work?**
-   The "upsert" operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
+   The `upsert` operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
 
 * `update`: Function to modify value of a `key` if it is already existing in the `Map`.
 * `insert`: Function that generates a default-value to be set to the belonging `value` of the checked `key`.
@@ -63,11 +63,11 @@ flowchart TD
    **The function follow these steps:**
 
    1. The `Map` is checked for the `key` passed as argument. If found:
-       * It checks the `handler` for `update` function. If found this is used to `update` the `value` belonging to the `key` to then `return` it
-   2. If it is not found, the `insert` function from the `handler` is used to generate a new `value`, assign this to the passed `key` and then `return` the new `value`.
-   3. Either way, the belonging value will be returned.
+       * It checks the `handler` for `update` function. If found, this is used to `update` the `value` belonging to the passed `key`. After this, the newly updated key will be returned. 
+   2. If not found, the `insert` function from the `handler` is used to generate a new `value`. This will be assigned to the given `key` before returning it.
+   3. In either case, the `value` will be the `return` value of the `upsert` method.
 
-   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and developer inconvenience while avoiding encouraging code that is surprising or is potentially error prone.
+   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and can be inconvenient for developers. It is also aiming to prevent code that might be confusing or lead to errors.
 
    <details>
    <summary>
@@ -138,11 +138,9 @@ flowchart TD
    Using upsert:
 
    ```js
-   if (map.has(key)) {
-     map.upsert(key, {
-       update: (old) => old.doThing()
-     });
-   }
+    map.upsert(key, {
+      update: (old) => old.doThing()
+    });
    ```
 
    </details>
