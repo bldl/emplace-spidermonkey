@@ -1520,7 +1520,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   ```
 
   The worst case for this is that is loops through the entire `entries`.
-  This is rather slow, considering a lookup in maps should be ~O(1), given an efficient HashTable implementation.
+  This is rather slow, considering a lookup in maps should be ~O(1), given an efficient `HashTable` implementation.
   Therefore, we decided to try to optimize this line.
 
   **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
