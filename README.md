@@ -1076,9 +1076,9 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Issues with the original proposal</h2></summary>
 
-The proposal we have dealt with so far introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Even though flexibility can be a good thing, it will in this case influence the cost of simplicity, which is very important for widespread adoption in programming languages.  
+The proposal we have dealt with so far introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Flexibility is generally a good thing. However in the case of `Map.prototype.upsert`, the flexibility comes at the expense of simplicity and ease of use, which is very important for widespread adoption in programming languages.
 
-The process of checking if a `key` exists and then inserting it if not, is most likely the primary use case of this method. By following the steps of this proposal, the process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
+The process of checking if a `key` exists and then inserting it if not, is likely the primary, in-demand use case for this method. By following the steps of this proposal, the process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
 In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. You can read more about this method in the next section of the tutorial.
 
@@ -1089,20 +1089,20 @@ By making it overcomplicated and a feature that is not commonly found in other l
 <details open>
    <summary><h2>Explaining the new proposal</h2></summary>
 
-  In the original <a href="https://github.com/tc39/proposal-upsert" target="_blank">proposal</a> the idea of two different versions was presented. 
+  The new <a href="https://github.com/tc39/proposal-upsert" target="_blank">proposal</a> presents the idea of implementing two different versions. 
 
   (1) Takes the arguments `key` and `value`. 
 
   (2) Takes the the arguments `key` and `callbackfn`
 
-  Both the respective versions with `value` and `callbackfn` serves the same principle as a `get` or `insert` method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
+  Both the respective versions with `value` and `callbackfn` serves the same principle as a `get` or `insert` if missing method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
 
 
    **What is the motivation for a new propsosal?**
-   A common problem when using a `Map` is how to handle doing an `update` when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
+   A common problem when using a `Map` is how to handle doing a `Map` entry when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
-   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists, the `value` associated with the `key` is returned. Otherwise the `key` is inserted in to the `Map` with the provided default value, then returning the newly input `value`.  
+   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists, the `value` associated with the `key` is returned. Otherwise the new `key-value` pair is inserted in to the `Map`, before returning the newly input `value`.
 
    **Simple use of "new" upsert:**
 
@@ -1149,9 +1149,11 @@ prefs.setdefault("useDarkmode", True)
 
 To implement the updated proposal, we first need to adapt the specification. 
 
-### A Draft of The Specification For The New Proposal.
-  The spec text now looks like this, and you should have a finished implementation as well.
-  ```
+## A Draft of The Specification For The New Proposal.
+
+The new specification now looks like this. It draws similarities from the old specification and adapts to the newly specified behaviour we seek in the `Map.prototype.upsert` method.
+
+  ```lua
   1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
   3. Let entries be the List that is M.[[MapData]].
