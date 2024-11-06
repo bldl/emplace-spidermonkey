@@ -59,7 +59,7 @@ flowchart TD
    1. The `Map` is checked for the `key` passed as argument. If found:
        * It checks the `handler` for an `update` function. If found, this is used to `update` the `value` belonging to the passed `key`. After this, the newly updated entry will be returned. 
    2. If not found, the `insert` function from the `handler` is used to generate a new `value`. This will be assigned to the given `key` before returning it.
-   3. In either case, the `value` will be the `return` value of the `upsert` method.
+   3. In either case, the `value` will be the `return value` of the `upsert` method.
 
    **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and can be inconvenient for developers. It is also aiming to prevent code that might be confusing or lead to errors.
 
@@ -218,7 +218,7 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
   Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit, add or remove functions.
 
-  To see the effect of this, we can change the `return` value of a function.
+  To see the effect of this, we can change the `return value` of a function.
 
   Open file `Array.js` and change function `ArrayAt` to `return` 42.
 
@@ -309,10 +309,10 @@ The aim is to develop a clear understanding of the functionality we want to achi
 
 **Key Points to Focus On:**
 
-- __Scope and Validation:__ The first few lines establish the this value (`M`) and ensure it’s a valid instance of `Map`.
+- __Scope and Validation:__ The first few lines establish the `this value` (`M`) and ensure it’s a valid instance of `Map`.
 - __Iterating Over Entries:__ The method iterates through the `Map` entries to check if the specified `key` already exists.
-- __Conditional Update or Insert:__ If the key exists, it checks for an `update` function in the `handler` and applies it to update the value. If the key does not exist, it uses the `insert` function to create a new entry.
-- __Returning the Result:__ Finally, it returns the updated or inserted value.
+- __Conditional Update or Insert:__ If the key exists, it checks for an `update` function in the `handler` and applies it to update the `value`. If the key does not exist, it uses the `insert` function to create a new entry.
+- __Returning the Result:__ Finally, it returns the updated or inserted `value`.
 
 By breaking down the specification in this way, you'll have a roadmap for implementing each part of the `upsert` method. This approach will help make the implementation process smoother and ensure that you understand how each step contributes to the overall functionality.
 
@@ -349,9 +349,9 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### Creating a function
 
-  The first step to implementing a function in SpiderMonkey is to create a hook in C++. This hook serves as the connection between SpiderMonkey’s C++ core and our self-hosted JavaScript™ code.
+  The first step to implementing a function in SpiderMonkey is to create a *hook* in C++. This hook serves as the connection between SpiderMonkey’s C++ core and our self-hosted JavaScript™ code.
 
-  The JavaScript™ type `Map` is defined in CPP as `MapObject`. All `Map` methods, like `Map::set` and `Map::get`, are defined 
+  The JavaScript™ type `Map` is defined in C++ as `MapObject`. All `Map` methods, like `Map::set` and `Map::get`, are defined 
   in the array `MapObject::methods[]`. To add `upsert` we need to define a hook in this array.
   
   __Create a hook in `MapObject.cpp`:__
@@ -410,11 +410,11 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Specification Line:**
 
-  ```
+  ```lua
   1. Let M be the this value.
   ```
 
-  In the code, we can implement this line simply by assigning this to a variable called M. This will allow us to refer to the `Map` instance consistently throughout the function: 
+  In the code, we can implement this line simply by assigning this to a variable called `M`. This will allow us to refer to the `Map` instance consistently throughout the function: 
 
   ```js
   function MapUpsert(key, handler) {
@@ -429,11 +429,11 @@ In the implementation part of this tutorial, each line of the specification will
   With the `this` context now captured in `M`, our next step is to validate that `M` is actually a `MapObject`. This is crucial because JavaScript™ objects can sometimes be altered or misused, and we need to ensure that `upsert` is being called on a valid instance of `Map`. This verification process will prevent errors and misuse, keeping the method consistent with the ECMAScript® specification.
 
   **Verifying the Map’s Internal Structure**  
-  The ECMAScript® specification uses internal slots to define hidden properties within objects. In this step, we’re asked to confirm that the object `M` has the `[[MapData]]` internal slot, which holds the actual key-value data for the `Map`. By checking for this internal slot, we can be confident that `M` is indeed a `Map` and not some other type of object.
+  The ECMAScript® specification uses internal slots to define hidden properties within objects. In this step, we’re asked to confirm that the object `M` has the `[[MapData]]` internal slot, which holds the actual `key-value` data for the `Map`. By checking for this internal slot, we can be confident that `M` is indeed a `Map` and not some other type of object.
 
   __Specification Line:__
 
-   ```
+   ```lua
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
    
@@ -472,7 +472,7 @@ In the implementation part of this tutorial, each line of the specification will
   Furthermore, self-hosted code also has limited access to the C++ builtins. Only a select set, defined in `Selfhosting.cpp` is accessible. 
 
   **What functions can be used in self-hosted JavaScript™?**
-  Self-hosted code can use:
+
   - Other self-hosted functions (remember 'almost' everything is an `Object`).
   - Functions made accessible in `SelfHosting.cpp`.
   - Some abstract operations and additional utility functions.
@@ -495,15 +495,15 @@ In the implementation part of this tutorial, each line of the specification will
   ```
 
   **Moving on with the implementation**
-  we have stored the `this` object and verified that is infact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
+  We have stored the `this` object and verified that is infact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
 
   __Specification Line:__
 
-  ```
+  ```lua
   3. Let entries be the List that is M.[[MapData]].
   ```
 
-  Use `callFunction` and the standard built-in `std_Map_entries` to retrive a list of all `key` - `value` entries in the `Map`. Store it as a variable named `entries`.
+  Use `callFunction` and the standard built-in `std_Map_entries` to retrive a list of all `key-value` entries in the `Map`. Store it as a variable named `entries`.
 
    <details>
    <summary>Solution</summary>
@@ -576,7 +576,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   __Specification Line:__
 
-   ```
+   ```lua
    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
    ```
 
@@ -622,7 +622,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   __Specification Line:__
 
-   ```
+   ```lua
    4ai. If HasProperty(handler, "update") is `true`, then
    ```
 
@@ -684,7 +684,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   __Specification Line:__
 
-   ```
+   ```lua
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
@@ -725,19 +725,19 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Call the update function**
 
-  Now that we’ve verified the existence of an `update` function in the `handler` object, the next step is to invoke this function to get the updated `value`.
+  Now that we’ve verified the existence of an `update` function in the `handler` object, the next step is to invoke this function to get the `updated` `value`.
 
   __Specification Line:__
 
    </details>
 
-   ```
+   ```lua
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
-  In this context, we need to call the `update` function on the current value associated with the `Map` entry. This involves passing `e.[[Value]]` (the existing value), `key`, and `M` as arguments to the function.
+  In this context, we need to call the `update` function on the current value associated with the `Map` entry. This involves passing `e.[[Value]]` (the existing `value`), `key`, and `M` as arguments to the function.
 
-  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here.</a>
+  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing `value`) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the `Map` entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here.</a>
 
    <details>
    <summary>Solution</summary>
@@ -775,17 +775,17 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-  **Update the value in the map**
+  **Update the `value` in the `Map`**
 
-  Once we have the updated value from calling the `update` function, we can proceed to replace the current value in the map entry.
+  Once we have the `updated` `value` from calling the `update` function, we can proceed to replace the current `value` in the map entry.
 
   __Specification Line:__
 
-   ```
+   ```lua
    4ai3. Set e.[[Value]] to updated.
    ```
 
-  This step involves using the `std_Map_set` function, a standard self-hosted operation that allows us to safely set a new `value` for a specified `key` in the `Map`. Since `std_Map_set` is a built-in function available to self-hosted code, we’ll call it to update the entry with our newly computed updated `value`.
+  This step involves using the `std_Map_set` function, a standard self-hosted operation that allows us to safely set a new `value` for a specified `key` in the `Map`. Since `std_Map_set` is a built-in function available to self-hosted code, we’ll call it to update the entry with our newly computed `updated` `value`.
 
    **Recall the standard built-in map operations specified in `SelfHosting.cpp`:**
 
@@ -833,19 +833,19 @@ In the implementation part of this tutorial, each line of the specification will
    }
    ```
 
-  **Return the value**
+  **`Return` the `value`**
 
-  We have now updated the value, and can return it.
+  We have now `updated` the `value`, and can `return` it.
 
   __Specification Line:__
 
    </details>
 
-   ```
+   ```lua
    4aii. Return e.[[Value]].
    ```
 
-  Return the updated value.
+  `return` the `updated` `value`.
 
    <details>
    <summary>Solution</summary>
@@ -891,7 +891,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   __The Specification States__
 
-   ```
+   ```lua
    5. Let insertFn be ? Get(handler, "insert").
    6. Let inserted be ? Call(insertFn, handler, « e.[[Value]], key, M »).
    7. Set e.[[Value]] to inserted.
@@ -948,13 +948,13 @@ In the implementation part of this tutorial, each line of the specification will
 
   ### Test the implementation
 
-  Now that we have implemented the function, it's essential that test it to verify it behaves as intended.
+  Now that we have implemented the function, it's essential that we test it to verify it behaves as intended.
 
   Recall, you can create files and run them with the command:
 
-    ```sh
-    ./mach run MyFileName.js
-    ```
+  ```sh
+  ./mach run MyFileName.js
+  ```
 
   Create a script to test your implementation or use the sample script below:
 
