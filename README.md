@@ -223,7 +223,7 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 
 ### 3. Applying simple changes
 
-  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit or `add`/`remove` functions.
+  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit, add or remove functions.
 
   To see the effect of this, we can change the `return` value of a function.
 
