@@ -1665,11 +1665,11 @@ With these fairly simple steps our new implementation is now more streamlined wi
   ```
   </details>
 
-  Now the `std_has`method should be available in self-hosted JavaScript™.
+  The `std_Map_has` method should now be available in self-hosted JavaScript™.
 
   ### Optimize the function
 
-  With has now exposed to self-hosted code, alter your implementation to use `std_has` instead of a `for-of` iteration
+  With has now exposed to self-hosted code, alter your implementation to use `std_Map_has` instead of a `for-of` loop
   and `SameValueZero`.
 
   <details>
@@ -1705,7 +1705,6 @@ With these fairly simple steps our new implementation is now more streamlined wi
   **TODO? more advanced, next iteration introducing cpp code**
 
   
-  </details>
 </details>
 
 <details open>
