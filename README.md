@@ -2,14 +2,14 @@
 
 ### ECMAScript®
 
-JavaScript™ is standardized by ECMAScript® and specified in the [ECMA-262 language specification](https://ecma-international.org/publications-and-standards/standards/ecma-262/), which is maintained by Ecma International through the [TC39 committee](https://tc39.es/). ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like [V8](https://v8.dev/) (used in Chrome and Node.js), [JavaScriptCore](https://developer.apple.com/documentation/javascriptcore) (Safari), and [SpiderMonkey](https://spidermonkey.dev/) (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
+JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International through the <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
 
 SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ feature proposal, providing insights into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
 
 ### Introduction
 
 
-Welcome to this detailed tutorial on how to implement and understand the [`Map.prototype.upsert proposal`](https://github.com/tc39/proposal-upsert). This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, [Test262](https://github.com/tc39/test262).
+Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert proposal`</a>. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
 
 
 We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both JavaScript™ and C++, ensuring alignment with the ECMAScript® specification. 
@@ -164,9 +164,9 @@ flowchart TD
 
   The installation process depends on your operating system, therefore you can click on the link under that matches yours.
 
-* [Build Mozilla Firefox on Linux](https://firefox-source-docs.mozilla.org/setup/linux_build.html)
-* [Build Mozilla Firefox on Mac](https://firefox-source-docs.mozilla.org/setup/macos_build.html)
-* [Build Mozilla Firefox on Windows](https://firefox-source-docs.mozilla.org/setup/windows_build.html)
+* <a href="https://firefox-source-docs.mozilla.org/setup/linux_build.html" target="_blank">Build Mozilla Firefox on Linux</a>
+* <a href="https://firefox-source-docs.mozilla.org/setup/macos_build.html" target="_blank">Build Mozilla Firefox on Mac</a>
+* <a href="https://firefox-source-docs.mozilla.org/setup/windows_build.html" target="_blank">Build Mozilla Firefox on Windows</a>
 
   
   During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
@@ -175,7 +175,7 @@ flowchart TD
 
 **Having trouble?**
 
-[Here](https://firefox-source-docs.mozilla.org/setup/common_build_errors.html) are some of the most common build errors.
+<a href="https://firefox-source-docs.mozilla.org/setup/common_build_errors.html" target="_blank">Here</a> are some of the most common build errors.
 __Note!__ Many errors can be related to your Python build. Ensure you are using the correct python path and/or configuration.
 
 ### 2. Running SpiderMonkey
@@ -250,7 +250,7 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 
 ### 1. What is the ECMA-262 Specification?
 
-* [ECMA-262](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA) is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
+* <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA" target="_blank">ECMA-262</a> is the official document that defines how JavaScript™ works. It tells developers and browser makers what JavaScript™ should do in every situation.
 
 ### 2. How to Navigate the Document
 
@@ -261,7 +261,7 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 ### 3. How to Read the Algorithms
 
 * **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: For example, the spec describes how [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push) works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
+* **Steps to follow**: For example, the spec describes how <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a> works with small, numbered steps: first, it checks the current `length`, then adds the new element, and finally updates the array’s `length`.
 * **Conditions**: You’ll often see if-statements, that will tell you how to proceed if the statement evaluates to true or false.
 
 ### 4. Some Key Symbols and What They Mean
@@ -276,16 +276,16 @@ __Note!__ Many errors can be related to your Python build. Ensure you are using 
 
 The specification text uses a range of notations and symbols to describe its syntax and structure. To understand these symbols, you can look into this specific section in the specification:
 
-* [Notational Conventions](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-notational-conventions): This section explains the different types of symbols, and how they are used to define the language. 
-* For example, in the [Nonterminal Symbols and Productions](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-nonterminal-symbols-and-productions) section, you can read about nonterminal symbol, which are shown in _italic type_, and learn how to read the syntactic definition of a **WhileStatement**. 
+* <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-notational-conventions" target="_blank">Notational Conventions</a>: This section explains the different types of symbols, and how they are used to define the language. 
+* For example, in the <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-nonterminal-symbols-and-productions" target="_blank">Nonterminal Symbols and Productions</a> section, you can read about nonterminal symbol, which are shown in _italic type_, and learn how to read the syntactic definition of a **WhileStatement**. 
 
 ### 6. Start Simple
 
 * Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
-* **External Help**: Use resources like [SearchFox.org](https://searchfox.org/) to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
+* **External Help**: Use resources like <a href="https://searchfox.org/" target="_blank">SearchFox.org</a> to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 * You can also check out https://timothygu.me/es-howto/ or https://v8.dev/blog/tags/understanding-ecmascript for other helpful guides on how to read the ECMA-262 Language Specification. 
 
-### 7. Example: Understanding [`Array.prototype.push`](https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push)
+### 7. Example: Understanding <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a>
 
 * In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
   * First, the `length` of the array is checked.
@@ -311,7 +311,7 @@ The specification text uses a range of notations and symbols to describe its syn
   8. Return e.[[Value]].
 ```
 
-An html version of the specification can be found [here.](https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html)
+An html version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html" target="_blank">here.</a>
 
 The ECMAScript262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
 The goal is gain an overview of what we are trying to achieve.
@@ -329,7 +329,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-   When implementing a feature [Searchfox](https://searchfox.org/) is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+   When implementing a feature <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a powerful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like Map are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
    When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the Ecma-262 Specification with Searchfox and look at existing code.
 
@@ -482,7 +482,7 @@ In the implementation part of this tutorial, each line of the specification will
   - Some abstract operations and additional utility functions.
 
 
-  Read more about self-hosted code [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
+  Read more about self-hosted code <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here.</a>
   
   __The snippet below is from `SelfHosting.cpp` and displays the available `MapObject` builtins:__
 
@@ -741,7 +741,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   In this context, we need to call the `update` function on the current value associated with the map entry. This involves passing `e.[[Value]]` (the existing value), `key`, and `M` as arguments to the function.
 
-  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination [here.](https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting)
+  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing value) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the map entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here.</a>
 
    <details>
    <summary>Solution</summary>
@@ -1084,7 +1084,7 @@ The original proposal introduced a flexible solution by allowing both an `update
 
 The process of checking if a `key` exists and then inserting it if not is most likely the primary use case of this method. By following the steps of the initial proposal, this process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
 
-In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called [`setdefault`](https://docs.python.org/2/library/stdtypes.html#dict.setdefault). This method is written more about in the "Explaining the new proposal" section of the tutorial. 
+In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. This method is written more about in the "Explaining the new proposal" section of the tutorial. 
 
 By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
@@ -1093,7 +1093,7 @@ By making it overcomplicated and a feature that is not commonly found in other l
 <details open>
    <summary><h2>Explaining the new proposal</h2></summary>
 
-  In the original [proposal](https://github.com/tc39/proposal-upsert) the idea of two versions was presented. 
+  In the original <a href="https://github.com/tc39/proposal-upsert" target="_blank">proposal</a> the idea of two versions was presented. 
   - (1)Takes the arguments `key` and `value`. 
   - (2)Takes the the arguments `key` and `callbackfn`
 
@@ -1165,7 +1165,7 @@ To implement the updated proposal, we first need to adapt the specification.
 
   The next section will be based on this draft of the new specification. Later in the tutorial we will look into how we can write the specification in ecmarkup.
 
-  An html version of the specification can be found [here.](https://bldl.github.io/upsert-tutorial/key-value-callback-spec/Map.prototype.getOrInsert.html)
+  An html version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/Map.prototype.getOrInsert.html" target="_blank">here.</a>
 
 </details>
 
@@ -1398,7 +1398,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
     </details>
 
 
-* **Installing [Ecmarkup](https://tc39.es/ecmarkup/)**
+* **Installing <a href="https://tc39.es/ecmarkup/" target="_blank">Ecmarkup</a>**
     * Windows/Mac/Linux
         1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
         2. Run the following command to install Ecmarkup globally:
@@ -1449,7 +1449,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
     1. **Understanding why we need Ecmarkup**
 
-       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the tc39 official website, and locate ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification (<https://tc39.es/ecma262/>). This is made with Ecmarkup.
+       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">tc39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These spesifications are made with Ecmarkup.
     2. **Basic translation steps**
         * `<emu-alg>`: Defines an algorithm.
         * `<emu-clause>`: Defines a clause/section in the specification.
@@ -1506,7 +1506,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  A proposal goes through several [stages](https://www.proposals.es/stages) before it becomes a part of the ECMAScript® language.
+  A proposal goes through several <a href="https://www.proposals.es/stages" target="_blank">stages</a> before it becomes a part of the ECMAScript® language.
   Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
   Therefore optimization becomes crucial when designing and implementing these features.
   In our case there is especially one line which could use some optimization:
@@ -1712,7 +1712,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
    <summary><h2>Testing (Test262)</h2></summary>
    
-   ### Writing tests for [Test262](https://github.com/tc39/test262)
+   ### Writing tests for <a href="https://github.com/tc39/test262" target="_blank">Test262</a>
    When it comes to testing implementations, there are some guidelines to follow. 
    The official guidelines state that an acceptable test in Test262 is the following:
    ```
@@ -1744,7 +1744,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
    The `assert` is part of the Test262 suite, here we assert that a TypeError is thrown.
 
-   You can find the rest of the functions for assert [here](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment).
+   You can find the rest of the functions for assert <a href="https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment" target="_blank">here</a>.
 
    ### More than just testing
 
@@ -1788,7 +1788,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
         ... 
    ```
 
-   There are many other keys we can look at, but if you want to learn more about them, check out this [link](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter).
+   There are many other keys we can look at, but if you want to learn more about them, check out this <a href="https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter" target="_blank">link.</a>
 
    Our full test should now look something like this:
    ```js
