@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Jonas Haukenes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: pending
+esid: proposal-upsert
 description: >
   Append a new value in the map normalizing +0 and -0.
 info: |

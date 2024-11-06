@@ -2,7 +2,7 @@
 // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
-esid: pending
+esid: proposal-upsert
 description: >
   Inserts the value for the specified key on different types, when key not present.
 info: |
