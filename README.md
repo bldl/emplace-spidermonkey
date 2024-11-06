@@ -9,7 +9,7 @@ SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in
 ### Introduction
 
 
-Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert proposal`</a>. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
+Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert proposal`</a>. This guide is tailored to help both beginners and advanced developers to learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
 
 
 We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both JavaScript™ and C++, ensuring alignment with the ECMAScript® specification. 
