@@ -283,7 +283,9 @@ The specification text uses a range of notations and symbols to describe its syn
 
 ## The `Map.prototype.upsert` Specification
 
-```
+This is the specification of the `Map.prototype.upsert` which will be implemented in this tutorial. This specification will guide our implementation, detailing each operation the `upsert` method needs to perform to insert or update a `key-value` pair in a `Map` object.
+
+```lua
 1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
   3. Let entries be the List that is M.[[MapData]].
@@ -302,8 +304,17 @@ The specification text uses a range of notations and symbols to describe its syn
 
 An html version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html" target="_blank">here.</a>
 
-The ECMAScript 262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudo code, sentences or a combination. 
-The goal is to gain an overview of what we are trying to achieve.
+The ECMAScript 262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudocode, sentences or a combination. 
+The aim is to develop a clear understanding of the functionality we want to achieve.
+
+**Key Points to Focus On:**
+
+__- Scope and Validation:__ The first few lines establish the this value (`M`) and ensure it’s a valid instance of `Map`.
+__- Iterating Over Entries:__ The method iterates through the `Map` entries to check if the specified `key` already exists.
+__- Conditional Update or Insert:__ If the key exists, it checks for an `update` function in the `handler` and applies it to update the value. If the key does not exist, it uses the `insert` function to create a new entry.
+__- Returning the Result:__ Finally, it returns the updated or inserted value.
+
+By breaking down the specification in this way, you'll have a roadmap for implementing each part of the `upsert` method. This approach will help make the implementation process smoother and ensure that you understand how each step contributes to the overall functionality.
 
 **Rewrite the spec in your own words**
 Example: 
