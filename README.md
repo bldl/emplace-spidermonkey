@@ -1085,18 +1085,20 @@ By making it overcomplicated and a feature that is not commonly found in other l
 <details open>
    <summary><h2>Explaining the new proposal</h2></summary>
 
-  In the original <a href="https://github.com/tc39/proposal-upsert" target="_blank">proposal</a> the idea of two versions was presented. 
-  - (1)Takes the arguments `key` and `value`. 
-  - (2)Takes the the arguments `key` and `callbackfn`
+  In the original <a href="https://github.com/tc39/proposal-upsert" target="_blank">proposal</a> the idea of two different versions was presented. 
 
-  Both the respective versions with `value` and `callbackfn` serves the same principle as a get or insert method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
+  (1) Takes the arguments `key` and `value`. 
+
+  (2) Takes the the arguments `key` and `callbackfn`
+
+  Both the respective versions with `value` and `callbackfn` serves the same principle as a `get` or `insert` method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
 
 
    **What is the motivation for a new propsosal?**
    A common problem when using a `Map` is how to handle doing an `update` when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
-   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists the value associated with the `key` is returned. Otherwise the `key` is inserted in to the `Map` with the provided default value, then returning the newly inputted value.  
+   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists, the `value` associated with the `key` is returned. Otherwise the `key` is inserted in to the `Map` with the provided default value, then returning the newly input `value`.  
 
    **Simple use of "new" upsert:**
 
@@ -1219,7 +1221,7 @@ We are now ready to proceed and update the logic of the function.
 
   ### Step 4a - If the key exists, return the value
 
-  In this step, we implement the condition to handle the case when the key already exists in the Map.
+  In this step, we implement the condition to handle the case when the `key` already exists in the `Map`.
 
   __Specification Line:__
 
@@ -1227,9 +1229,9 @@ We are now ready to proceed and update the logic of the function.
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
 
-In the updated logic, we are only concerned with returning the existing value if the key is found, rather than handling updates. This is a streamlined approach that differs from our previous implementation.
+In the updated logic, we are only concerned with returning the existing `value` if the `key` is found, rather than handling updates. This is a streamlined approach that differs from our previous implementation.
 
-Use the built-in `std_Map_get` function to return the existing value.
+Use the built-in `std_Map_get` function to `return` the existing `value`.
 
   <details>
     <summary>Solution</summary>
@@ -1263,13 +1265,13 @@ function MapUpsert(key, value) {
 
 ```
 
-With this code in place, our MapUpsert function will return the existing value if the key is found in the Map. If the key does not exist, the function will continue to the next steps, where we will handle inserting a new entry.
+With this code in place, our `MapUpsert` function will `return` the existing `value` if the `key` is found in the `Map`. If the `key` does not exist, the function will continue to the next steps, where we will handle inserting a new entry.
 
   </details>
 
   ### Step 5 & 6 - insert the new key value pair
 
-  Now, we address the scenario where the key does not already exist in the Map. If the specified key is not found in the previous iteration step, insert the new value and return it.
+  Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and `return` it.
 
   __The Specification States:__
   
@@ -1278,7 +1280,7 @@ With this code in place, our MapUpsert function will return the existing value i
   6. Return e.[[Value]].
   ```
 
-  In this case, we will add the new key-value pair to the Map and then return the value. We can achieve this by using the built-in set operation, which allows us to add entries directly and efficiently.
+  In this case, we will add the new `key`-`value` pair to the `Map` and then `return` the `value`. We can achieve this by using the built-in set operation, which allows us to add entries directly and efficiently.
 
   <details>
     <summary>Solution</summary>
