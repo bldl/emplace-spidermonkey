@@ -1149,7 +1149,7 @@ prefs.setdefault("useDarkmode", True)
 
 To implement the updated proposal, we first need to adapt the specification. 
 
-## A Draft of The Specification For The New Proposal.
+## A Draft of The New Specification For The Proposal.
 
 The new specification now looks like this. It draws similarities from the old specification and adapts to the newly specified behaviour we seek in the `Map.prototype.upsert` method.
 
@@ -1172,7 +1172,7 @@ The new specification now looks like this. It draws similarities from the old sp
 <details open>
   <summary><h2>Implementing the new proposal</h2></summary>
 
-  In this section, we will adapt our implementation to match the updated proposal specifications. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
+  In this section, we will adapt our implementation to match the updated proposal specification. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
 
   ### Step 1-4 - the logic remains the same
 
@@ -1180,13 +1180,11 @@ The new specification now looks like this. It draws similarities from the old sp
 
   __The Specification States:__
 
-  ```
-
+  ```lua
   1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
   3. Let entries be the List that is M.[[MapData]].
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-
   ```
 
   These lines are similar to the previous proposal specification and they remain seemingly unchanged. Only a few altercations are introduced. We need to update the argument `handler` to `value`.
@@ -1231,7 +1229,7 @@ We are now ready to proceed and update the logic of the function.
 
   __Specification Line:__
 
-  ```
+  ```lua
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
 
@@ -1281,12 +1279,12 @@ With this code in place, our `MapUpsert` function will `return` the existing `va
 
   __The Specification States:__
   
-  ```
+  ```lua
   5. Set e.[[Value]] to value.
   6. Return e.[[Value]].
   ```
 
-  In this case, we will add the new `key`-`value` pair to the `Map` and then `return` the `value`. We can achieve this by using the built-in set operation, which allows us to add entries directly and efficiently.
+  In this case, we will add the new `key`-`value` pair to the `Map` and then `return` the `value`. We can achieve this by using the built-in `Map::set` method, which allows us to add entries directly and efficiently.
 
   <details>
     <summary>Solution</summary>
@@ -1324,7 +1322,7 @@ function MapUpsert(key, value) {
 
   </details>
 
-With these fairly simple steps our new implementation is now more streamlined with a simpler and more 'attractive' api.
+With these fairly simple steps our new implementation is now more streamlined with a simpler and more attractive api.
   
 </details>
 
@@ -1337,7 +1335,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript®-standards. 
 
   We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
-  Furthermore, we will check out how to format spec text using Ecmarkup before guiding you through how to build your specification into a HTML document. 
+  Furthermore, we will check out how to format specification using Ecmarkup before guiding you through how to build your specification into a HTML document. 
 
 * **Installing Node.js and Node Package Manager**
 
@@ -1352,7 +1350,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
     3. Verify installation by opening Command Prompt and typing:
 
-    ```bash
+    ```sh
     node -v
     npm -v
     ```
@@ -1365,11 +1363,11 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
     1. Open Terminal
     2. Install Node.js via Homebrew by running the following command:
-    ```bash
+    ```sh
     brew install node
     ```
     3. Verify installation by typing:
-    ```bash
+    ```sh
     node -v
     npm -v
     ```
@@ -1381,17 +1379,17 @@ With these fairly simple steps our new implementation is now more streamlined wi
     1. Open Terminal
     2. Update your package list:
 
-    ```bash
+    ```sh
     sudo apt update
     ```
 
     3. Install Node.js by running:
-    ```bash
+    ```sh
     sudo apt install node.js spm
     ```
 
     4. Verify the installation:
-    ```bash
+    ```sh
     node -v
     npm -v
     ```
@@ -1402,14 +1400,14 @@ With these fairly simple steps our new implementation is now more streamlined wi
     * Windows/Mac/Linux
         1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
         2. Run the following command to install Ecmarkup globally:
-      ```bash
+      ```sh
       npm install -g ecmarkup
       ```
         3. Verify that Ecmarkup has been installed by typing:
-      ```bash
+      ```sh
       ecmarkup --version
       ```
-      Now you have installed Ecmarkup.
+      You have now installed Ecmarkup.
 
 * **How to write ecmarkup**
 
@@ -1490,7 +1488,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   To build the spec, use the following command:
 
-    ```bash
+    ```sh
       ecmarkup spec.emu out.html
     ```
 
@@ -1498,9 +1496,6 @@ With these fairly simple steps our new implementation is now more streamlined wi
     * `spec.emu` is the source file where you have written your specification using Ecmarkup.
     * `out.html` is the output file, which is a runnable HTML document.
       To verify that your specification has been built correctly, simply drag-and-drop the `out.html` file into a web browser.
-
-  TODO: Troubleshooting while building the spec.
-  TODO: Load the html file to verify successfully connected hyperlinks etc.
 
 </details>
 
@@ -1512,7 +1507,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   Therefore optimization becomes crucial when designing and implementing these features.
   In our case there is especially one line which could use some optimization:
 
-  ```
+  ```lua
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   ```
   
@@ -1525,8 +1520,8 @@ With these fairly simple steps our new implementation is now more streamlined wi
   }
   ```
 
-  The worst case for this is that is loops through the entire `entries`.
-  This is rather slow, considering a lookup in maps should be ~O(1), given an efficient `HashTable` implementation.
+  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`~O(size)`__.
+  This is rather slow, considering a lookup in maps should be __`~O(1)`__, given an efficient `HashTable` implementation.
   Therefore, we decided to try to optimize this line.
 
   **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
@@ -1586,9 +1581,11 @@ With these fairly simple steps our new implementation is now more streamlined wi
   </details>
 
 
-  One solution we had, was to check if the entry was in the `Map`, by using `std_has`.
-  The problem with this, is that the function is not currently exposed to self hosted JavaScript™ code. The reason for this
-  is seemingly because there has not been any need for the `std_has` method in self-hosted code previously.
+  One solution we had, was to check if the entry was in the `Map`, by using `Map::has`.
+  The problem with this, is that this method is not currently exposed to self hosted JavaScript™ code. The reason for this
+  is seemingly because there has not been any need for the `Map::has` method in self-hosted code previously.
+
+  **Exposing `std_Map_has` to self-hosted code**
 
   `Selfhosting.cpp`
   ```cpp
@@ -1610,27 +1607,27 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   ```
 
-  Copy the line and paste it into `js/src/vm/Selfhosting.cpp`, before MapObject::set (to ensure consistency across files).
+  Copy the line and paste it into `js/src/vm/Selfhosting.cpp`, before `MapObject::set` (to ensure consistency across files).
 
   <details>
     <summary>Solution</summary>
   
-    ```cpp
+  ```cpp
 
-    // Standard builtins used by self-hosting.
-    //...
-    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
-    JS_FN("std_Map_get", MapObject::get, 1, 0),
-    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
-    JS_FN("std_Map_set", MapObject::set, 2, 0),
-    //...
+  // Standard builtins used by self-hosting.
+  //...
+  JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+  JS_FN("std_Map_get", MapObject::get, 1, 0),
+  JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
+  JS_FN("std_Map_set", MapObject::set, 2, 0),
+  //...
 
   ```
   </details>
 
-  We also need to make the `has` function publicly exposed in `MapObject.h` to use it in self-hosted code.
+  We also need to make the `has` method publicly exposed in `MapObject.h` to use it in self-hosted code.
 
-  In `MapObject.h`, move this line from private to public.
+  In `MapObject.h`, move this line from __private__ to __public__.
 
   ```cpp
   [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
