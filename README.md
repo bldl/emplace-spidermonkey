@@ -1633,7 +1633,8 @@ With these fairly simple steps our new implementation is now more streamlined wi
   [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
   ```
 
-  (This could be tricky) Let's break down the structure of the file:
+  <details>
+  <summary>(This could be tricky) Let's break down the structure of the file: </summary>
 
   ```cpp
     class MapObject : public NativeObject {
@@ -1662,6 +1663,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
     }
 
   ```
+  </details>
 
   Now the `std_has`method should be available in self-hosted JavaScript™.
 
