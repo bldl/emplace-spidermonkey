@@ -1669,7 +1669,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   ### Optimize the function
 
-  With has now exposed to self-hosted code, alter your implementation to use `std_Map_has` instead of a `for-of` loop
+  With `has` now exposed to self-hosted code, alter your implementation to use `std_Map_has` instead of a `for-of` loop
   and `SameValueZero`.
 
   <details>
@@ -1698,12 +1698,6 @@ With these fairly simple steps our new implementation is now more streamlined wi
       }
     ```
   </details>
-
-
-  **TODO explain further on std_has**
-
-  **TODO? more advanced, next iteration introducing cpp code**
-
   
 </details>
 
@@ -1737,7 +1731,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
    var m = new Map();
     
    assert.throws(TypeError, function () {
-       m.upsert.call(false, 1);
+       m.upsert.call(new Set(), 1, 1);
    });
    ```
 
@@ -1807,7 +1801,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.upsert.call(false, 1, 1);
+       m.upsert.call(new Set(), 1, 1);
    });
    ```
    ### Fill in test cases
