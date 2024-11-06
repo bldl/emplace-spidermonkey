@@ -2,31 +2,29 @@
 
 ### ECMAScript®
 
-JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International through the <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
+JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International through the <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey,</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
 
-SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ feature proposal, providing insights into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
+SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ proposal, providing insight into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
 
 ### Introduction
 
+Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert proposal`</a>. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` method and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
 
-Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert proposal`</a>. This guide is tailored to help both beginners and advanced developers to learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` function and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
 
-
-We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both JavaScript™ and C++, ensuring alignment with the ECMAScript® specification. 
+We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both *self-hosted* JavaScript™ and (a little bit of) C++, ensuring alignment with the ECMAScript® specification. 
 
 The main focus will initially be on developing a functional solution. Once basic functionality is verified, optimization techniques will be applied to ensure your code is efficient and performant. You'll also gain insight into contributing to the ECMAScript® standard, aligning your code with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
 
-By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained valuable insights into the process of designing, testing and standardizing JavaScript™ features.
+By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained valuable insight into the process of designing, testing and standardizing JavaScript™ features.
 
 ### What’s Covered in This Tutorial?
 
 - __The `Map.prototype.upsert` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript™ developers.
 - __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
-- __Implementing the Proposal:__ We will implement the upsert function both in self-hosted JavaScript™ and C++.
+- __Implementing the Proposal:__ We will implement the `upsert` method both in self-hosted JavaScript™ and C++.
 - __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript®, and how to run custom scripts.
 - __Optimizing Your Code:__ Learn about performance considerations and optimizations.
 - __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
-
 
 ```mermaid
 flowchart TD
@@ -43,31 +41,27 @@ flowchart TD
   J --> K[Testing The Proposal];
 ```
 
-**TODO testing is introduced in the end of the tutorial, but there are other ways to test implementation, writing scripts**
-
-**TODO? explain the process of an ECMAScript® proposal, ex. phases 2 -> 2.7 etc**
-
 <details open>
    <summary><h2>The `Map.prototype.upsert` proposal</h2></summary>
 
    **What is it?**
 
-   `Map.prototype.upsert` is a new method for JavaScript™'s `Map`-object. The operation simplifies the process of inserting or updating key-value pairs in the Map. The function simply checks for existence of a key to either `insert` or `update` new key-value pairs.
+   `Map.prototype.upsert` is a new method for JavaScript™'s `Map`-object. The operation simplifies the process of inserting or updating `key-value` pairs in the Map. The function simply checks for existence of a key to either `insert` or `update` new `key-value` pairs.
 
    **How does it work?**
    The `upsert` operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
 
-* `update`: Function to modify value of a `key` if it is already existing in the `Map`.
-* `insert`: Function that generates a default-value to be set to the belonging `value` of the checked `key`.
+* `update`: Function to modify `value` of a `key` if already present in the `Map`.
+* `insert`: Function that generates a `default-value` to be set to the belonging `value` of the checked `key`.
 
    **The function follow these steps:**
 
    1. The `Map` is checked for the `key` passed as argument. If found:
-       * It checks the `handler` for `update` function. If found, this is used to `update` the `value` belonging to the passed `key`. After this, the newly updated key will be returned. 
+       * It checks the `handler` for an `update` function. If found, this is used to `update` the `value` belonging to the passed `key`. After this, the newly updated entry will be returned. 
    2. If not found, the `insert` function from the `handler` is used to generate a new `value`. This will be assigned to the given `key` before returning it.
    3. In either case, the `value` will be the `return` value of the `upsert` method.
 
-   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` prototype methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and can be inconvenient for developers. It is also aiming to prevent code that might be confusing or lead to errors.
+   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and can be inconvenient for developers. It is also aiming to prevent code that might be confusing or lead to errors.
 
    <details>
    <summary>
