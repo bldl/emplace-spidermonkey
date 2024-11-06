@@ -28,8 +28,6 @@ By the end of this tutorial, you'll have implemented a fully functional `upsert`
 - __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
 
 
-By the end of this tutorial, you will have a full implementation of `Map.prototype.upsert` and a solid understanding of how JavaScript™ engine features are developed.
-
 ```mermaid
 flowchart TD
   A[The Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
