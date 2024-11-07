@@ -1176,7 +1176,7 @@ The new specification now looks like this. It draws similarities from the old sp
 
   In this section, we will adapt our implementation to match the updated proposal specification. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
 
-  ### Step 1-4 - the logic remains the same
+  ### Step 1-4 - The logic remains the same
 
   The first four steps remain unchanged from the original proposal.
 
