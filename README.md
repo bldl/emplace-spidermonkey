@@ -169,7 +169,7 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 ### 2. Running SpiderMonkey
 
-  After the installation is completed a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
+After the installation is complete, a folder named `mozilla-unified` should appear in the directory where your terminal was located when you started the guide above.
 
   Navigate into `mozilla-unified` folder using `cd mozilla_unified`.
 
