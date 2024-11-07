@@ -22,19 +22,19 @@ assert.doesNotThrow(function () {
 });
 
 assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 1, () => {});
+    m.getOrInsertComputed.call(m, 2, () => {});
 });
 
 assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 1, (function() {}).bind(m));
+    m.getOrInsertComputed.call(m, 3, (function() {}).bind(m));
 });
 
 assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 1, new Function());
+    m.getOrInsertComputed.call(m, 4, new Function());
 });
 
 assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 1, { 
+    m.getOrInsertComputed.call(m, 5, { 
         call: function() {} 
     });
 });
