@@ -466,7 +466,7 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### Step 3 - Self-Hosted JavaScript™ vs. JavaScript™
 
-  Before we proceed further in the tutorial it's imperitive to better our understanding of self-hosted JavaScript™. 
+  Before proceeding further in the tutorial, it’s imperative to improve our understanding of self-hosted JavaScript™. 
 
   All self-hosted JavaScript™ operates in __strict mode,__ preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe,
   we have to follow some rules. A potentially critical problem when writing self-hosted code is __monkey patching.__ This phenomenom occurs when our implementation makes a function call to an external function
