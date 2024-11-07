@@ -207,7 +207,7 @@ After the installation is complete, a folder named `mozilla-unified` should appe
   js> console.log("Hello World!");
   ```
   
-  You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command: 
+  You can also execute `.js` files, which is done by giving the filename as a parameter in the `./mach run` command: 
 
   If you create a file called `helloworld.js` with `console.log("Hello World!);` in it and save it. You can execute it like this (given it is in the same folder):
   ```sh
