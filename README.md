@@ -505,7 +505,7 @@ In the implementation part of this tutorial, each line of the specification will
   3. Let entries be the List that is M.[[MapData]].
   ```
 
-  Use `callFunction` and the standard built-in `std_Map_entries` to retrive a list of all `key-value` entries in the `Map`. Store it as a variable named `entries`.
+  Use `callFunction` and the standard built-in `std_Map_entries` to retrieve a list of all `key-value` entries in the `Map`. Store it as a variable named `entries`.
 
    <details>
    <summary>Solution</summary>
