@@ -317,9 +317,11 @@ The aim is to develop a clear understanding of the functionality we want to achi
 By breaking down the specification in this way, you'll have a roadmap for implementing each part of the `upsert` method. This approach will help make the implementation process smoother and ensure that you understand how each step contributes to the overall functionality.
 
 **Rewrite the spec in your own words**
+
 Example: 
 3. Let __entries__ be the `List` that is __M__.[[MapData]].
--->>
+
+Could be rewritten to:
 3. make a `List` variable __entries__, which stores pairs `(key, value)`
 
 In the implementation part of this tutorial, each line of the specification will be explained.
