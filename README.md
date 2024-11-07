@@ -33,7 +33,7 @@ flowchart TD
   C --> D[Searchfox As Tool];
   D --> E[The Initial 'key, handler' Proposal];
   E --> F[Implement The Proposal];
-  F --> G{Satisified With The Proposal?};
+  F --> G{Satisfied With The Proposal?};
   G --> |no| H[Identify The Issues And Create A New Proposal];
   H --> I[Create The New Specification];
   I --> F;
@@ -258,7 +258,7 @@ After the installation is complete, a folder named `mozilla-unified` should appe
 * **`[[ ]]` (Double Square Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, specifying the result to be returned.
-* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a secific `value`. 
+* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a specific `value`. 
 * **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather than in code syntax, to describe the behavior that an implementation should follow.
 
 ### 5. Finding Information on Other Symbols
@@ -424,7 +424,7 @@ In the implementation part of this tutorial, each line of the specification will
   }
   ```
 
-  We have now captured the `this` object, which should be an instance of a `MapObject` and we can now start to manipulate this object in the upcomming steps.
+  We have now captured the `this` object, which should be an instance of a `MapObject` and we can now start to manipulate this object in the upcoming steps.
 
 ### Step 2 - Verify The Object Type
 
@@ -469,7 +469,7 @@ In the implementation part of this tutorial, each line of the specification will
   Before proceeding further in the tutorial, it’s imperative to improve our understanding of self-hosted JavaScript™. 
 
   All self-hosted JavaScript™ operates in __strict mode,__ preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe,
-  we have to follow some rules. A potentially critical problem when writing self-hosted code is __monkey patching.__ This phenomenom occurs when our implementation makes a function call to an external function
+  we have to follow some rules. A potentially critical problem when writing self-hosted code is __monkey patching.__ This phenomenon occurs when our implementation makes a function call to an external function
   which has been overwritten by user scripts. This problem can be mitigated by using __function invocation.__ Use `callFunction` and `callContentFunction` to call function within the specific object scope. 
   Furthermore, self-hosted code also has limited access to the C++ builtins. Only a select set, defined in `Selfhosting.cpp` is accessible. 
 
@@ -497,7 +497,7 @@ In the implementation part of this tutorial, each line of the specification will
   ```
 
   **Moving on with the implementation:**
-  We have stored the `this` object and verified that is infact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
+  We have stored the `this` object and verified that is in fact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
 
   __Specification Line:__
 
@@ -574,7 +574,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Check if `key` already exists**
 
-  As mentioned above, the purpose of the iteration is to check whether or not the key already exists. This can be done by comparing the `key` with `eKey`.
+  As mentioned above, the purpose of the iteration is to check whether the key already exists. This can be done by comparing the `key` with `eKey`.
 
   __Specification Line:__
 
@@ -1082,7 +1082,7 @@ The proposal we have dealt with so far introduced a flexible solution by allowin
 
 The process of checking if a `key` exists and then inserting it if not, is likely the primary, in-demand use case for this method. By following the steps of this proposal, the process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide separate logic for both `insert` and `update`. 
 
-In additon, the approach of the original proposal doesn't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. You can read more about this method in the next section of the tutorial.
+In addition, the approach of the original proposal doesn't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. You can read more about this method in the next section of the tutorial.
 
 By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
@@ -1095,12 +1095,12 @@ By making it overcomplicated and a feature that is not commonly found in other l
 
   (1) Takes the arguments `key` and `value`. 
 
-  (2) Takes the the arguments `key` and `callbackfn`
+  (2) Takes the arguments `key` and `callbackfn`
 
   Both the respective versions with `value` and `callbackfn` serves the same principle as a `get` or `insert` if missing method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
 
 
-   **What is the motivation for a new propsosal?**
+   **What is the motivation for a new proposal?**
    A common problem when using a `Map` is how to handle doing a `Map` entry when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
@@ -1337,7 +1337,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript®-standards. 
 
   We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
-  Furthermore, we will check out how to format specification using Ecmarkup before guiding you through how to build your specification into a HTML document. 
+  Furthermore, we will check out how to format specification using Ecmarkup before guiding you through how to build your specification into an HTML document. 
 
 * **Installing Node.js and Node Package Manager**
 
@@ -1449,7 +1449,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
     1. **Understanding why we need Ecmarkup**
 
-       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These specifications are made with Ecmarkup.
+       Ecmarkup combines HTML-like tags with specific syntactic constructs to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These specifications are made with Ecmarkup.
     2. **Basic translation steps**
         * `<emu-alg>`: Defines an algorithm.
         * `<emu-clause>`: Defines a clause/section in the specification.
@@ -1524,7 +1524,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
   The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`O(n)`__ where `n` is the amount of entries.
   This is rather slow, considering a lookup in maps should be __`~O(1)`__, given an efficient `HashTable` implementation.
-  Therefore, we decided to try to optimize this line.
+  Therefore, we decided to try optimizing this line.
 
   **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
 
@@ -1584,7 +1584,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
 
   One solution we had, was to check if the entry was in the `Map`, by using `Map::has`.
-  The problem with this, is that this method is not currently exposed to self hosted JavaScript™ code. The reason for this
+  The problem with this, is that this method is not currently exposed to self-hosted JavaScript™ code. The reason for this
   is seemingly because there has not been any need for the `Map::has` method in self-hosted code previously.
 
   **Exposing `std_Map_has` to self-hosted code**
@@ -1733,7 +1733,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
    var m = new Map();
     
    assert.throws(TypeError, function () {
-       m.upsert.call(new Set(), 1, 1);
+       m.upsert.call(false, 1, 1);
    });
    ```
 
@@ -1769,7 +1769,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
         Throws a TypeError if 'this' is not an object
    ```
 
-   Although not required, we should fill out the `info` key aswell.
+   Although not required, we should fill out the `info` key as well.
    Some points that are beneficial here are:
     - What does the method look like?
     - Which line of code are we testing?
@@ -1803,7 +1803,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.upsert.call(new Set(), 1, 1);
+       m.upsert.call(false, 1, 1);
    });
    ```
    ### Fill in test cases
