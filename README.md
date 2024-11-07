@@ -337,7 +337,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   Example workflow:
 
-  1. *some line from the specification*.
+  1. *Some line from the specification*.
   2. Find some other function with the same or similar spec line in the ECMA-262 specification.
   3. Look up the function in Searchfox.
   4. Borrow from the other function.
