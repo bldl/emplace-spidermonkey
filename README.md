@@ -1522,7 +1522,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   }
   ```
 
-  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`~O(size)`__.
+  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`O(n)`__ where `n` is the amount of entries.
   This is rather slow, considering a lookup in maps should be __`~O(1)`__, given an efficient `HashTable` implementation.
   Therefore, we decided to try to optimize this line.
 
