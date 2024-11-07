@@ -14,7 +14,7 @@ info: |
 
   6. Let value be ? Call(callbackfn, key).
   ...
-features: [array-grouping, Map]
+
 ---*/
 
 var map = new Map();
