@@ -496,7 +496,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   ```
 
-  **Moving on with the implementation**
+  **Moving on with the implementation:**
   We have stored the `this` object and verified that is infact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
 
   __Specification Line:__
