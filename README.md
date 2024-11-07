@@ -270,7 +270,7 @@ The specification text uses a range of notations and symbols to describe its syn
 
 ### 6. Start Simple
 
-* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
+* Avoid diving into the complex parts right away. Start with sections like the **Introduction** or common JavaScript™ features, such as arrays and functions.
 * **External Help**: Use resources like <a href="https://searchfox.org/" target="_blank">SearchFox.org</a> to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 * You can also check out https://timothygu.me/es-howto/ or https://v8.dev/blog/tags/understanding-ecmascript for other helpful guides on how to read the ECMA-262 Language Specification. 
 
