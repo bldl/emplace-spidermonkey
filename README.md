@@ -574,7 +574,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Check if `key` already exists**
 
-  As mentioned above, the purpose of the iteration is to check wether or not the key already exists. This can be done by comparing the `key` with `eKey`.
+  As mentioned above, the purpose of the iteration is to check whether or not the key already exists. This can be done by comparing the `key` with `eKey`.
 
   __Specification Line:__
 
