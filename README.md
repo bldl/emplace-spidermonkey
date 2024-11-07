@@ -407,8 +407,8 @@ In the implementation part of this tutorial, each line of the specification will
 
   Now that we have our `upsert` method hooked up and accessible in the JavaScript™ runtime, it’s time to start implementing the logic as specified in the ECMAScript® proposal.
 
-  **Setting Up this in the Function**
-  Some lines in the specification are more intutive than others. The first line of the specification instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called. This is a foundational step in almost any method, as it ensures we’re working with the correct object.
+  **Setting Up `this` in the Function:**
+  Some lines in the specification are more intuitive than others. The first line of the specification instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called. This is a foundational step in almost any method, as it ensures we’re working with the correct object.
 
   **Specification Line:**
 
