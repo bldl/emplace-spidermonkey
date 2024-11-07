@@ -682,7 +682,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Get the `update` function from the `handler`**
   
-  If the `key` exists and `update` is specified, the next step is to retrive the `update` function.
+  If the `key` exists and `update` is specified, the next step is to retrieve the `update` function.
 
   __Specification Line:__
 
