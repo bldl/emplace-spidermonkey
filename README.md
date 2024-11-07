@@ -2,7 +2,7 @@
 
 ### ECMAScript®
 
-JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International through the <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey,</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
+JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International through the <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
 
 SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ proposal, providing insight into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
 
@@ -33,7 +33,7 @@ flowchart TD
   C --> D[Searchfox As Tool];
   D --> E[The Initial 'key, handler' Proposal];
   E --> F[Implement The Proposal];
-  F --> G{Satisified With The Proposal?};
+  F --> G{Satisfied With The Proposal?};
   G --> |no| H[Identify The Issues And Create A New Proposal];
   H --> I[Create The New Specification];
   I --> F;
@@ -169,7 +169,7 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 ### 2. Running SpiderMonkey
 
-  After the installation is completed a folder named `mozilla-unified` should now appear in the folder your terminal was located when starting the guide above.
+After the installation is complete, a folder named `mozilla-unified` should appear in the folder where your terminal was located when you started the guide above.
 
   Navigate into `mozilla-unified` folder using `cd mozilla_unified`.
 
@@ -207,7 +207,7 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
   js> console.log("Hello World!");
   ```
   
-  You can also execute `.js` files, which is done by giving the filename as a parameter in the `/mach run` command: 
+  You can also execute `.js` files, which is done by giving the filename as a parameter in the `./mach run` command: 
 
   If you create a file called `helloworld.js` with `console.log("Hello World!);` in it and save it. You can execute it like this (given it is in the same folder):
   ```sh
@@ -255,10 +255,10 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 ### 4. Some Key Symbols and What They Mean
 
-* **`[[ ]]` (Double Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
+* **`[[ ]]` (Double Square Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
 * **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, specifying the result to be returned.
-* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a secific `value`. 
+* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a specific `value`. 
 * **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather than in code syntax, to describe the behavior that an implementation should follow.
 
 ### 5. Finding Information on Other Symbols
@@ -270,7 +270,7 @@ The specification text uses a range of notations and symbols to describe its syn
 
 ### 6. Start Simple
 
-* Don’t dive into the complex parts immediately. Start by reading sections like the **Introduction** or common JavaScript™ features such as arrays or functions.
+* Avoid diving into the complex parts right away. Start with sections like the **Introduction** or common JavaScript™ features, such as arrays and functions.
 * **External Help**: Use resources like <a href="https://searchfox.org/" target="_blank">SearchFox.org</a> to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 * You can also check out https://timothygu.me/es-howto/ or https://v8.dev/blog/tags/understanding-ecmascript for other helpful guides on how to read the ECMA-262 Language Specification. 
 
@@ -317,9 +317,11 @@ The aim is to develop a clear understanding of the functionality we want to achi
 By breaking down the specification in this way, you'll have a roadmap for implementing each part of the `upsert` method. This approach will help make the implementation process smoother and ensure that you understand how each step contributes to the overall functionality.
 
 **Rewrite the spec in your own words**
+
 Example: 
 3. Let __entries__ be the `List` that is __M__.[[MapData]].
--->>
+
+Could be rewritten to:
 3. make a `List` variable __entries__, which stores pairs `(key, value)`
 
 In the implementation part of this tutorial, each line of the specification will be explained.
@@ -335,7 +337,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   Example workflow:
 
-  1. *some line from the specification*.
+  1. *Some line from the specification*.
   2. Find some other function with the same or similar spec line in the ECMA-262 specification.
   3. Look up the function in Searchfox.
   4. Borrow from the other function.
@@ -405,8 +407,8 @@ In the implementation part of this tutorial, each line of the specification will
 
   Now that we have our `upsert` method hooked up and accessible in the JavaScript™ runtime, it’s time to start implementing the logic as specified in the ECMAScript® proposal.
 
-  **Setting Up this in the Function**
-  Some lines in the specification are more intutive than others. The first line of the specification instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called. This is a foundational step in almost any method, as it ensures we’re working with the correct object.
+  **Setting Up `this` in the Function:**
+  Some lines in the specification are more intuitive than others. The first line of the specification instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called. This is a foundational step in almost any method, as it ensures we’re working with the correct object.
 
   **Specification Line:**
 
@@ -422,7 +424,7 @@ In the implementation part of this tutorial, each line of the specification will
   }
   ```
 
-  We have now captured the `this` object, which should be an instance of a `MapObject` and we can now start to manipulate this object in the upcomming steps.
+  We have now captured the `this` object, which should be an instance of a `MapObject` and we can now start to manipulate this object in the upcoming steps.
 
 ### Step 2 - Verify The Object Type
 
@@ -464,10 +466,10 @@ In the implementation part of this tutorial, each line of the specification will
 
 ### Step 3 - Self-Hosted JavaScript™ vs. JavaScript™
 
-  Before we proceed further in the tutorial it's imperitive to better our understanding of self-hosted JavaScript™. 
+  Before proceeding further in the tutorial, it’s imperative to improve our understanding of self-hosted JavaScript™. 
 
   All self-hosted JavaScript™ operates in __strict mode,__ preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe,
-  we have to follow some rules. A potentially critical problem when writing self-hosted code is __monkey patching.__ This phenomenom occurs when our implementation makes a function call to an external function
+  we have to follow some rules. A potentially critical problem when writing self-hosted code is __monkey patching.__ This phenomenon occurs when our implementation makes a function call to an external function
   which has been overwritten by user scripts. This problem can be mitigated by using __function invocation.__ Use `callFunction` and `callContentFunction` to call function within the specific object scope. 
   Furthermore, self-hosted code also has limited access to the C++ builtins. Only a select set, defined in `Selfhosting.cpp` is accessible. 
 
@@ -494,8 +496,8 @@ In the implementation part of this tutorial, each line of the specification will
 
   ```
 
-  **Moving on with the implementation**
-  We have stored the `this` object and verified that is infact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
+  **Moving on with the implementation:**
+  We have stored the `this` object and verified that is in fact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
 
   __Specification Line:__
 
@@ -503,7 +505,7 @@ In the implementation part of this tutorial, each line of the specification will
   3. Let entries be the List that is M.[[MapData]].
   ```
 
-  Use `callFunction` and the standard built-in `std_Map_entries` to retrive a list of all `key-value` entries in the `Map`. Store it as a variable named `entries`.
+  Use `callFunction` and the standard built-in `std_Map_entries` to retrieve a list of all `key-value` entries in the `Map`. Store it as a variable named `entries`.
 
    <details>
    <summary>Solution</summary>
@@ -528,7 +530,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### Step 4 - iterating through the map entries
+### Step 4 - Iterating through the map entries
 
   Now that we’ve set up our initial structure and verified our `MapObject`, the next step is to iterate through the entries within the `Map`. This allows us to examine each `key`-`value` pair to determine 
   if the specified `key` already exists, which will help us decide whether to update an existing `value` or `insert` a new one. To achieve this we first have to set up an iteration of the `entries` list.
@@ -572,7 +574,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Check if `key` already exists**
 
-  As mentioned above, the purpose of the iteration is to check wether or not the key already exists. This can be done by comparing the `key` with `eKey`.
+  As mentioned above, the purpose of the iteration is to check whether the key already exists. This can be done by comparing the `key` with `eKey`.
 
   __Specification Line:__
 
@@ -680,7 +682,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   **Get the `update` function from the `handler`**
   
-  If the `key` exists and `update` is specified, the next step is to retrive the `update` function.
+  If the `key` exists and `update` is specified, the next step is to retrieve the `update` function.
 
   __Specification Line:__
 
@@ -737,7 +739,7 @@ In the implementation part of this tutorial, each line of the specification will
 
   In this context, we need to call the `update` function on the current value associated with the `Map` entry. This involves passing `e.[[Value]]` (the existing `value`), `key`, and `M` as arguments to the function.
 
-  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing `value`) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the `Map` entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. A more detailed explaination <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here.</a>
+  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing `value`) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the `Map` entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. You can read a more detailed explanation <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here</a>.
 
    <details>
    <summary>Solution</summary>
@@ -898,7 +900,7 @@ In the implementation part of this tutorial, each line of the specification will
    8. Return e.[[Value]].
    ```
 
-  This section is similar to our approach for updating an existing entry, except here, we’re adding a new entry to the `Map`. If the `key` isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial `value` for this new `key`-`value` pair.
+  This section is similar to our approach for updating an existing entry, except here we’re adding a new entry to the `Map`. If the `key` isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial `value` for this new `key`-`value` pair.
 
   The section uses similar techniques to the `update` scenario. Use the knowledge and experience you have gained so far to implement the `insert` handler.
 
@@ -1078,9 +1080,9 @@ In the implementation part of this tutorial, each line of the specification will
 
 The proposal we have dealt with so far introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Flexibility is generally a good thing. However in the case of `Map.prototype.upsert`, the flexibility comes at the expense of simplicity and ease of use, which is very important for widespread adoption in programming languages.
 
-The process of checking if a `key` exists and then inserting it if not, is likely the primary, in-demand use case for this method. By following the steps of this proposal, the process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide sepreate logic for both `insert` and `update`. 
+The process of checking if a `key` exists and then inserting it if not, is likely the primary, in-demand use case for this method. By following the steps of this proposal, the process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide separate logic for both `insert` and `update`. 
 
-In additon, the approach of the original proposal don't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. You can read more about this method in the next section of the tutorial.
+In addition, the approach of the original proposal doesn't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. You can read more about this method in the next section of the tutorial.
 
 By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
 
@@ -1093,12 +1095,12 @@ By making it overcomplicated and a feature that is not commonly found in other l
 
   (1) Takes the arguments `key` and `value`. 
 
-  (2) Takes the the arguments `key` and `callbackfn`
+  (2) Takes the arguments `key` and `callbackfn`
 
   Both the respective versions with `value` and `callbackfn` serves the same principle as a `get` or `insert` if missing method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
 
 
-   **What is the motivation for a new propsosal?**
+   **What is the motivation for a new proposal?**
    A common problem when using a `Map` is how to handle doing a `Map` entry when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
    **What is the solution?**
@@ -1174,7 +1176,7 @@ The new specification now looks like this. It draws similarities from the old sp
 
   In this section, we will adapt our implementation to match the updated proposal specification. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
 
-  ### Step 1-4 - the logic remains the same
+  ### Step 1-4 - The logic remains the same
 
   The first four steps remain unchanged from the original proposal.
 
@@ -1273,7 +1275,7 @@ With this code in place, our `MapUpsert` function will `return` the existing `va
 
   </details>
 
-  ### Step 5 & 6 - insert the new key value pair
+  ### Step 5 & 6 - Insert the new key value pair
 
   Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and `return` it.
 
@@ -1322,7 +1324,7 @@ function MapUpsert(key, value) {
 
   </details>
 
-With these fairly simple steps our new implementation is now more streamlined with a simpler and more attractive api.
+With these fairly simple steps our new implementation is now more streamlined with a simpler and more attractive API.
   
 </details>
 
@@ -1335,7 +1337,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript®-standards. 
 
   We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
-  Furthermore, we will check out how to format specification using Ecmarkup before guiding you through how to build your specification into a HTML document. 
+  Furthermore, we will check out how to format specification using Ecmarkup before guiding you through how to build your specification into an HTML document. 
 
 * **Installing Node.js and Node Package Manager**
 
@@ -1411,7 +1413,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
 * **How to write ecmarkup**
 
-  Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
+  Ecmarkup is a markup language used for writing technical specifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
 
   ```html
   <!DOCTYPE html>
@@ -1447,14 +1449,14 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
     1. **Understanding why we need Ecmarkup**
 
-       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These spesifications are made with Ecmarkup.
+       Ecmarkup combines HTML-like tags with specific syntactic constructs to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These specifications are made with Ecmarkup.
     2. **Basic translation steps**
         * `<emu-alg>`: Defines an algorithm.
         * `<emu-clause>`: Defines a clause/section in the specification.
         * Underscores are used to refer to variables (`_varname_`).
         * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification.
         * `*someBoldText*`: Make bold text with `*`.
-        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
+        * Use double square brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
 
 * The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
     ```html
@@ -1520,9 +1522,9 @@ With these fairly simple steps our new implementation is now more streamlined wi
   }
   ```
 
-  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`~O(size)`__.
+  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`O(n)`__ where `n` is the size of the `Map`.
   This is rather slow, considering a lookup in maps should be __`~O(1)`__, given an efficient `HashTable` implementation.
-  Therefore, we decided to try to optimize this line.
+  Therefore, we decided to try optimizing this line.
 
   **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
 
@@ -1582,7 +1584,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
 
   One solution we had, was to check if the entry was in the `Map`, by using `Map::has`.
-  The problem with this, is that this method is not currently exposed to self hosted JavaScript™ code. The reason for this
+  The problem with this, is that this method is not currently exposed to self-hosted JavaScript™ code. The reason for this
   is seemingly because there has not been any need for the `Map::has` method in self-hosted code previously.
 
   **Exposing `std_Map_has` to self-hosted code**
@@ -1731,7 +1733,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
    var m = new Map();
     
    assert.throws(TypeError, function () {
-       m.upsert.call(new Set(), 1, 1);
+       m.upsert.call(false, 1, 1);
    });
    ```
 
@@ -1767,7 +1769,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
         Throws a TypeError if 'this' is not an object
    ```
 
-   Although not required, we should fill out the `info` key aswell.
+   Although not required, we should fill out the `info` key as well.
    Some points that are beneficial here are:
     - What does the method look like?
     - Which line of code are we testing?
@@ -1801,7 +1803,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.upsert.call(new Set(), 1, 1);
+       m.upsert.call(false, 1, 1);
    });
    ```
    ### Fill in test cases
