@@ -530,7 +530,7 @@ In the implementation part of this tutorial, each line of the specification will
 
    </details>
 
-### Step 4 - iterating through the map entries
+### Step 4 - Iterating through the map entries
 
   Now that we’ve set up our initial structure and verified our `MapObject`, the next step is to iterate through the entries within the `Map`. This allows us to examine each `key`-`value` pair to determine 
   if the specified `key` already exists, which will help us decide whether to update an existing `value` or `insert` a new one. To achieve this we first have to set up an iteration of the `entries` list.
