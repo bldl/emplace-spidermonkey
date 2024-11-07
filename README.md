@@ -1275,7 +1275,7 @@ With this code in place, our `MapUpsert` function will `return` the existing `va
 
   </details>
 
-  ### Step 5 & 6 - insert the new key value pair
+  ### Step 5 & 6 - Insert the new key value pair
 
   Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and `return` it.
 
