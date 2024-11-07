@@ -1413,7 +1413,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
 * **How to write ecmarkup**
 
-  Ecmarkup is a markup language used for writing technical spesifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
+  Ecmarkup is a markup language used for writing technical specifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
 
   ```html
   <!DOCTYPE html>
@@ -1449,7 +1449,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
 
     1. **Understanding why we need Ecmarkup**
 
-       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These spesifications are made with Ecmarkup.
+       Ecmarkup combines HTML-like tags with specific syntactic constucts to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These specifications are made with Ecmarkup.
     2. **Basic translation steps**
         * `<emu-alg>`: Defines an algorithm.
         * `<emu-clause>`: Defines a clause/section in the specification.
