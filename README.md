@@ -1324,7 +1324,7 @@ function MapUpsert(key, value) {
 
   </details>
 
-With these fairly simple steps our new implementation is now more streamlined with a simpler and more attractive api.
+With these fairly simple steps our new implementation is now more streamlined with a simpler and more attractive API.
   
 </details>
 
