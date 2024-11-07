@@ -169,7 +169,7 @@ It doesn't matter if you choose to use `hg` or `git` to grab the source code.
 
 ### 2. Running SpiderMonkey
 
-After the installation is complete, a folder named `mozilla-unified` should appear in the directory where your terminal was located when you started the guide above.
+After the installation is complete, a folder named `mozilla-unified` should appear in the folder where your terminal was located when you started the guide above.
 
   Navigate into `mozilla-unified` folder using `cd mozilla_unified`.
 
@@ -1522,7 +1522,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
   }
   ```
 
-  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`O(n)`__ where `n` is the amount of entries.
+  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`O(n)`__ where `n` is the size of the `Map`.
   This is rather slow, considering a lookup in maps should be __`~O(1)`__, given an efficient `HashTable` implementation.
   Therefore, we decided to try optimizing this line.
 
