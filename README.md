@@ -1456,7 +1456,7 @@ With these fairly simple steps our new implementation is now more streamlined wi
         * Underscores are used to refer to variables (`_varname_`).
         * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification.
         * `*someBoldText*`: Make bold text with `*`.
-        * Use double brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
+        * Use double square brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
 
 * The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
     ```html
