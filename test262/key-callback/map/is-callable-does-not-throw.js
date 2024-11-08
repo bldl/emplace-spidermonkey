@@ -1,4 +1,3 @@
-// Copyright (C) 2015 the V8 project authors. All rights reserved.
 // Copyright (C) 2024 Mathias Ness. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
@@ -17,26 +16,37 @@ info: |
 
 var m = new Map();
 
-assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 1, function() {});
-});
 
-assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 2, () => {});
-});
+assert.sameValue(
+    m.getOrInsertComputed(1, function() {return 1;})
+    , 1);
+assert.sameValue(m.get(1), 1);
 
-assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 3, (function() {}).bind(m));
-});
 
-assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 4, new Function());
-});
+assert.sameValue(
+    m.getOrInsertComputed(2, () => 2)
+    , 2);
+assert.sameValue(m.get(1), 1);
 
-assert.doesNotThrow(function () {
-    m.getOrInsertComputed.call(m, 5, { 
-        call: function() {} 
-    });
-});
+
+function three() {return 3;}
+
+assert.sameValue(
+    m.getOrInsertComputed(3, three)
+    , 3);
+assert.sameValue(m.get(3), 3);
+
+
+assert.sameValue(
+    m.getOrInsertComputed(4, new Function())
+    , undefined);
+assert.sameValue(m.get(4), undefined);
+ 
+
+assert.sameValue(
+    getOrInsertComputed(5, (function() {return 3;}).bind(m))
+    , 3);
+assert.sameValue(m.get(5), 5);
+
 
 reportCompare(0, 0);
