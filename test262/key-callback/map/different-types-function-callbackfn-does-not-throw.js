@@ -44,7 +44,7 @@ assert.sameValue(m.get(4), undefined);
  
 
 assert.sameValue(
-    getOrInsertComputed(5, (function() {return 5;}).bind(m))
+    m.getOrInsertComputed(5, (function() {return 5;}).bind(m))
     , 5);
 assert.sameValue(m.get(5), 5);
 
