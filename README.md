@@ -2,37 +2,50 @@
 
 ### ECMAScript®
 
-JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International through the <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
+JavaScript™ is standardized by ECMAScript® and specified in the <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank">ECMA-262 language specification</a>, which is maintained by Ecma International's <a href="https://tc39.es/" target="_blank">TC39 committee</a>. ECMAScript® defines the core features of the language, providing a standard that ensures consistency across different JavaScript™ engines. Major engines like <a href="https://v8.dev/" target="_blank">V8</a> (used in Chrome and Node.js), <a href="https://developer.apple.com/documentation/javascriptcore" target="_blank">JavaScriptCore</a> (Safari), and <a href="https://spidermonkey.dev/" target="_blank">SpiderMonkey</a> (Firefox) implement these specifications, allowing developers to write code that behaves similarly across different environments.
 
-SpiderMonkey, the engine developed by Mozilla, powers JavaScript™ execution in Firefox and supports the development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test a new JavaScript™ proposal, providing insight into both the ECMAScript® standardization process and the inner workings of a JavaScript™ engine.
+<a href="https://spidermonkey.dev/">SpiderMonkey</a>, the engine developed by Mozilla, powers JavaScript™ execution in <a href="https://www.mozilla.org/en-US/firefox/">Firefox</a> and supports development of new language features. This tutorial focuses on working within SpiderMonkey to implement and test an ECMAScript® proposal, providing insight into both the ECMAScript® standardization process and the inner workings of a JavaScript™ browser engine.
 
 ### Introduction
 
-Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert proposal`</a>. This guide is tailored to help both beginners and advanced developers learn how to contribute to (JavaScript™) language development by implementing a new feature in SpiderMonkey, Mozilla's JavaScript™ engine. We’ll cover all the necessary steps, from downloading and setting up the development environment to writing the `upsert` method and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
+Welcome to this detailed tutorial on how to implement and understand the <a href="https://github.com/tc39/proposal-upsert" target="_blank">`Map.prototype.upsert`</a> proposal. This tutorial is tailored to help both beginners and advanced developers learn how to contribute to JavaScript™ language development by implementing a new feature in SpiderMonkey - Mozilla's JavaScript™ engine. We will cover all the necessary steps, from downloading and setting up the development environment to specifying and implementing the `upsert` method and testing it with the official test suite, <a href="https://github.com/tc39/test262" target="_blank">Test262</a>.
+
+We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using the SpiderMonkey engine. You'll then implement the `upsert` method using both <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting">*self-hosted*</a> JavaScript™ and (a little bit of) C++, ensuring alignment with the ECMAScript® specification. 
+
+The main focus will initially be on developing a functional solution. Once basic functionality is working, optimization techniques will be applied to ensure your code is efficient and performant. You'll also gain insight into contributing to the ECMAScript® standard, aligning your code with the best practises in the JavaScript™ evolution. Finally, you'll explore testing with <a href="https://github.com/tc39/test262">Test262</a>, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
+
+By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained an understanding into the process of designing, testing and standardizing JavaScript™ features.
+
+### Authors
+
+This tutorial has been written and edited by: **Lauritz Thoresen Angeltveit**, **Jonas Haukenes**, **Vetle Larsen**, **Sune Lianes**, **Mathias Hop Ness**, and **Mikhail Barash**, and is a result of a project conducted at the University of Bergen (Norway) in collaboration with **Daniel Minor** (Mozilla) during August - November 2024.
+
+Project supervisors: **Daniel Minor** (Mozilla), **Mikhail Barash** (University of Bergen, Norway).
+Project facilitators: **Yulia Startsev** (Mozilla), **Mikhail Barash** (University of Bergen, Norway).
+
+This tutorial can be cited as:
+```
+L. T. Angeltveit, J. Haukenes, V. Larsen, S. Lianes, M. Hop Ness, M. Barash. Implementing a JavaScript API proposal `Map.prototype.upsert` (a tutorial). 2024. 
+```
 
 
-We'll start with an introduction to the `Map.prototype.upsert` proposal, highlighting its benefits for developers. From there, you'll be guided through setting up the development environment using Mozilla's SpiderMonkey JavaScript™ engine. You'll then implement the `upsert` method using both *self-hosted* JavaScript™ and (a little bit of) C++, ensuring alignment with the ECMAScript® specification. 
-
-The main focus will initially be on developing a functional solution. Once basic functionality is verified, optimization techniques will be applied to ensure your code is efficient and performant. You'll also gain insight into contributing to the ECMAScript® standard, aligning your code with the best practises in the JavaScript™ community. Finally, you'll explore testing with Test262, the official ECMAScript® test suite, learning how to write custom tests to validate your implementation.
-
-By the end of this tutorial, you'll have implemented a fully functional `upsert` method and gained valuable insight into the process of designing, testing and standardizing JavaScript™ features.
 
 ### What’s Covered in This Tutorial?
 
-- __The `Map.prototype.upsert` Proposal:__ Learn what this proposal is, how it works, and why it’s beneficial for JavaScript™ developers.
-- __Setting Up the Development Environment:__ How to download and build Mozilla Unified, the repository that contains SpiderMonkey.
-- __Implementing the Proposal:__ We will implement the `upsert` method both in self-hosted JavaScript™ and C++.
-- __Debugging and Testing:__ How to test your implementation using Test262, the official test suite for ECMAScript®, and how to run custom scripts.
-- __Optimizing Your Code:__ Learn about performance considerations and optimizations.
-- __Contributing to the ECMAScript® Standard:__ Understand how to write specification-compliant code and contribute to the broader ECMAScript® standard.
+- __The `Map.prototype.upsert` Proposal:__ Learn what <a href="https://github.com/tc39/proposal-upsert">this proposal</a> is, how it works, and why it’s beneficial for JavaScript™ developers.
+- __Setting up the development environment:__ How to download and build <a href="https://hg.mozilla.org/mozilla-unified/">_Mozilla Unified_</a>, the repository that contains SpiderMonkey.
+- __Implementing the proposal:__ We will implement the `upsert` method both in <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting">self-hosted</a> JavaScript™ and C++.
+- __Debugging and testing:__ How to test your implementation using <a href="https://github.com/tc39/test262">Test262</a>, the official test suite for ECMAScript®, and how to run custom scripts.
+- __Optimizing the code:__ Learn about performance considerations and optimizations.
+- __Contributing to the ECMAScript® Specification:__ Understand how to write <a href="https://tc39.es/proposal-upsert/">specification</a>-compliant code and contribute to the broader <a href="https://262.ecma-international.org/">ECMAScript® standard</a>.
 
 ```mermaid
 flowchart TD
-  A[The Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
+  A[Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
   B --> C[Learning To Read ECMA-262 Specification];
-  C --> D[Searchfox As Tool];
-  D --> E[The Initial 'key, handler' Proposal];
-  E --> F[Implement The Proposal];
+  C --> D[Using Searchfox to navigate Firefox source tool];
+  D --> E[Initial version of the proposal: 'key, handler'];
+  E --> F[Implementing the initial proposal];
   F --> G{Satisfied With The Proposal?};
   G --> |no| H[Identify The Issues And Create A New Proposal];
   H --> I[Create The New Specification];
@@ -46,29 +59,30 @@ flowchart TD
 
    **What is it?**
 
-   `Map.prototype.upsert` is a new method for JavaScript™'s `Map`-object. The operation simplifies the process of inserting or updating `key-value` pairs in the Map. The function simply checks for existence of a key to either `insert` or `update` new `key-value` pairs.
+   `Map.prototype.upsert` is a new method for `Map`-object in JavaScript™. The operation simplifies the process of inserting or updating key-value pairs in the `Map`: it checks for existence of a key and then either `insert`s or `update`s a key-value pair.
 
    **How does it work?**
    The `upsert` operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
 
-* `update`: Function to modify `value` of a `key` if already present in the `Map`.
-* `insert`: Function that generates a `default-value` to be set to the belonging `value` of the checked `key`.
+* `update`: A function to modify `value` of a `key` if it is already present in the `Map`.
+* `insert`: A function that generates a `default-value` to be set to the belonging `value` of the checked `key`.
 
-   **The function follow these steps:**
+   **The function `upsert` operates following these steps:**
 
    1. The `Map` is checked for the `key` passed as argument. If found:
        * It checks the `handler` for an `update` function. If found, this is used to `update` the `value` belonging to the passed `key`. After this, the newly updated entry will be returned. 
    2. If not found, the `insert` function from the `handler` is used to generate a new `value`. This will be assigned to the given `key` before returning it.
-   3. In either case, the `value` will be the `return value` of the `upsert` method.
+   3. In either case, the `value` will be the return value of the `upsert` method.
 
-   **What is the motivation?** Adding and updating values of a `Map` are tasks that developers often perform in conjunction. There are currently no `Map` methods for either of those two things, let alone a method that does both. The workarounds involve multiple lookups and can be inconvenient for developers. It is also aiming to prevent code that might be confusing or lead to errors.
+   **What is the motivation?** Adding and updating values of a `Map` are oftentimes performed in conjunction. Currently, there are no `Map` methods for either of these two actions - let alone a method that would do both. Usual workarounds involve multiple lookups and can be inconvenient for developers, and lead to confusing and error-prone code. Introducing a new method `upsert` shall resolve these drawbacks.
 
+#### Examples
    <details>
    <summary>
-   Either update or insert for a specific key
+   Example: <i>Either updating or inserting for a specific key</i>
    </summary>
 
-   Before:
+   - Without using the `upsert` function:
 
    ```js
    // two lookups
@@ -80,7 +94,7 @@ flowchart TD
    }
    ```
 
-   Using upsert:
+   - Using the `upsert` function:
 
    ```js
    map.upsert(key, {
@@ -92,10 +106,10 @@ flowchart TD
    </details>
    <details>
    <summary>
-   Just insert if missing:
+   Example: <i>Inserting if missing</i>
    </summary>
 
-   Before:
+   - Without using the `upsert` function:
 
    ```js
    // two lookups
@@ -104,7 +118,7 @@ flowchart TD
    }
    ```
 
-   Using upsert:
+   - Using the `upsert` function:
 
    ```js
    map.upsert(key, {
@@ -115,10 +129,10 @@ flowchart TD
    </details>
    <details>
    <summary>
-   Just update if present:
+   Example: <i>Updating if present</i>
    </summary>
 
-   Before:
+   - Without using the `upsert` function:
 
    ```js
    // three lookups
@@ -129,7 +143,7 @@ flowchart TD
    }
    ```
 
-   Using upsert:
+   - Using the `upsert` function:
 
    ```js
     map.upsert(key, {
@@ -142,17 +156,17 @@ flowchart TD
 </details>
 
 <details open>
-   <summary><h2>Installing mozilla unified</h2></summary>
+   <summary><h2>Installing Mozilla Unified</h2></summary>
 
-   In this section you will learn how to download the Mozilla environment based on your operating system. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
+   In this section you will learn how to download the Mozilla environment for your operating system. It will also feature setting up SpiderMonkey for development and introduce main tools which are used during development.
 
 ### 1. Installation of SpiderMonkey and required tools
 
-  We will start by installing SpiderMonkey and all required tools.
+  We will start by installing SpiderMonkey and all the required tools.
 
   Before you start installing, open a terminal and navigate to the desired location of the `mozilla_unified` folder.
 
-  The installation process depends on your operating system, therefore you can click on the link under that matches yours.
+  The installation process depends on your operating system - please use the link below that matches yours.
 
 * <a href="https://firefox-source-docs.mozilla.org/setup/linux_build.html" target="_blank">Build Mozilla Firefox on Linux</a>
 * <a href="https://firefox-source-docs.mozilla.org/setup/macos_build.html" target="_blank">Build Mozilla Firefox on Mac</a>
@@ -161,15 +175,15 @@ flowchart TD
   
 During the installation, you will be asked which version of Firefox you want to build as a standard. In this tutorial we will choose `5: SpiderMonkey JavaScript™ engine`, which will allow for faster builds during development.
 
-It doesn't matter if you choose to use `hg` or `git` to grab the source code.
+It doesn't matter if you choose to use <a href="https://en.wikipedia.org/wiki/Mercurial">`hg`</a> or <a href="https://en.wikipedia.org/wiki/Git">`git`</a> to grab the source code.
 
-**Having trouble?**
+**Troubleshooting**
 
-<a href="https://firefox-source-docs.mozilla.org/setup/common_build_errors.html" target="_blank">Here</a> are some of the most common build errors. __Note!__ Many errors can be related to your Python build. Ensure you are using the correct python path and/or configuration.
+<a href="https://firefox-source-docs.mozilla.org/setup/common_build_errors.html" target="_blank">Here</a> are some of the most common build errors. __Note!__ Many errors can be related to your Python build. Ensure you are using the correct Python path and/or configuration.
 
 ### 2. Running SpiderMonkey
 
-After the installation is complete, a folder named `mozilla-unified` should appear in the folder where your terminal was located when you started the guide above.
+After the installation is complete, a folder named `mozilla-unified` should appear in the folder where the terminal was located when you started step 1.
 
   Navigate into `mozilla-unified` folder using `cd mozilla_unified`.
 
@@ -179,7 +193,7 @@ After the installation is complete, a folder named `mozilla-unified` should appe
   ./mach build
   ```
 
-  After executing this command the output should look something like this:
+  After executing this command, the output should look something like this:
 
   ```sh
   Your build was successful!
@@ -192,8 +206,8 @@ After the installation is complete, a folder named `mozilla-unified` should appe
   ./mach run
   ```
 
-  Your terminal should now enter the JavaScript™ Read-Eval-Print-Loop mode. 
-  The functionality is similar to a browsers console and arbitrary JavaScript™ code can be executed. 
+  Your terminal should now enter the JavaScript™ <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">Read-Eval-Print-Loop</a> mode. 
+  The functionality is similar to a browser console. You can execute arbitrary JavaScript™ code. 
 
   ```sh
   js>
@@ -207,30 +221,26 @@ After the installation is complete, a folder named `mozilla-unified` should appe
   js> console.log("Hello World!");
   ```
   
-  You can also execute `.js` files, which is done by giving the filename as a parameter in the `./mach run` command: 
-
-  If you create a file called `helloworld.js` with `console.log("Hello World!);` in it and save it. You can execute it like this (given it is in the same folder):
+  You can also execute `.js` files - this is done by passing the filename as a parameter in the `./mach run` command: 
   ```sh
   ./mach run helloworld.js
   ```
-
+  
 ### 3. Applying simple changes
 
-  Self-hosted code is located in `mozilla-unified/js/src/builtin`. Here we can edit, add or remove functions.
-
-  To see the effect of this, we can change the `return value` of a function.
-
-  Open file `Array.js` and change function `ArrayAt` to `return` 42.
-
-  Test your changes by rebuilding and running the SpiderMonkey and then call the function with valid parameters.
+  Self-hosted code is located in <a href="https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin">`mozilla-unified/js/src/builtin`</a>.
+  
+  In the local copy, we can edit, add or remove functions. As an example, we demonstrate how we can change the return value of a function. Open file <a href="https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Array.js">`Array.js`</a> and change function <a href="https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Array.js#l1168">`ArrayAt`</a> to always <a href="https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Array.js#l1192">return</a> the value `42`. We can now test this change by rebuilding and running the SpiderMonkey and then calling the function with some valid parameters, as shown below:
   ```sh
-    js> var l = [1,2,3];
-    js> l.at(1);
+    ./mach build
+    ./mach run
+    js> var myArray = [1, 2, 3];
+    js> myArray.at(1);
     42
   ```
 
-  Self-hosted code is a bit different to normal JavaScript™, given that you can effectively and easily edit/create functions you want.
-  This can cause problems, more on this later.
+  Self-hosted code is a somewhat different from ordinary JavaScript™, given that you can effectively and easily edit/create functions you want.
+  This can cause problems in certain situations - we will discuss more on this later.
 
 </details>
 
