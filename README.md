@@ -25,12 +25,12 @@ Project facilitators: **Yulia Startsev** (Mozilla), **Mikhail Barash** (Universi
 
 This tutorial can be cited as:
 ```
-L. T. Angeltveit, J. Haukenes, V. Larsen, S. Lianes, M. Hop Ness, M. Barash. Implementing a JavaScript API proposal `Map.prototype.upsert` (a tutorial). 2024. 
+L. Angeltveit, J. Haukenes, V. Larsen, S. Lianes, M. Ness, M. Barash. Implementing a JavaScript API proposal `Map.prototype.upsert` (a tutorial). 2024. 
 ```
 
 
 
-### What’s Covered in This Tutorial?
+### What Is Covered in This Tutorial?
 
 - __The `Map.prototype.upsert` Proposal:__ Learn what <a href="https://github.com/tc39/proposal-upsert">this proposal</a> is, how it works, and why it’s beneficial for JavaScript™ developers.
 - __Setting up the development environment:__ How to download and build <a href="https://hg.mozilla.org/mozilla-unified/">_Mozilla Unified_</a>, the repository that contains SpiderMonkey.
@@ -249,47 +249,47 @@ After the installation is complete, a folder named `mozilla-unified` should appe
 
 ### 1. What is the ECMA-262 Specification?
 
-* <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA" target="_blank">ECMA-262</a> is the official document that defines how JavaScript™ works. It provides detailed guidelines for developers and browser vendors on how JavaScript™ should behave in every situation, ensuring consistency and compatibility across different platforms and implementations.
+* <a href="https://262.ecma-international.org/" target="_blank">ECMA-262</a> is the official document that defines the programming language ECMAScript® (also known as JavaScript™). It provides detailed guidelines for developers and browser vendors on how JavaScript™ should behave in every situation, ensuring consistency and compatibility across different platforms and implementations.
 
 ### 2. How to Navigate the Document
 
-* **Start with the Table of Contents**: This is where you’ll find major sections like grammar, types, and functions. It helps you jump to the part you’re interested in.
-* **Use Search**: The specification is large. If you’re looking for a specific topic, like `Promise` or `Array`, use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly.
+* **Start with the _Table of Contents_**: This is where you’ll find major sections describing the language's grammar and constructs, data types, standard library functions, and so on. It helps you jump to the part you’re interested in.
+* **Use _Search_**: The specification is a large document. If you’re looking for a specific topic, like `Promise` or `Array`, use your browser’s search function (`Ctrl + F`/`cmd + F`) to find it quickly.
 * **Annexes (Extras)**: At the end of the document, you’ll find extra sections that explain older features or give additional context.
 
 ### 3. How to Read the Algorithms
 
-* **Algorithms are like instructions**: The spec breaks down how JavaScript™ works using step-by-step instructions, almost like a recipe.
-* **Steps to follow**: The specification breaks down methods like <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a> into clear, numbered steps. For instance, it describes how the method first checks the current `length`, then adds the new element, and finally updates the array's `length`.
-* **Conditions**: You’ll often see `if`-statements, that will tell you how to proceed if the statement evaluates to `true` or `false`.
+* **Algorithms are like instructions**: The specification breaks down how JavaScript™ works using [step-by-step instructions](https://262.ecma-international.org/#sec-algorithm-conventions), almost like a recipe.
+* **Steps to follow**: The specification breaks down methods like <a href="https://262.ecma-international.org/15.0/index.html#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a> into clear, numbered steps. For instance, it describes how the method first checks the current `length`, then adds the new element, and finally updates the array's `length`.
+* **Conditionals and other control flow constructs**: You’ll often see `if`-statements, that will tell you how to proceed if the statement evaluates to `true` or `false`.
 
 ### 4. Some Key Symbols and What They Mean
 
-* **`[[ ]]` (Double Square Brackets)**: These represent internal properties of JavaScript™ objects. These are properties that JavaScript™ uses internally but developers can’t directly access.
-* **`?` (Question Mark)**: This shorthand means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
+* **`[[ ]]` (Double Square Brackets)**: These represent [internal properties of JavaScript™ objects](https://262.ecma-international.org/#sec-object-internal-methods-and-internal-slots). These are properties that JavaScript™ uses internally but developers can’t directly access.
+* **`?` (Question Mark)**: This [shorthand](https://262.ecma-international.org/#sec-returnifabrupt-shorthands) means "if this operation results in an error (abrupt completion), `return` that error immediately." For example, `? Call(func, arg)` means that if calling `func` with `arg` throws an error, stop the current process and `return` the error right away.
 * **`Return`**: This marks the end of an operation, specifying the result to be returned.
-* **`{ }` (Curly braces)**: These are used to define a **Record** structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a specific `value`. 
-* **Keywords**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather than in code syntax, to describe the behavior that an implementation should follow.
+* **`{ }` (Curly braces)**: These are used to define a [**Record**](https://262.ecma-international.org/#sec-list-and-record-specification-type) structure. A **Record** is a data structure that groups together related fields as `key-value` pairs. Each field is identified by a name (`key`) and stores a specific `value`. These **Record** structures are specification-level entities.
+* **Keywords in Algorithm Specifications**: Keywords like `If`, `Else`, or `Else if` are represented as **algorithmic steps** in plain text, rather than in code syntax, to describe the behavior that an implementation should follow.
 
 ### 5. Finding Information on Other Symbols
 
-The specification text uses a range of notations and symbols to describe its syntax and structure. To understand these symbols, you can look into this specific section in the specification:
+The specification text uses a range of notations and symbols to describe its syntax and structure. To understand these symbols, you can look into section <a href="https://262.ecma-international.org/15.0/index.html#sec-notational-conventions" target="_blank">Notational Conventions</a>. This section explains different types of symbols, and how they are used to define the language. 
 
-* <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-notational-conventions" target="_blank">Notational Conventions</a>: This section explains the different types of symbols, and how they are used to define the language. 
-* For example, in the <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-nonterminal-symbols-and-productions" target="_blank">Nonterminal Symbols and Productions</a> section, you can read about nonterminal symbol, which are shown in _italic type_, and learn how to read the syntactic definition of a **WhileStatement**. 
+For example, in section <a href="https://262.ecma-international.org/15.0/index.html#sec-nonterminal-symbols-and-productions" target="_blank">Nonterminal Symbols and Productions</a>, you can read about nonterminal symbols, which are shown in _italic font_, and learn how to read syntactic definition of a **`WhileStatement`** or an **`ArgumentList`**. 
 
 ### 6. Start Simple
 
-* Avoid diving into the complex parts right away. Start with sections like the **Introduction** or common JavaScript™ features, such as arrays and functions.
+* Avoid diving into the complex parts right away.
+* Proceed with sections that describe common JavaScript™ features, such as [arrays](https://262.ecma-international.org/15.0/index.html#sec-array-objects) and [function objects](https://262.ecma-international.org/15.0/index.html#sec-function-objects).
 * **External Help**: Use resources like <a href="https://searchfox.org/" target="_blank">SearchFox.org</a> to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
-* You can also check out https://timothygu.me/es-howto/ or https://v8.dev/blog/tags/understanding-ecmascript for other helpful guides on how to read the ECMA-262 Language Specification. 
+* You can also check out [_"How to Read the ECMAScript Specification"_](https://timothygu.me/es-howto/) or [_"Understanding ECMAScript"_](https://v8.dev/blog/tags/understanding-ecmascript): these are helpful guides on how to read the ECMA-262 Language Specification. 
 
-### 7. Example: Understanding <a href="https://262.ecma-international.org/15.0/index.html?_gl=1*chzpt6*_ga*Mzc5OTUzMzY4LjE3MjQzMjMwMjA.*_ga_TDCK4DWEPP*MTczMDcyMzg1Ni41LjEuMTczMDcyNDYxMy4wLjAuMA#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a>
+### 7. Example: Understanding <a href="https://262.ecma-international.org/15.0/index.html#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a>
 
-* In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain:
-  * First, the `length` of the array is checked.
-  * Then, the new element is added to the array.
-  * Finally, the `length` property is updated to reflect the added element.
+In the specification, you can search for `Array.prototype.push` to see how it works. The algorithm will explain that:
+  * first, the `length` of the array is checked
+  * then, the new element is added to the array
+  * finally, the `length` property is updated to reflect the added element.
 
 ## The `Map.prototype.upsert` Specification
 
@@ -312,9 +312,9 @@ This is the specification of the `Map.prototype.upsert` which will be implemente
   8. Return e.[[Value]].
 ```
 
-An html version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html" target="_blank">here.</a>
+An HTML version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/initial-emplace-spec/Map.prototype.emplace.html" target="_blank">here</a>.
 
-The ECMAScript 262 specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the spec means. Write pseudocode, sentences or a combination. 
+The ECMA-262 Specification text can look intimidating at first glance. Before starting the implementation, try to get a rough understanding of what each line in the specification means. Write pseudocode, natural language sentences or a combination of them, for yourself to understand what is actually going on. 
 The aim is to develop a clear understanding of the functionality we want to achieve.
 
 **Key Points to Focus On:**
@@ -326,13 +326,15 @@ The aim is to develop a clear understanding of the functionality we want to achi
 
 By breaking down the specification in this way, you'll have a roadmap for implementing each part of the `upsert` method. This approach will help make the implementation process smoother and ensure that you understand how each step contributes to the overall functionality.
 
-**Rewrite the spec in your own words**
+**Rewrite the Specification in Your Own Words**
 
 Example: 
+
 3. Let __entries__ be the `List` that is __M__.[[MapData]].
 
 Could be rewritten to:
-3. make a `List` variable __entries__, which stores pairs `(key, value)`
+
+3. Make a `List` variable __entries__, which stores pairs `(key, value)`.
 
 In the implementation part of this tutorial, each line of the specification will be explained.
 
@@ -341,76 +343,93 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-  <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a helpful tool. Searchfox provides an indexed view of the source code, allowing developers to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like `Map` are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+  <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a helpful tool. Searchfox provides an indexed view of the source code, allowing one to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like `Map` are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
 
-  When Implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the ECMA-262 Specification with Searchfox and look at existing code.
+When implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the ECMA-262 Specification with Searchfox and look at existing code.
 
-  Example workflow:
+  Example of workflow when trying to implement a line of the specification:
 
   1. *Some line from the specification*.
-  2. Find some other function with the same or similar spec line in the ECMA-262 specification.
-  3. Look up the function in Searchfox.
-  4. Borrow from the other function.
+  2. Find some other function with the same or similar specificatin line in the ECMA-262 Specification.
+  3. Look up that other function in Searchfox.
+  4. Borrow code from that other function's implementation.
 
 </details>
 
 <details open>
    <summary><h2>Implementation</h2></summary>
 
-  In this section, we’ll walk through the process of implementing the `Map.prototype.upsert` method step-by-step. We will examine each line of the specification in detail and you will gain a deep understanding of the implementation process. By the end, you’ll have a fully functional `upsert` method in JavaScript™, along with insight in where to find resources and information which gives you a strong foundation to implement additional functions on your own in the future.
+In this section, we’ll walk through the process of implementing the `Map.prototype.upsert` method step-by-step. We will examine each line of the specification in detail and you will gain a deep understanding of the implementation process. By the end, you’ll have a fully functional `upsert` method in JavaScript™, along with insight in where to find resources and information which gives you a strong foundation to implement additional functions on your own in the future.
 
 ### Creating a function
 
-  The first step to implementing a function in SpiderMonkey is to create a *hook* in C++. This hook serves as the connection between SpiderMonkey’s C++ core and our self-hosted JavaScript™ code.
+  The first step to implementing a function in SpiderMonkey is to create a *hook* in C++. This hook serves as the connection between SpiderMonkey’s C++ _core_ and our _self-hosted_ JavaScript™ code.
 
-  The JavaScript™ type `Map` is defined in C++ as `MapObject`. All `Map` methods, like `Map::set` and `Map::get`, are defined 
-  in the array `MapObject::methods[]`. To add `upsert` we need to define a hook in this array.
-  
-  __Create a hook in `MapObject.cpp`:__
+  The JavaScript™ type `Map` is defined in C++ as `MapObject` in the file [`MapObject.cpp`](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/MapObject.cpp).
+  All `Map` methods, such as `Map::set` and `Map::clear`, are defined 
+  in the array [`MapObject::methods[]`](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/MapObject.cpp#l510):
 
   ```cpp
-
+const JSFunctionSpec MapObject::methods[] = {
+    // ...
+    JS_FN("set", set, 2, 0),
+    JS_FN("delete", delete_, 1, 0),
+    JS_FN("keys", keys, 0, 0),
+    JS_FN("values", values, 0, 0),
+    JS_FN("clear", clear, 0, 0),
+    JS_SELF_HOSTED_FN("forEach", "MapForEach", 2, 0),
+    JS_FN("entries", entries, 0, 0),
+    // ...
+};
+```
+  
+  To add method `upsert`, we need to define a hook in this array:
+  
+  ```cpp
+    // ...
     JS_SELF_HOSTED_FN("upsert", "MapUpsert", 2,0),
+    // ...
   
   ```
 
-  This line sets up the hook with the following details:
-
-  - __JS_SELF_HOSTED_FN:__ Indicates the function is implemented in self-hosted JavaScript™ (meaning the main logic is in JavaScript™ rather than C++).
-  - __First argument:__ `upsert` — the function name as it will appear in JavaScript™.
-  - __Second argument:__ `MapUpsert` — the name of the JavaScript™ implementation (which we’ll define shortly)
-  - __Third argument:__ `2` Number of arguments.
-  - __Fourth argument:__ `0` Number of flags.
-
-  __Copy the line above and paste it into `MapObject.cpp` under `MapObject::Methods`__
-
-  With the C++ hook in place, we can define the actual function in JavaScript™. Open `Map.js`, and add the following code:
+  Here, we invoke [`JS_SELF_HOSTED_FN`](https://searchfox.org/mozilla-central/rev/2fc2ccf960c2f7c419262ac7215715c5235948db/js/public/PropertySpec.h#438), which sets up the hook: it indicates that the function whose name is mentioned in the first argument of `JS_SELF_HOSTED_FN` is implemented in _self-hosted_ JavaScript™ - meaning the main logic of the function's behaviour is written in JavaScript™ rather than C++.
+  We pass the following actual arguments to `JS_SELF_HOSTED_FN`:
+  
+  |argument|in our case|explanation|
+  |--------|-----------|-----------|
+  |_first argument_|`"upsert"`|indicates the function name as it will appear in JavaScript™ standard library|
+  |_second argument_|`"MapUpsert"`|indicates the name of the JavaScript™ implementation (which we’ll define shortly) for the function|
+  |_third argument_|`2`|indicates the number of arguments that the function mentioned in the _first argument_ will have|
+  |_fourth argument_|`0`|specifies flags (we omit this in the tutorial)|
+  
+  With the C++ hook in place, we can define the actual function's behaviour using JavaScript™ (that's why "self-hosted" JavaScript™).
+  In the file [`Map.js`](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js), and add the following code:
 
    ```js
    function MapUpsert(key, handler) {
-     return 42
+     return 42;
    }
    ```
 
-  This is a simple placeholder function. It doesn’t perform any `upsert` logic yet; it just returns the number 42. This step allows us to check that our function is correctly hooked up and accessible in the JavaScript™ runtime.
+  For now, this is a simple stub function. It doesn’t perform any `upsert` logic yet; it just returns the number 42. This step allows us to check that our function is correctly hooked and accessible in the JavaScript™ runtime.
 
-  To confirm everything is connected, build the project and run the JavaScript™ shell:
+  To make sure that everything works as intended, build the project and run the JavaScript™ shell:
 
   ```sh
   ./mach build
-  ...
+  ............
   ./mach run
   ```
 
-  Once the shell opens, you can test your upsert function:
+  Once the shell opens, we can test our `upsert` function:
 
   ```sh
-  js> const m = new Map()
-  js> m.upsert(0,0)
+  js> const m = new Map();
+  js> m.upsert(0,0);
   42
   ```
 
-  If you see 42 as the output, then you’ve successfully created a function hook and defined an initial JavaScript™ implementation. This means we’re ready to move forward with implementing the actual `upsert` functionality.
+  If you see `42` as the output, then you’ve successfully created a function hook and defined an initial JavaScript™ implementation. This means we’re ready to move forward with implementing the actual `upsert` functionality.
 
 
 ### Step 1 - Implement The First Line
