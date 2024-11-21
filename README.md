@@ -450,6 +450,7 @@ const JSFunctionSpec MapObject::methods[] = {
 
   ```js
   function MapUpsert(key, handler) {
+    // 1. Let M be the this value.
     var M = this;
   }
   ```
@@ -498,8 +499,10 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -575,23 +578,21 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
 
 
   **Moving on with the implementation:**
-  We have stored the `this` object and verified that is in fact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
-
-  __Specification Line:__
-
+  We have stored the `this` object and verified that is in fact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated.
+  The third step in the specification 
   ```lua
   3. Let entries be the List that is M.[[MapData]].
   ```
+  tells us to store the contents of the `Map` as a `List`.
 
-  Use `callFunction` and the standard built-in `std_Map_entries` to retrieve a list of all `key-value` entries in the `Map`. Store it as a variable named `entries`.
-
-   <details>
-   <summary>Solution</summary>
+  We can now use `callFunction` and the standard builtin `std_Map_entries` to retrieve a list of all `key`-`value` entries in the `Map`, and store it in a variable named `entries`.
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -601,33 +602,32 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
    }
    ```
 
-   </details>
 
 ### Step 4 - Iterating through the map entries
 
   Now that we’ve set up our initial structure and verified our `MapObject`, the next step is to iterate through the entries within the `Map`. This allows us to examine each `key`-`value` pair to determine 
-  if the specified `key` already exists, which will help us decide whether to update an existing `value` or `insert` a new one. To achieve this we first have to set up an iteration of the `entries` list.
+  if the specified `key` already exists, which will help us decide whether to update an existing `value` or `insert` a new one. To achieve this, we first have to set up an iteration of the `entries` list.
 
-  __Specification Line:__
+  The fourth line in the `upsert` proposal specification is as follows:
 
-   ```
+   ```lua
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-  Different methods of iteration is used in the other self-hosted `Map` methods. The specification states that we should use a `for-of loop`. Look at existing methods and create the for-loop.  
-
-   <details>
-   <summary>Solution</summary>
+  `Map` methods in self-hosted JavaScript™ use various methods to implement iteration. The specification states that we should use a _`for ... of` loop_. To implement this line, we again look at [implementations of the already existing methods](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js) and find how a `for ... of` loop can be implemented.  
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -637,38 +637,34 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       //...
+       // ...
      }
    }
    ```
 
-   </details>
-
-  **Check if `key` already exists**
-
-  As mentioned above, the purpose of the iteration is to check whether the key already exists. This can be done by comparing the `key` with `eKey`.
-
-  __Specification Line:__
+  **Checking if `key` already exists.** As mentioned above, the purpose of the iteration is to check whether the key already exists. This can be done by comparing the `key` with `eKey`, as described in the step 4a. of the `upsert` proposal specification:
 
    ```lua
    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
    ```
 
-  The `SameValueZero` function helps us check for equality between the `key` provided to `MapUpsert` and the `key` in the current entry. This comparison ensures that we handle only the correct `key`-`value` pair.
-
-   <details>
-   <summary>Solution</summary>
+  The [`SameValueZero`](https://262.ecma-international.org/#sec-samevaluezero) function helps us check for equality between the `key` provided to `MapUpsert` and the `key` in the current entry.
+  This comparison ensures that we handle only the correct `key`-`value` pair.
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -678,59 +674,61 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
-         //...
+         // ...
        }
      }
    }
    ```
 
-   </details>
+   If the `SameValueZero` operation returns `true` on an entry, the `key` exists in the `Map`.
+   According to the logic of the specification, we cannot insert on an existing `key`-`value` pair, but we can perform an `update` if this function exists in the `handler`.
 
-   If the `SameValueZero` operation returns `true` on an entry, the `key` exists in the `Map`. By logic of the specification, we cannot insert on an existing `key`-`value` pair, but we can `update` it this function exists in the `handler`.
+  **Checking for the `update` handler.** With the `key` identified in the `Map`, the next step is to determine if the `handler` object includes an `update` function. This will allow us to `update` the `value` associated with the existing `key` in the `Map`.
 
-  **Check for the `update` handler**
-
-  With the `key` identified in the `Map`, the next step is to determine if the `handler` object includes an `update` function. This will allow us to `update` the `value` associated with the existing `key` in the `Map`.
-
-  __Specification Line:__
+  In the specification, this is expressed in line 4ai.:
 
    ```lua
    4ai. If HasProperty(handler, "update") is `true`, then
    ```
 
-  In self-hosted JavaScript™, most objects are treated similarly to regular JavaScript™ objects, so we can use standard object methods for these checks. For example, `hasOwnProperty` can verify if `update` is a property of `handler`. 
+  In self-hosted JavaScript™, most objects are treated similarly to regular JavaScript™ objects, and we can use standard object methods for these checks. For example, `hasOwnProperty` can verify if `update` is a property of `handler`. 
    
-  Here’s a snippet from the `Object.cpp` file displaying some self-hosted functions:
+  Here is a [snippet](https://searchfox.org/mozilla-central/source/js/src/builtin/Object.cpp#2437) from the [`Object.cpp`](https://searchfox.org/mozilla-central/source/js/src/builtin/Object.cpp) demonstrating some of the relevant self-hosted functions:
 
    ```cpp
-   // Code snippet from Object.cpp
+   // This code is from: /js/src/builtin/Object.cpp
+   // ...
    static const JSFunctionSpec object_methods[] = {
-       //...
+       // ...
        JS_SELF_HOSTED_FN("toLocaleString", "Object_toLocaleString", 0, 0),
        JS_SELF_HOSTED_FN("valueOf", "Object_valueOf", 0, 0),
        JS_SELF_HOSTED_FN("hasOwnProperty", "Object_hasOwnProperty", 1, 0),
-       //...
+       // ...
        JS_FS_END,
    };
+   // ...
    ```
 
   Using `hasOwnProperty` on `handler`, we can now verify if the `update` property is defined. This step ensures that we only proceed if `handler` actually provides an `update` function.
 
-   <details>
-   <summary>Solution</summary>
-
+   
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -740,43 +738,40 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
+         // 4ai. If HasProperty(handler, "update") is `true`, then
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
-           //...
+           // ...
          }
        }
      }
    }
    ```
 
-   </details>
-
-  **Get the `update` function from the `handler`**
-  
-  If the `key` exists and `update` is specified, the next step is to retrieve the `update` function.
-
-  __Specification Line:__
+  **Getting the `update` function from the `handler`.** If the `key` exists and `update` is specified, the next step is to retrieve the `update` function, as expressed on line 4ai1. of the specification:
 
    ```lua
    4ai1. Let updateFn be ? Get(handler, "update").
    ```
 
-  Store the `update` function as a variable `updateFn`.
-
-   <details>
-   <summary>Solution</summary>
+  In the implementation, we store the `update` function as a variable `updateFn`.
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -786,46 +781,49 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
+         // 4ai. If HasProperty(handler, "update") is `true`, then
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+           // 4ai1. Let updateFn be ? Get(handler, "update").
            var updateFN = handler['update'];
-           //...
+           // ...
          }
        }
      }
    }
    ```
 
-  **Call the update function**
+  **Calling the update function.** Now that we’ve verified the existence of an `update` function in the `handler` object, the next step is to invoke this function to get the `updated` `value`.
 
-  Now that we’ve verified the existence of an `update` function in the `handler` object, the next step is to invoke this function to get the `updated` `value`.
-
-  __Specification Line:__
-
-   </details>
-
+  In the specification, this is line 4ai2.:
    ```lua
    4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
    ```
 
   In this context, we need to call the `update` function on the current value associated with the `Map` entry. This involves passing `e.[[Value]]` (the existing `value`), `key`, and `M` as arguments to the function.
 
-  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`, to call `updateFn` with `M` as the scope and `eValue` (the existing `value`) and `key` as the arguments. The result of this call should be stored as `var updated`, which we’ll then use to update the `Map` entry. Why use `callContentFunction` instead of `callFunction`? `callFunction` is faster than `callContentFunction`, however the latter is safer with respect to user content. Since the `handler` object is passed by the user, `callContentFunction` is reasonable. You can read a more detailed explanation <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here</a>.
-
-   <details>
-   <summary>Solution</summary>
+  To perform this function call in self-hosted JavaScript™, we’ll use `callContentFunction`. This will call `updateFn` with `M` as the scope and `eValue` (the existing `value`) and `key` as the arguments.
+  The result of this call should be stored as variable `updated`, which we’ll then use to update the `Map` entry.
+  
+  Note that here we use `callContentFunction` instead of `callFunction`.
+  While `callFunction` is faster than `callContentFunction`, the latter is safer with respect to the user content - since the `handler` object is passed by the user, the use of `callContentFunction` is justified. You can read a more detailed explanation <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here</a>.
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -835,57 +833,47 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
+         // 4ai. If HasProperty(handler, "update") is `true`, then
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+           // 4ai1. Let updateFn be ? Get(handler, "update").
            var updateFN = handler['update'];
+           // 4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
            var updated = callContentFunction(updateFN, M, eValue, key);
-           //...
+           // ...
          }
        }
      }
    }
    ```
 
-   </details>
-
-  **Update the `value` in the `Map`**
-
-  Once we have the `updated` `value` from calling the `update` function, we can proceed to replace the current `value` in the map entry.
-
-  __Specification Line:__
+  **Updating the `value` in the `Map`.** Once we have the `updated` `value` from calling the `update` function, we can proceed to replace the current `value` in the map entry. This is expressed in line 4ai3. of the specification.
 
    ```lua
    4ai3. Set e.[[Value]] to updated.
    ```
 
-  This step involves using the `std_Map_set` function, a standard self-hosted operation that allows us to safely set a new `value` for a specified `key` in the `Map`. Since `std_Map_set` is a built-in function available to self-hosted code, we’ll call it to update the entry with our newly computed `updated` `value`.
+  Implementing this step involves using the `std_Map_set` function, which is a standard self-hosted function that allows us to safely set a new `value` for a specified `key` in the `Map`.
+  Since `std_Map_set` is a built-in function available in self-hosted code, we’ll call it to update the entry with our newly computed `updated` `value`. Recall that `std_Map_set` is a standard built-in map operation specified in `SelfHosting.cpp`.
 
-   **Recall the standard built-in map operations specified in `SelfHosting.cpp`:**
-
-   ```cpp
-   // Standard builtins used by self-hosting.
-   // Code snippet from SelfHosting.cpp
-       JS_FN("std_Map_entries", MapObject::entries, 0, 0),
-       JS_FN("std_Map_get", MapObject::get, 1, 0),
-       JS_FN("std_Map_set", MapObject::set, 2, 0),
-   ```
-
-   Use `callFunction` and `std_Map_entries` to set the new `value`.
-
-   <details>
-   <summary>Solution</summary>
+  We can now use `callFunction` with `std_Map_entries` to set the new `value`:
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -895,17 +883,24 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
+         // 4ai. If HasProperty(handler, "update") is `true`, then
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+           // 4ai1. Let updateFn be ? Get(handler, "update").
            var updateFN = handler['update'];
+           // 4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
            var updated = callContentFunction(updateFN, M, eValue, key);
+           // 4ai3. Set e.[[Value]] to updated.
            callFunction(std_Map_set, M, key, updated);
          }
        }
@@ -913,27 +908,21 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
    }
    ```
 
-  **`Return` the `value`**
-
-  We have now `updated` the `value`, and can `return` it.
-
-  __Specification Line:__
-
-   </details>
+  **Returning the `value`.** We have now `updated` the `value`, and can `return` it, as described in line 4aii. of the specification.
 
    ```lua
    4aii. Return e.[[Value]].
    ```
 
-  `return` the `updated` `value`.
+Now our implementation looks as follows:
 
-   <details>
-   <summary>Solution</summary>
-
+   
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -943,27 +932,32 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
+         // 4ai. If HasProperty(handler, "update") is `true`, then
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+           // 4ai1. Let updateFn be ? Get(handler, "update").
            var updateFN = handler['update'];
+           // 4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
            var updated = callContentFunction(updateFN, M, eValue, key);
+           // 4ai3. Set e.[[Value]] to updated.
            callFunction(std_Map_set, M, key, updated);
          }
-   
+         // 4aii. Return e.[[Value]].
          return callFunction(std_Map_get, M, key);
        }
      }
    }
    ```
-
-   </details>
 
 ### Step 5 - Implementing The `Insert` Handler
 
