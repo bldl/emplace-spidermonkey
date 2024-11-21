@@ -370,6 +370,7 @@ In this section, we’ll walk through the process of implementing the `Map.proto
   in the array [`MapObject::methods[]`](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/MapObject.cpp#l510):
 
   ```cpp
+// This code is from: /js/src/builtin/MapObject.cpp
 const JSFunctionSpec MapObject::methods[] = {
     // ...
     JS_FN("set", set, 2, 0),
@@ -432,20 +433,20 @@ const JSFunctionSpec MapObject::methods[] = {
   If you see `42` as the output, then you’ve successfully created a function hook and defined an initial JavaScript™ implementation. This means we’re ready to move forward with implementing the actual `upsert` functionality.
 
 
-### Step 1 - Implement The First Line
+### Step 1 - Implementing The First Line of the Specification
 
-  Now that we have our `upsert` method hooked up and accessible in the JavaScript™ runtime, it’s time to start implementing the logic as specified in the ECMAScript® proposal.
+  Now that we have our `upsert` method hooked and accessible in the JavaScript™ runtime, it’s time to start implementing the logic as specified in the ECMAScript® proposal.
 
-  **Setting Up `this` in the Function:**
-  Some lines in the specification are more intuitive than others. The first line of the specification instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called. This is a foundational step in almost any method, as it ensures we’re working with the correct object.
-
-  **Specification Line:**
+  **Setting Up `this` in the Function.** Some lines in the specification are more intuitive than others. The first line of the specification:
 
   ```lua
   1. Let M be the this value.
   ```
 
-  In the code, we can implement this line simply by assigning this to a variable called `M`. This will allow us to refer to the `Map` instance consistently throughout the function: 
+  instructs us to capture the current `this` context, which is the `MapObject` instance on which `upsert` was called.
+  This is a foundational step in almost any method, as it ensures we’re working with the correct object.
+
+  In the self-hosted JavaScript™ code, we can implement this line simply by assigning `this` to a variable called `M`. This will allow us to refer to the `Map` instance consistently throughout the function: 
 
   ```js
   function MapUpsert(key, handler) {
@@ -455,24 +456,45 @@ const JSFunctionSpec MapObject::methods[] = {
 
   We have now captured the `this` object, which should be an instance of a `MapObject` and we can now start to manipulate this object in the upcoming steps.
 
-### Step 2 - Verify The Object Type
+### Step 2 - Verifying The Object Type
 
-  With the `this` context now captured in `M`, our next step is to validate that `M` is actually a `MapObject`. This is crucial because JavaScript™ objects can sometimes be altered or misused, and we need to ensure that `upsert` is being called on a valid instance of `Map`. This verification process will prevent errors and misuse, keeping the method consistent with the ECMAScript® specification.
+  With the `this` context now captured in `M`, our next step is to validate that `M` is actually a `MapObject`. This is crucial because JavaScript™ objects can sometimes be [altered or misused](https://en.wikipedia.org/wiki/Monkey_patch), and we need to ensure that `upsert` is being called on a valid instance of `Map`. This verification process will prevent errors and misuse, keeping the method consistent with the ECMAScript® specification.
 
-  **Verifying the Map’s Internal Structure**  
-  The ECMAScript® specification uses internal slots to define hidden properties within objects. In this step, we’re asked to confirm that the object `M` has the `[[MapData]]` internal slot, which holds the actual `key-value` data for the `Map`. By checking for this internal slot, we can be confident that `M` is indeed a `Map` and not some other type of object.
+  **Verifying the Map’s Internal Structure.**  The ECMAScript® specification uses [internal slots](https://262.ecma-international.org/#sec-object-internal-methods-and-internal-slots) to define hidden properties within objects. In this step, we need to confirm that the object `M` has the `[[MapData]]` internal slot, which holds the actual `key-value` data for the `Map`. By checking for this internal slot, we can be confident that `M` is indeed a `Map` and not some other type of object.
 
-  __Specification Line:__
+  The second line in the specification:
 
    ```lua
    2. Perform ? RequireInternalSlot(M, [[MapData]]).
    ```
    
-   This step is common for most self-hosted `MapObject` methods. The solution for this step already exists in the code. Look at `MapForEach` as an example.
+   is common for most self-hosted `MapObject` methods. To implement this step as code, we can look into already existing implementations, for example, the [implementation of `MapForEach`](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js#l32) - which is the SpiderMonkey implementation of the [`Map.prototype.forEach` specification](https://262.ecma-international.org/#sec-map.prototype.foreach):
 
 
-   <details>
-   <summary>Solution</summary>
+```js
+// This code is from: /js/src/builtin/Map.js
+// ES2018 draft rev f83aa38282c2a60c6916ebc410bfdf105a0f6a54
+// 23.1.3.5 Map.prototype.forEach ( callbackfn [ , thisArg ] )
+function MapForEach(callbackfn, thisArg = undefined) {
+  // Step 1.
+  var M = this;
+
+  // Steps 2-3.
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      callbackfn,
+      thisArg,
+      "MapForEach"
+    );
+  }
+
+  // ...
+```
+
+As we can see from the specification of [`Map.prototype.forEach`](https://262.ecma-international.org/#sec-map.prototype.foreach), the second line is identical to the one we are trying to implement for the `upsert` proposal. Thus, we can borrow the relevant part of the code verbatim.
+At this point, our work-in-progress implementation of `MapUpsert` will look like this:
 
    ```js
    function MapUpsert(key, handler) {
@@ -490,40 +512,67 @@ const JSFunctionSpec MapObject::methods[] = {
    }
    ```
 
-   </details>
 
+### Step 3 - Self-Hosted JavaScript™ vs. "Ordinary" JavaScript™
 
-### Step 3 - Self-Hosted JavaScript™ vs. JavaScript™
+  Before proceeding further in the tutorial, we need to improve our understanding of self-hosted JavaScript™. 
 
-  Before proceeding further in the tutorial, it’s imperative to improve our understanding of self-hosted JavaScript™. 
-
-  All self-hosted JavaScript™ operates in __strict mode,__ preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe,
-  we have to follow some rules. A potentially critical problem when writing self-hosted code is __monkey patching.__ This phenomenon occurs when our implementation makes a function call to an external function
-  which has been overwritten by user scripts. This problem can be mitigated by using __function invocation.__ Use `callFunction` and `callContentFunction` to call function within the specific object scope. 
-  Furthermore, self-hosted code also has limited access to the C++ builtins. Only a select set, defined in `Selfhosting.cpp` is accessible. 
-
-  **What functions can be used in self-hosted JavaScript™?**
-
-  - Other self-hosted functions (remember 'almost' everything is an `Object`).
-  - Functions made accessible in `SelfHosting.cpp`.
-  - Some abstract operations and additional utility functions.
-
-
-  Read more about self-hosted code <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here.</a>
+  All self-hosted JavaScript™ operates in [__strict mode__](https://262.ecma-international.org/#sec-strict-mode-of-ecmascript), preventing functions from running in the global scope if invoked with a `null` or `undefined` scope. To make self-hosted JavaScript™ safe, we have to follow some rules. A potentially critical problem when writing self-hosted code is [__monkey patching__](https://en.wikipedia.org/wiki/Monkey_patch). This phenomenon occurs when our implementation makes a function call to an external function
+  which has been overwritten by user scripts.
   
-  __The snippet below is from `SelfHosting.cpp` and displays the available `MapObject` builtins:__
+  This problem can be mitigated by using __function invocations__.
+  We will use [`callFunction`](https://searchfox.org/mozilla-central/source/js/public/CallAndConstruct.h#68) and `callContentFunction` to call a function within the specific object scope.
+  For example, an invocation:
+  ```
+  callFunction(std_Map_entries, M);
+  ```
+  will correspond to calling the `entries` method on an instance `M` of `MapObject`.
+  
+  This example demonstrates that self-hosted code also has limited access to the C++ builtins: only a select set, defined in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp), is accessible. 
+  For `MapObject`, the available builtins are:
 
+  |"ordinary" JavaScript™ function|corresponding C++ builtin|C++ hook definition|
+  |-------------------------------|-------------------------|-------------------|
+  |[`entries`](https://262.ecma-international.org/#sec-map.prototype.entries)|`std_Map_entries`|[`JS_FN("std_Map_entries", MapObject::entries, 0, 0)`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2383)|
+  |[`get(key)`](https://262.ecma-international.org/#sec-map.prototype.get)|`std_Map_set`|[`JS_FN("std_Map_get", MapObject::get, 1, 0)`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2384)|
+  |[`set(key, value)`](https://262.ecma-international.org/#sec-map.prototype.set)|`std_Map_get`|[`JS_FN("std_Map_set", MapObject::set, 2, 0)`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2385)|
+
+  These `MapObject` builtins are [defined](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2383) in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp):
   ```cpp
-
-  // Standard builtins used by self-hosting.
-  // Code snippet from SelfHosting.cpp
-  ...
+    // this code is from: /js/src/vm/SelfHosting.cpp
+    // ...
     JS_FN("std_Map_entries", MapObject::entries, 0, 0),
     JS_FN("std_Map_get", MapObject::get, 1, 0),
     JS_FN("std_Map_set", MapObject::set, 2, 0),
-  ...
-
+    // ...
   ```
+
+This is how calls to methods of a `Map` object in "ordidnary" JavaScript™ would be implemented in self-hosted JavaScript™:
+
+  |example of a function call in "ordinary" JavaScript™|example of an invocation in self-hosted JavaScript™|
+  |----------------------------------------------------|---------------------------------------------------|
+  |`M.entries()`|`callFunction(std_Map_entries, M)`|
+  |`M.get("myKey")`|!!!TODO!!!|
+  |`M.set("myKey", "myValue")`|!!!TODO!!!|
+  
+Besides `callFunction`, we will use `callContentFunction`. The table below summarizes the differences between these two functions. !!!TODO!!! proof-read the table !!!TODO!!!
+
+|aspect|`callFunction`|`callContentFunction`|
+|------|--------------|---------------------|
+|_applicability_|used to call general-purpose JavaScript functions in the execution context|used to call context scripts functions in sandboxes environments|
+|_API-level_|low-level JavaScript APIs|browser environments with context boundaries|
+|_security_|no specific security policies enforced|context security policies and sandboxing|
+
+
+  Apart from the functions made accessible in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp), the following functions **can be used in self-hosted JavaScript™**:
+  - other self-hosted functions (remember that "almost" everything is an object),
+  - some abstract operations and additional utility functions.
+
+
+  You can read more about self-hosted code <a href="https://udn.realityripple.com/docs/Mozilla/Projects/SpiderMonkey/Internals/self-hosting" target="_blank">here</a>.
+  
+  
+
 
   **Moving on with the implementation:**
   We have stored the `this` object and verified that is in fact an instance of `MapObject`. In the coming steps, the contents of this object will be manipulated. The next step tells us to store the contents of the `Map` as a `List`.
