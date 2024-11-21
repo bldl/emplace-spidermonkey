@@ -963,7 +963,7 @@ Now our implementation looks as follows:
 
   In this step, we’ll handle the scenario where the specified `key` doesn’t exist in the `Map`.
 
-  __The Specification States__
+  Let's look at the steps 5-8 in the specification of the `upsert` proposal:
 
    ```lua
    5. Let insertFn be ? Get(handler, "insert").
@@ -972,17 +972,17 @@ Now our implementation looks as follows:
    8. Return e.[[Value]].
    ```
 
-  This section is similar to our approach for updating an existing entry, except here we’re adding a new entry to the `Map`. If the `key` isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial `value` for this new `key`-`value` pair.
+  These steps are similar to how we updated an existing entry (compare with steps 4ai1.-4ai3. and 4aii.), with the difference that here we’re adding a new entry to the `Map`. If the `key` isn’t found, we retrieve the `insert` function from the `handler` and invoke it to generate the initial `value` for this new `key`-`value` pair.
 
-  The section uses similar techniques to the `update` scenario. Use the knowledge and experience you have gained so far to implement the `insert` handler.
+  The section uses similar techniques to the `update` scenario. We can implement the `insert` case as follows:
 
-   <details>
-   <summary>Solution</summary>
 
    ```js
    function MapUpsert(key, handler) {
+     // 1. Let M be the this value.
      var M = this;
-   
+
+     // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
      if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
        return callFunction(
          CallMapMethodIfWrapped,
@@ -992,51 +992,61 @@ Now our implementation looks as follows:
          "MapUpsert"
        );
      }
-   
+
+     // 3. Let entries be the List that is M.[[MapData]].
      var entries = callFunction(std_Map_entries, M);
-   
+
+     // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
      for (var e of allowContentIter(entries)) {
        var eKey = e[0];
        var eValue = e[1];
-       
+
+       // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, then
        if (SameValueZero(key, eKey)) {
+         // 4ai. If HasProperty(handler, "update") is `true`, then
          if (callFunction(Object_hasOwnProperty, handler, 'update')) {
+           // 4ai1. Let updateFn be ? Get(handler, "update").
            var updateFN = handler['update'];
+           // 4ai2. Let updated be ? Call(updateFn, handler, « e.[[Value]], key, M »).
            var updated = callContentFunction(updateFN, M, eValue, key);
+           // 4ai3. Set e.[[Value]] to updated.
            callFunction(std_Map_set, M, key, updated);
          }
-   
+
+         // 4aii. Return e.[[Value]].
          return callFunction(std_Map_get, M, key);
        }
      }
-   
+
+     // 5. Let insertFn be ? Get(handler, "insert").
      var insertFN = handler['insert'];
+
+     // 6. Let inserted be ? Call(insertFn, handler, « e.[[Value]], key, M »).
      var inserted = callFunction(insertFN, key, M);
+
+     // 7. Set e.[[Value]] to inserted.
      callFunction(std_Map_set, M, key, inserted);
-   
+
+     // 8. Return e.[[Value]].
      return callFunction(std_Map_get, M, key);
    }
    ```
 
-   </details>
 
-  ### Test the implementation
+  ### Testing the Implementation
 
-  Now that we have implemented the function, it's essential that we test it to verify it behaves as intended.
+  Now that we have implemented the function `MapUpsert`, it's essential that we test it to ensure that it behaves as intended.
 
-  Recall, you can create files and run them with the command:
+  Recall that we can create files and run them with the command `run`:
 
   ```sh
   ./mach run MyFileName.js
   ```
 
-  Create a script to test your implementation or use the sample script below:
-
-  <details>
-    <summary>Script</summary>
+  We can now create a script to test our implementation:
 
    ```js
-  console.log("Running tests for Map.prototype.upsert proposal...");
+  console.log("Running tests for Map.prototype.upsert proposal");
 
   // Utility function for logging test results
   function logResult(testName, actual, expected) {
@@ -1046,6 +1056,7 @@ Now our implementation looks as follows:
       console.log(actual === expected ? "Passed" : "Failed");
       console.log('------------------------------');
   }
+
 
   // Test 1: Update on existing key
   (function testUpdateExistingKey() {
@@ -1059,7 +1070,9 @@ Now our implementation looks as follows:
       logResult("Update on existing key", m.get("key"), "updated");
   })();
 
-  // Test 2: Insert on existing key (should not change existing value)
+
+  // Test 2: Insert on existing key
+  // Expectation: should not change the existing value
   (function testInsertExistingKey() {
       const m = new Map();
       m.set("key", "val");
@@ -1070,6 +1083,7 @@ Now our implementation looks as follows:
 
       logResult("Insert on existing key (no change)", m.get("key"), "val");
   })();
+
 
   // Test 3: Insert and update on existing key
   (function testInsertAndUpdateExistingKey() {
@@ -1084,7 +1098,9 @@ Now our implementation looks as follows:
       logResult("Insert and update on existing key", m.get("key"), "updated");
   })();
 
-  // Test 4: Update nonexistent key (should not update, no effect)
+
+  // Test 4: Update non-existent key
+  // Expectation: should not update, no effect
   (function testUpdateNonexistentKey() {
       const m = new Map();
 
@@ -1100,7 +1116,8 @@ Now our implementation looks as follows:
 
   })();
 
-  // Test 5: Insert nonexistent key
+
+  // Test 5: Insert non-existent key
   (function testInsertNonexistentKey() {
       const m = new Map();
 
@@ -1111,7 +1128,9 @@ Now our implementation looks as follows:
       logResult("Insert nonexistent key", m.get("nonexistent"), "inserted");
   })();
 
-  // Test 6: Insert and update nonexistent key (insert should happen)
+
+  // Test 6: Insert and update nonexistent key
+  // Expectation: insert should happen
   (function testInsertAndUpdateNonexistentKey() {
       const m = new Map();
 
@@ -1122,6 +1141,7 @@ Now our implementation looks as follows:
 
       logResult("Insert and update nonexistent key", m.get("nonexistent"), "inserted");
   })();
+
 
   // Test 7: Increment counter twice
   (function testIncrementCounter() {
@@ -1139,10 +1159,7 @@ Now our implementation looks as follows:
       });
       logResult("Increment counter second time", counter.get("a"), 2);
   })();
-
-
    ```
-  </details>
 
 
 </details>
