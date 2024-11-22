@@ -1159,90 +1159,83 @@ Now our implementation looks as follows:
       });
       logResult("Increment counter second time", counter.get("a"), 2);
   })();
-   ```
+  ```
 
 
 </details>
 
 <details open>
-   <summary><h2>Issues with the original proposal</h2></summary>
+   <summary><h2>Issues With the Original Proposal</h2></summary>
 
-The proposal we have dealt with so far introduced a flexible solution by allowing both an `update` and an `insert` function, which added unnecessary complexity to the usage of `upsert`. Flexibility is generally a good thing. However in the case of `Map.prototype.upsert`, the flexibility comes at the expense of simplicity and ease of use, which is very important for widespread adoption in programming languages.
+The proposal we have implemented provides a flexible solution by allowing both an `update` and an `insert` function. While flexibility is generally a good thing, here it adds unnecessary complexity to the usage of `upsert`. In other words, flexibility comes here at the expense of simplicity and ease of use which are very important for widespread adoption in programming languages.
 
-The process of checking if a `key` exists and then inserting it if not, is likely the primary, in-demand use case for this method. By following the steps of this proposal, the process became unnecessarily complicated. Most developers typically just need to insert a `value` if the given `key` is missing, rather than having to provide separate logic for both `insert` and `update`. 
+The most likely primary, in-demand use case of the `upsert` method is when a developer wants to check whether a `key` exists and, if it doesn't, to insert it into the map.
+That is, most developers typically would just need to insert a `value` if the given `key` is missing - rather than providing separate logic for both `insert` and `update`. 
+We can argue that the proposal design in its current form unnecessarily complicates the use of the `upsert` method for a majority of developers.
 
-In addition, the approach of the original proposal doesn't align well with common practices in other known programming languages. An example which offers a similar and simpler functionality is seen in Python and is called <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a>. You can read more about this method in the next section of the tutorial.
-
-By making it overcomplicated and a feature that is not commonly found in other languages, the method is at risk at being underutilized. Reducing the scope to a more straightforward function makes it more intuitive and more likely to be used effectively. 
+Moreover, the current design doesn't align well with common practices in other major programming languages.
+An example with a similar - and simpler - functionality is the <a href="https://docs.python.org/2/library/stdtypes.html#dict.setdefault" target="_blank">`setdefault`</a> method on dictionaries in Python. 
+Again, we can argue that being an overcomplicated feature not commonly found in other languages, the `upsert` method is at risk of being underutilized.
+Reducing the scope of the proposal, so that it has a more straightforward behaviour, would make it more intuitive and more likely to be used effectively by JavaScript™ developers. 
 
 </details>
 
 <details open>
-   <summary><h2>Explaining the new proposal</h2></summary>
+   <summary><h2>Redesigning the Proposal</h2></summary>
 
-  The new <a href="https://github.com/tc39/proposal-upsert" target="_blank">proposal</a> presents the idea of implementing two different versions. 
+As we already alluded, a common problem when using a `Map` is how to handle doing a `Map` entry when you're not sure if the `key` already exists in the `Map`.
+This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result. However, this is both inconvenient for the developer, and far from being optimal - because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
-  (1) Takes the arguments `key` and `value`. 
+A possible solution to this is to have a method with the following behaviour: it will check whether the given `key` already exists in the `Map`, and, if the `key` already exists, the `value` associated with the `key` will be returned. Otherwise, the new `key`-`value` pair will be inserted into the `Map`, before returning the newly input `value`.
 
-  (2) Takes the arguments `key` and `callbackfn`
-
-  Both the respective versions with `value` and `callbackfn` serves the same principle as a `get` or `insert` if missing method on the `MapObject`. For the remainder of this tutorial we will focus on the `upsert(key, value)` version.
-
-
-   **What is the motivation for a new proposal?**
-   A common problem when using a `Map` is how to handle doing a `Map` entry when you're not sure if the `key` already exists in the `Map`. This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result, but this is both inconvenient for the developer, and less than optimal, because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
-
-   **What is the solution?**
-   A method that will check whether the given `key` already exists in the `Map`. If the `key` already exists, the `value` associated with the `key` is returned. Otherwise the new `key-value` pair is inserted in to the `Map`, before returning the newly input `value`.
-
-   **Simple use of "new" upsert:**
+Let's look at an example of how the new method `upsert` can be used.
 
    ```js
-    // Currently
+    // ECMAScript 15.0 - without using the `upsert` proposal
     let prefs = new getUserPrefs();
     if (prefs.has("useDarkmode")) {
         let darkMode = prefs.get("useDarkmode");
     }
     else {
         prefs.set("useDarkmode", true);
-        darkMode = true; //Default value
+        darkMode = true; // `true` is the default value
     }
     
-    // Using upsert
+    // using the new design of the `upsert` proposal
     let prefs = new getUserPrefs();
-        prefs.upsert("useDarkmode", true); // Default to true
+    prefs.upsert("useDarkmode", true); // defaults to `true`
    ```
 
-By using `upsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is obviously because the `key` already exists and will `return` the existing `key` instead of inserting or overwriting.
+By using `upsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is so because the `key` would already exist and calling `upsert` will return the existing `key` instead of inserting or overwriting.
 
-<details>
-<summary>
-Similar functionality in Python
-</summary>
-As mentioned earlier in this tutorial, there are similar functionalities in other languages such as Python and its setdefault method. In our case we use upsert on Map's. The setdefault method is used on dictionaries, lets use a similar code example:
+We can compare this new behaviour of the `upsert` method with the Python's `setDefault` method on dictionaries.
 
 ```python
-# Without setdefault
+# without using `setdefault`
 prefs = {}
 if "useDarkmode" not in prefs : 
-  prefs["useDarkmode"] = True # Default value
-
+  prefs["useDarkmode"] = True # `True` is the default value
 dark_mode = prefs["useDarkmode"]
-```
 
-```python
-# Using setdefault
+# using `setdefault`
 prefs = {}
-prefs.setdefault("useDarkmode", True)
+prefs.setdefault("useDarkmode", True) # defaults to `True`
 ```
 
-</details>
 
-To implement the updated proposal, we first need to adapt the specification. 
+In the <a href="https://github.com/tc39/proposal-upsert" target="_blank">new version</a> of the `upsert` proposal, we will consider two different signatures for the method `upsert`:
+  - taking arguments `key` and `value`
+  - taking arguments `key` and `callbackfn`
 
-## A Draft of The New Specification For The Proposal.
+Both versions serve the same principle as `get` or `insert` if missing method on the `MapObject`.
+For the remainder of this tutorial, we will focus on the `upsert(key, value)` version.
 
-The new specification now looks like this. It draws similarities from the old specification and adapts to the newly specified behaviour we seek in the `Map.prototype.upsert` method.
+
+To implement the new proposal, we first need to adapt the specification. 
+
+## Drafting the New Specification of the Proposal
+
+The new specification draws from the original specification and adapts to the newly specified behaviour we described above.
 
   ```lua
   1. Let M be the this value.
@@ -1254,22 +1247,20 @@ The new specification now looks like this. It draws similarities from the old sp
   6. Return e.[[Value]].
   ```
 
-  The next section will be based on this draft of the new specification. Later in the tutorial we will look into how we can write the specification in ecmarkup.
-
-  An html version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/Map.prototype.getOrInsert.html" target="_blank">here.</a>
+An HTML version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/Map.prototype.getOrInsert.html" target="_blank">here</a>.
 
 </details>
 
 <details open>
-  <summary><h2>Implementing the new proposal</h2></summary>
+  <summary><h2>Implementing the New Proposal</h2></summary>
 
-  In this section, we will adapt our implementation to match the updated proposal specification. Fortunately, some of the logic from the previous implementation can be reused. Our goal here is to keep the code clean and efficient by making only the necessary adjustments.
+  We will now adapt our existing implementation of the original `upsert` proposal to match the updated specification.
+  As we can see, some of the logic from the previous implementation can be reused.
+  Our goal here is to make the necessary adjustments to the original implementation.
 
   ### Step 1-4 - The logic remains the same
 
   The first four steps remain unchanged from the original proposal.
-
-  __The Specification States:__
 
   ```lua
   1. Let M be the this value.
@@ -1278,16 +1269,15 @@ The new specification now looks like this. It draws similarities from the old sp
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   ```
 
-  These lines are similar to the previous proposal specification and they remain seemingly unchanged. Only a few altercations are introduced. We need to update the argument `handler` to `value`.
-
-  <details>
-    <summary>Solution</summary>
+  The only modification we make is that the `handler` of `MapUpsert` is now named `value`.
 
 ```js
 
 function MapUpsert(key, value) {
+  // 1. Let M be the this value.
   var M = this;
 
+  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
     return callFunction(
       CallMapMethodIfWrapped,
@@ -1298,44 +1288,41 @@ function MapUpsert(key, value) {
     );
   }
 
+  // 3. Let entries be the List that is M.[[MapData]].
   var entries = callFunction(std_Map_entries, M);
 
+  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   for (var e of allowContentIter(entries)) {
     var eKey = e[0];
     var eValue = e[1];
-
-    //...
+    // ...
   }
 }
-
 ```
 
-We are now ready to proceed and update the logic of the function.
+We are now ready to proceed with the steps 4a, 5 and 6 of the updated specification.
 
   </details>
 
   ### Step 4a - If the key exists, return the value
 
-  In this step, we implement the condition to handle the case when the `key` already exists in the `Map`.
-
-  __Specification Line:__
+  In this step, we implement the condition to handle the case when the `key` already exists in the `Map`:
 
   ```lua
   4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
   ```
 
-In the updated logic, we are only concerned with returning the existing `value` if the `key` is found, rather than handling updates. This is a streamlined approach that differs from our previous implementation.
-
-Use the built-in `std_Map_get` function to `return` the existing `value`.
-
-  <details>
-    <summary>Solution</summary>
+In this updated logic, we are only concerned with returning the existing `value` if the `key` is found, rather than handling updates.
+This is a streamlined approach that differs from our previous implementation.
+We use the built-in `std_Map_get` function to return the existing `value`:
 
 ```js
 
 function MapUpsert(key, value) {
+  // 1. Let M be the this value.
   var M = this;
 
+  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
     return callFunction(
       CallMapMethodIfWrapped,
@@ -1346,44 +1333,48 @@ function MapUpsert(key, value) {
     );
   }
 
+  // 3. Let entries be the List that is M.[[MapData]].
   var entries = callFunction(std_Map_entries, M);
 
+  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   for (var e of allowContentIter(entries)) {
     var eKey = e[0];
     var eValue = e[1];
 
+    // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
     if (SameValueZero(eKey, key)) {
       return callFunction(std_Map_get, M, key);
     }
   }
-}
 
+  // ...
+}
 ```
 
-With this code in place, our `MapUpsert` function will `return` the existing `value` if the `key` is found in the `Map`. If the `key` does not exist, the function will continue to the next steps, where we will handle inserting a new entry.
+Now the `MapUpsert` function will return the existing `value` if the `key` is found in the `Map`.
+If the `key` does not exist, the function will continue to the next steps which will handle inserting a new entry.
 
   </details>
 
-  ### Step 5 & 6 - Insert the new key value pair
+  ### Step 5 and 6 - Insert the new key value pair
 
-  Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and `return` it.
+  Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and return it:
 
-  __The Specification States:__
-  
   ```lua
   5. Set e.[[Value]] to value.
   6. Return e.[[Value]].
   ```
 
-  In this case, we will add the new `key`-`value` pair to the `Map` and then `return` the `value`. We can achieve this by using the built-in `Map::set` method, which allows us to add entries directly and efficiently.
+  We add the new `key`-`value` pair to the `Map` and then `return` the `value`.
+  This can be achieved by using the built-in `Map::set` method, which allows us to add entries directly and efficiently.
 
-  <details>
-    <summary>Solution</summary>
 
 ```js
 function MapUpsert(key, value) {
+  // 1. Let M be the this value.
   var M = this;
 
+  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
     return callFunction(
       CallMapMethodIfWrapped,
@@ -1394,26 +1385,29 @@ function MapUpsert(key, value) {
     );
   }
 
+  // 3. Let entries be the List that is M.[[MapData]].
   var entries = callFunction(std_Map_entries, M);
 
+  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   for (var e of allowContentIter(entries)) {
     var eKey = e[0];
     var eValue = e[1];
 
+    // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
     if (SameValueZero(eKey, key)) {
       return callFunction(std_Map_get, M, key);
     }
   }
 
+  // 5. Set e.[[Value]] to value.
   callFunction(std_Map_set, M, key, value);
 
+  // 6. Return e.[[Value]].
   return value;
 }
 ```
 
-  </details>
-
-With these fairly simple steps our new implementation is now more streamlined with a simpler and more attractive API.
+With these fairly simple steps our new implementation becomes simpler, and provides a more compelling API.
   
 </details>
 
