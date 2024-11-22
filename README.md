@@ -1412,46 +1412,39 @@ With these fairly simple steps our new implementation becomes simpler, and provi
 </details>
 
 <details open>
-    <summary><h2>Writing the new spec in ecmarkup</h2></summary>
-  
-  In this section, we will cover how to install and use Ecmarkup to write specifications for proposals. 
-  Ecmarkup is a markup language that is designed for technical specifications. 
-  This allows the authors to visualize and format complex algorithms, clauses and terms in a way that is both readable and structured. 
-  Regarding JavaScript-proposals, Ecmarkup provides a solid framework to document new algorithms or implementations so they align with the ECMAScript®-standards. 
+    <summary><h2>Rendering the New Specification Text Using _Ecmarkup_</h2></summary>
 
-  We will start with setting up the necessary tools to be able to use Ecmarkup, such as Node.js and Ecmarkup itself. 
-  Furthermore, we will check out how to format specification using Ecmarkup before guiding you through how to build your specification into an HTML document. 
+In this section, we will explain how to use [_Ecmarkup_](https://github.com/tc39/ecmarkup), which is a specialized markup language, to write and format **specification documents** for ECMAScript® and other web standards, so that they align with the formatting of these standards documents. 
+_Ecmarkup_ is specifically designed for technical specifications, and allows authors to visualize and format complex algorithms, clauses and terms in a way that is both readable and structured. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">ECMA-262 official webpage</a>, you can read the ECMAScript® specification with hyperlinks to used terms, algorithms, and syntax definitions. This enables easy navigation between different sections and components of the specification. These specifications are made with _Ecmarkup_.
+  
+We will explain how to install and use _Ecmarkup_ to render proposal specifications, and will write our updated `upsert` proposal specification using _Ecmarkup_.
+We will start with setting up the necessary tools to be able to use _Ecmarkup_: Node.js and _Ecmarkup_ itself. 
 
 * **Installing Node.js and Node Package Manager**
 
     <details>
-    <summary>
-    <b>Windows</b>
-    </summary>
+    <summary>For <b>Windows</b>:</summary>
 
-    1. First go to Node.js official website (<https://nodejs.org/en>), and download the Windows Installer (recommended version).
-
-    2. Run the installer and follow the instructions (make sure to check the box that says "Automatically install necessary tools").
-
-    3. Verify installation by opening Command Prompt and typing:
+    1. Download the Windows installer from the [Node.js webpage](https://nodejs.org/en).
+    2. Run the installer and follow the instructions. Make sure to enable the checkbox that says _Automatically install necessary tools_.
+    3. Verify the installation by executing the following in the command prompt:
 
     ```sh
     node -v
     npm -v
     ```
-  This should return the versions of Node.js and npm.
-
+  This should output the versions of Node.js and npm.
     </details>
 
     <details>
-    <summary><b>Mac</b></summary>
+    <summary>For <b>Mac</b>:</summary>
 
-    1. Open Terminal
-    2. Install Node.js via Homebrew by running the following command:
+    1. Open Terminal.
+    2. Install Node.js via [Homebrew](https://brew.sh/) by running the following command:
     ```sh
     brew install node
     ```
-    3. Verify installation by typing:
+    3. Verify installation by executing:
     ```sh
     node -v
     npm -v
@@ -1459,20 +1452,17 @@ With these fairly simple steps our new implementation becomes simpler, and provi
     </details>
 
     <details>
-    <summary><b>Linux</b></summary>
-
-    1. Open Terminal
-    2. Update your package list:
-
+    <summary>For <b>Linux</b>:</summary>
+      
+    1. Open Terminal.
+    2. Update the package list:
     ```sh
     sudo apt update
     ```
-
-    3. Install Node.js by running:
+    3. Install Node.js by executing:
     ```sh
     sudo apt install node.js spm
     ```
-
     4. Verify the installation:
     ```sh
     node -v
@@ -1482,21 +1472,22 @@ With these fairly simple steps our new implementation becomes simpler, and provi
 
 
 * **Installing <a href="https://tc39.es/ecmarkup/" target="_blank">Ecmarkup</a>**
-    * Windows/Mac/Linux
-        1. Open Command Prompt (Windows) or Terminal (Mac/Linux)
-        2. Run the following command to install Ecmarkup globally:
+    * **Windows** / **Mac** / **Linux**
+        1. Open Command Prompt (Windows) or Terminal (Mac/Linux).
+        2. Run the following command to install _Ecmarkup_ globally:
       ```sh
       npm install -g ecmarkup
       ```
-        3. Verify that Ecmarkup has been installed by typing:
+        3. Verify that _Ecmarkup_ has been installed by executing:
       ```sh
       ecmarkup --version
       ```
-      You have now installed Ecmarkup.
+      You have now successfully installed _Ecmarkup_.
 
-* **How to write ecmarkup**
+* **How to write specifications using Ecmarkup**
 
-  Ecmarkup is a markup language used for writing technical specifications. It has a syntax similar to `HTML`, making it intuitive for those familiar with web development. Here's a simple example of what an algorithm in a `.emu` file looks like (`.emu` is the file ending of an ecmarkup file):
+  _Ecmarkup_'s syntax is similar to HTML - this makes it intuitive for most web developers.
+  Files written using _Ecmakup_ have extension `.emu`; here is a simple example of such a file.
 
   ```html
   <!DOCTYPE html>
@@ -1524,24 +1515,25 @@ With these fairly simple steps our new implementation becomes simpler, and provi
   </emu-clause>
   ```
 
-  **Note:** This is just an example of how an Ecmarkup file should be structured. The algorithm itself is illustrative and not a real-world example.
+  <a href="!!!TODO!!!">Here</a> is how this document will look like when "compiled" to an HTML presentation.
 
-* **How to format spec text using Ecmarkup**
+  Please note that this is just an example of how an _Ecmarkup_ file should be structured. The algorithm itself is illustrative and is not a real-world example.
 
-  Formatting spec text using Ecmarkup involves understanding the differences between what each reperesents. ECMAScript® is a scripting language specification, while Ecmarkup is a specialized markup language used to write and format **specification documents** for ECMAScript® and other web standards.
+* **How to Format Specification Text Using _Ecmarkup_**
 
-    1. **Understanding why we need Ecmarkup**
+_Ecmarkup_ combines HTML-like tags with specific syntactic constructs to write formal specifications.
 
-       Ecmarkup combines HTML-like tags with specific syntactic constructs to write formal specifications. If you visit the <a href="https://tc39.es/ecma262/" target="_blank">TC39 official website</a> for ECMA-262, you can read ECMAScript® with hyperlinks to used terms, algorithms, and syntax definitions, allowing for easy navigation between different sections and components of the specification. These specifications are made with Ecmarkup.
-    2. **Basic translation steps**
-        * `<emu-alg>`: Defines an algorithm.
-        * `<emu-clause>`: Defines a clause/section in the specification.
-        * Underscores are used to refer to variables (`_varname_`).
-        * `<emu-xref>`: Link to other sections, clauses or algorithms within the specification.
-        * `*someBoldText*`: Make bold text with `*`.
-        * Use double square brackets (`[[...]]`) when documenting or referring to the internal, hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object.
+|_Ecmarkup tag/syntax_|explanation|
+|---------------------|-----------|
+|`<emu-alg>`|defines an algorithm|
+|`<emu-clause>`|defines a clause/section in the specification|
+|`<emu-xref>`|adding a link to a section, clause or an algorithm within the specification|
+|`[[ ... ]]` (_double square brackets_)|when documenting or referring to the internal hidden mechanisms of objects that are not directly accessible in the JavaScript™ language but are crucial for the implementation and behavior of the object|
+|`_varname_` (_underscores_)|referring to variables within the specification|
+|`*someBoldText*` (_asterisks_)|renders text in bold font|
 
-* The function `upsert(key, callbackfn)` in ecmarkup (can also be found under the spec-folder in this proposal)
+[Here](!!!TODO!!!link-to-the-file-in-the-spec-folder) is how we can write the new specification of the method `upsert(key, callbackfn)` using _Ecmarkup_. 
+
     ```html
       <!DOCTYPE html>
       <meta charset="utf8">
@@ -1571,16 +1563,19 @@ With these fairly simple steps our new implementation becomes simpler, and provi
 
 * **Building the spec**
 
-  To build the spec, use the following command:
+  After we have written a specification, we can build it to render as an HTML file:
 
     ```sh
       ecmarkup spec.emu out.html
     ```
 
   In this command:
-    * `spec.emu` is the source file where you have written your specification using Ecmarkup.
-    * `out.html` is the output file, which is a runnable HTML document.
-      To verify that your specification has been built correctly, simply drag-and-drop the `out.html` file into a web browser.
+    * `spec.emu` is the source file where we have written our specification using _Ecmarkup_,
+    * `out.html` is the output file, which is an HTML document.
+  To verify that our specification has been built correctly, we can open the [`out.html`](!!!TODO!!!link-to-the-local-file) file in a web browser and visually inspect it.
+
+
+Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es/ecmarkup/).
 
 </details>
 
