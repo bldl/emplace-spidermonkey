@@ -371,6 +371,7 @@ In this section, we’ll walk through the process of implementing the `Map.proto
 
   ```cpp
 // This code is from: /js/src/builtin/MapObject.cpp
+// ...
 const JSFunctionSpec MapObject::methods[] = {
     // ...
     JS_FN("set", set, 2, 0),
@@ -474,6 +475,7 @@ const JSFunctionSpec MapObject::methods[] = {
 
 ```js
 // This code is from: /js/src/builtin/Map.js
+// ...
 // ES2018 draft rev f83aa38282c2a60c6916ebc410bfdf105a0f6a54
 // 23.1.3.5 Map.prototype.forEach ( callbackfn [ , thisArg ] )
 function MapForEach(callbackfn, thisArg = undefined) {
@@ -542,7 +544,7 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
 
   These `MapObject` builtins are [defined](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2383) in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp):
   ```cpp
-    // this code is from: /js/src/vm/SelfHosting.cpp
+    // This code is from: /js/src/vm/SelfHosting.cpp
     // ...
     JS_FN("std_Map_entries", MapObject::entries, 0, 0),
     JS_FN("std_Map_get", MapObject::get, 1, 0),
@@ -1356,7 +1358,7 @@ If the `key` does not exist, the function will continue to the next steps which 
 
   </details>
 
-  ### Step 5 and 6 - Insert the new key value pair
+  ### Step 5 and 6 - Insert the new key-value pair
 
   Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and return it:
 
@@ -1582,35 +1584,41 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  A proposal goes through several <a href="https://www.proposals.es/stages" target="_blank">stages</a> before it becomes a part of the ECMAScript® language.
-  Every new feature introduces complexity, which can affect the performance of the SpiderMonkey engine.
-  Therefore optimization becomes crucial when designing and implementing these features.
-  In our case there is especially one line which could use some optimization:
+  Before a proposal becomes a part of the ECMAScript® language, it goes through several stages, as described in the [TC39 Process Document](https://tc39.es/process-document/).
+  
+  When a new feature in being added to the language, we must consider the complexity it introduces - this can affect the performance of the SpiderMonkey engine.
+  Therefore, optimization becomes crucial when designing and implementing proposals.
+  In our case, step 4 of the specification 
 
   ```lua
   4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   ```
+
+  could use some optimization.
   
-  As of right now it is implemented like this:
+  Currently, this step is implemented like this:
   ```js
+  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
   for (var e of allowContentIter(entries)) {
     var eKey = e[0];
     var eValue = e[1];
-    //...
+    // ...
   }
   ```
 
-  The worst case for this is that is loops through the entire `entries`. The result is a runtime of __`O(n)`__ where `n` is the size of the `Map`.
-  This is rather slow, considering a lookup in maps should be __`~O(1)`__, given an efficient `HashTable` implementation.
-  Therefore, we decided to try optimizing this line.
+  In the worst case scenario, the loop would go through all of the `entries`, resulting in linear time complexity (that is, `O(n)` where `n` is the size of the `Map`).
+  This is rather slow, especially considering that a lookup in maps could be done in a constant time (`~O(1)`), given an efficient `HashTable` implementation.
+  In this section, we use this fact to optimize the implementation of the step 4 in the specification.
 
-  **Demonstration: Create a new file; Runtime.js with the code below and run the script with `./mach build` and `./mach run Runtime.js`**
+  Before proceeding, we informally demonstrate the performance of the current design of `upsert`.
+  In the code below, we measure the runtime of of updating or inserting key-value pairs into a `Map` object:
+  using the `upsert` method vs. using `has`, `get`, and `set`.
+  The `measureRuntime` function is used to execute and log the execution time of each approach over a fixed number of iterations.
 
-  <details>
-    <summary>Runtime script</summary>
+  We can create a new file `Runtime.js` with the code below and run it with: `./mach build` and `./mach run Runtime.js`.
 
   ```js
-    const iterations = 1000; 
+  const iterations = 1000; 
 
   // Function to measure runtime of a given block of code
   function measureRuntime(callback, description) {
@@ -1626,7 +1634,7 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
       console.log(`Runtime: ${runtime} milliseconds \n`);
   }
 
-  // test upsert for e record of entries
+  // test `upsert` for e record of entries
   function withUpsert() {
       const m = new Map();
 
@@ -1637,7 +1645,7 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
       }
   }
 
-  //test without upsert
+  // test without `upsert`
   function withoutUpsert() {
       const m = new Map();
 
@@ -1652,132 +1660,140 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
       }
   }
 
-  console.log("Starting tests...");
-  measureRuntime(withUpsert, "Test upsert for " + iterations + " iterations");
-  measureRuntime(withoutUpsert, "Test without upsert for " + iterations + " iterations");
-
+  console.log("Starting tests ...");
+  measureRuntime(withUpsert, "Test `upsert` for " + iterations + " iterations");
+  measureRuntime(withoutUpsert, "Test without `upsert` for " + iterations + " iterations");
   ```
 
-  </details>
 
+  Now we are ready to consider how the step 4 in the specification can be implemented in a more optimal way.
+  One solution we could have is to check if an entry was in the `Map` using the function [`Map::has`](https://262.ecma-international.org/#sec-map.prototype.has).
+  The problem with this solution, however, is that this method is not currently exposed to self-hosted JavaScript™ code.
+  An apparent reason for this is that there has not been any need for the `Map::has` method in self-hosted code previously.
 
-  One solution we had, was to check if the entry was in the `Map`, by using `Map::has`.
-  The problem with this, is that this method is not currently exposed to self-hosted JavaScript™ code. The reason for this
-  is seemingly because there has not been any need for the `Map::has` method in self-hosted code previously.
-
-  **Exposing `std_Map_has` to self-hosted code**
-
-  `Selfhosting.cpp`
+  Recall the `Map` methods exposed to self-hosted code in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2383):
   ```cpp
-
+    // This code is from: /js/src/vm/SelfHosting.cpp
+    // ...
     // Standard builtins used by self-hosting.
-    //...
+    // ...
     JS_FN("std_Map_entries", MapObject::entries, 0, 0),
     JS_FN("std_Map_get", MapObject::get, 1, 0),
     JS_FN("std_Map_set", MapObject::set, 2, 0),
-    //...
-
+    // ...
   ```
 
-  We want to add this line so that we can use `has` in our optimized implementation.
-
-  ```cpp  
-
-    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
-
-  ```
-
-  Copy the line and paste it into `js/src/vm/Selfhosting.cpp`, before `MapObject::set` (to ensure consistency across files).
-
-  <details>
-    <summary>Solution</summary>
+  We can expose `std_Map_has` to self-hosted code by adding the following line in `SelfHosting.cpp`:
   
   ```cpp
-
-  // Standard builtins used by self-hosting.
-  //...
-  JS_FN("std_Map_entries", MapObject::entries, 0, 0),
-  JS_FN("std_Map_get", MapObject::get, 1, 0),
-  JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
-  JS_FN("std_Map_set", MapObject::set, 2, 0),
-  //...
-
+    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
   ```
-  </details>
 
-  We also need to make the `has` method publicly exposed in `MapObject.h` to use it in self-hosted code.
+To ensure consistency across files, we add this line before `JS_FN("std_Map_set", MapObject::set, 2, 0),`, resulting in the following:
 
-  In `MapObject.h`, move this line from __private__ to __public__.
+```cpp
+    // This code is from: /js/src/vm/SelfHosting.cpp
+    // ...
+    // Standard builtins used by self-hosting.
+    // ...
+    JS_FN("std_Map_entries", MapObject::entries, 0, 0),
+    JS_FN("std_Map_get", MapObject::get, 1, 0),
+    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas), // we have added this line
+    JS_FN("std_Map_set", MapObject::set, 2, 0),
+    // ...
+  ```
+
+  We also need to make the method `has` publicly exposed in [`MapObject.h`](https://searchfox.org/mozilla-central/source/js/src/builtin/MapObject.h).
+  To do this, we replace the visibility modifier of [the method with signature](https://searchfox.org/mozilla-central/source/js/src/builtin/MapObject.h#217)  
 
   ```cpp
   [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp);
   ```
 
-  <details>
-  <summary>(This could be tricky) Let's break down the structure of the file: </summary>
+  from [`private`](https://searchfox.org/mozilla-central/source/js/src/builtin/MapObject.h#186) to [`public`](https://searchfox.org/mozilla-central/source/js/src/builtin/MapObject.h#109).
 
   ```cpp
+    // This code is from: /js/src/builtin/MapObject.h
+    // ...
     class MapObject : public NativeObject {
       public:
-        //...
+        // ...
         const ValueMap* getData() { return getTableUnchecked(); }
 
         [[nodiscard]] static bool get(JSContext* cx, unsigned argc, Value* vp);
         [[nodiscard]] static bool set(JSContext* cx, unsigned argc, Value* vp);
-        //add has here
+        // add `has` here
 
-        //...
+        // ...
 
       private: 
-        //...
+        // ...
         [[nodiscard]] static bool size_impl(JSContext* cx, const CallArgs& args);
         [[nodiscard]] static bool size(JSContext* cx, unsigned argc, Value* vp);
         [[nodiscard]] static bool get_impl(JSContext* cx, const CallArgs& args);
         [[nodiscard]] static bool has_impl(JSContext* cx, const CallArgs& args);
-        [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp); //remove this line
+        [[nodiscard]] static bool has(JSContext* cx, unsigned argc, Value* vp); // remove this line
         [[nodiscard]] static bool set_impl(JSContext* cx, const CallArgs& args);
         [[nodiscard]] static bool delete_impl(JSContext* cx, const CallArgs& args);
         [[nodiscard]] static bool delete_(JSContext* cx, unsigned argc, Value* vp);
         [[nodiscard]] static bool keys_impl(JSContext* cx, const CallArgs& args);
-        //...
+        // ...
     }
-
   ```
-  </details>
 
-  The `std_Map_has` method should now be available in self-hosted JavaScript™.
+This will enable us to use [`has`](https://262.ecma-international.org/#sec-map.prototype.has) in our optimized implementation: in self-hosted JavaScript™, we will be able to call this method using `callFunction` and passing `std_Map_has` as an argument.
 
-  ### Optimize the function
+### Optimizing the implementation of `upsert`
 
-  With `has` now exposed to self-hosted code, alter your implementation to use `std_Map_has` instead of a `for-of` loop
-  and `SameValueZero`.
+  We can now modify our implementation of the `upsert` method to use `std_Map_has` instead of a _`for ... of`_ loop and [`SameValueZero`](https://262.ecma-international.org/#sec-samevaluezero).
 
-  <details>
-    <summary>Solution</summary>
+```js
+function MapUpsert(key, value) {
+  // 1. Let M be the this value. 
+  var M = this;
 
-    ```js
-      function MapUpsert(key, value) {
-        var M = this;
+  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(      
+      CallMapMethodIfWrapped, 
+      this,
+      key,
+      value,             
+      "MapUpsert"
+    );
+  }
 
-        if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-            return callFunction(      
-                CallMapMethodIfWrapped, 
-                this,
-                key,
-                value,             
-                "MapUpsert"
-            );
-        }
+  // 3. Let entries be the List that is M.[[MapData]].
+  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+  // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  if (callFunction(std_Map_has, M, key)) {
+    return callFunction(std_Map_get, M, key);
+  }
 
-        if (callFunction(std_Map_has, M, key)) {
-          return callFunction(std_Map_get, M, key);
-        }
+  // 5. Set e.[[Value]] to value.
+  callFunction(std_Map_set, M, key, value);
 
-        callFunction(std_Map_set, M, key, value);
-          return value;
-      }
-    ```
-  </details>
+  // 6. Return e.[[Value]].
+  return value;
+}
+```
+
+It is important to note that now our implementation does not follow the exact structure of the `upsert` specification text.
+This is a common practice - as long as we make sure that the produced
+[**observable behavior**](https://github.com/tc39/how-we-work/blame/cc47a79340a773876cb03371dc2d46b9d9ce9695/how-to-read.md#L7)
+is the same as the one defined by the spec.
+This ensures compatibility and correctness while allowing flexibility in optimization or internal design.
+
+We quote here a [comment](https://github.com/tc39/how-we-work/blame/cc47a79340a773876cb03371dc2d46b9d9ce9695/how-to-read.md#L7) on the [_How We Work_](https://github.com/tc39/how-we-work) document by TC39:
+
+> _Specification text is meant to be interpreted abstractly. Only the observable semantics, that is, the behavior when JavaScript™ code is executed, need to match the specification. Implementations can use any strategy they want to make that happen, including using different algorithms that reach the same result._
+
+Further discussion on this can be found [here](https://github.com/tc39/how-we-work/issues/104).
+
+Note also that we don't need to change the specification text to reflect our optimized implementation:
+the specification is intended to define behavior at an abstract level, providing a precise but implementation-agnostic guide for JavaScript™ engines.
+This abstraction ensures that the specification remains broadly applicable,
+leaving room for diverse implementations while guaranteeing consistent observable behavior across compliant engines.
   
 </details>
 
