@@ -1799,87 +1799,81 @@ leaving room for diverse implementations while guaranteeing consistent observabl
 
 <details open>
 
-   <summary><h2>Testing (Test262)</h2></summary>
+   <summary><h2>Testing with Test262</h2></summary>
    
    ### Writing tests for <a href="https://github.com/tc39/test262" target="_blank">Test262</a>
    When it comes to testing implementations, there are some guidelines to follow. 
-   The official guidelines state that an acceptable test in Test262 is the following:
-   ```
-   Any test that exercises observable grammar or semantics, originating with citable, 
-   ormative text in the latest draft of the ECMAScript® Language Specification, 
-   the ECMAScript® Internationalization API Specification, the The JSON Data Interchange Syntax, 
-   a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications.
-   ```
-
-   The key point for this, is that we can write tests for any observable grammar or semantic from our specification.
-
-   First we need to identify the so-called testable lines in our specification.
-   One way to think about it, is when the behaviour of the specification is observable to the user, it is testable.
+   The [official guidelines](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#acceptable-tests) state that an acceptable test in Test262 is the following:
    
-   An example of easily testable line in our specification is:
-   ```2. Perform ? RequireInternalSlot(M, [[MapData]])```
+   > _Any test that exercises observable grammar or semantics, originating with citable, normative text in the latest draft of the ECMAScript® Language Specification, the ECMAScript® Internationalization API Specification, the The JSON Data Interchange Syntax, a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications._
+   
+   The key point for this is that we can write tests for any observable grammar or semantic from our specification.
 
-   Recall that this line, among other things, checks if `this` is an Object, therefore we can test it by trying it on non-objects.
-   Primitive types in JavaScript™ are not considered objects.
-   So an example of the tests you can write for this, could look like this:
+   First, we need to identify the so-called _testable lines_ in our specification.
+   One way to think about it is this: whenever the behaviour of the specification is observable to the user, then it is testable.
+   
+   An example of an easily testable line in our specification is:
+   
+   ```lua
+   2. Perform ? RequireInternalSlot(M, [[MapData]]).
+   ```
+
+   Recall that this line, among other things, checks whether `this` is an `Object`. Therefore, we can test it by trying it on non-objects, for example, on [values of primitive types](https://262.ecma-international.org/#sec-primitive-value).
+   Here is an example of a test where we assert that calling the `upsert` method on `false` with arguments `1` and `1` will throw  `TypeError` exception:
    
    ```js
    var m = new Map();
-    
+
    assert.throws(TypeError, function () {
        m.upsert.call(false, 1, 1);
    });
    ```
 
-   The `assert` is part of the Test262 suite, here we assert that a TypeError is thrown.
+   The `assert` method is a part of the Test262 suite. You can find the rest of the functions for assert <a href="https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment" target="_blank">here</a>.
 
-   You can find the rest of the functions for assert <a href="https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-environment" target="_blank">here</a>.
+   ### More Than Just Testing
 
-   ### More than just testing
-
-   Additional to the tests, there is a strict guide for documentation for the test.
+   Test262 test should be documented in a [certain manner](https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#test-case-style). 
     
-   You start the test by declaring the copyright, here you just fill in the year and your name:
+   We start with stating the copyright:
    ```
    // Copyright (C) *Year *Name. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
    ```
 
-   The rest of the information is enclosed in a YAML string and has specified values to simplify parsing.
-   All the info is inside the YAML tags `/*---` and `---*/`.
+   The rest of the test meta-information is enclosed in a YAML string and mentions specific fields ("keys), some of which we explain in the table below.
+   The complete list of possible keys can be found <a href="https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter" target="_blank">here</a>.
 
-   We start with the required key `esid`, which is the ECMAScript® identifier. 
-   This doesn't apply to us yet, as the proposal hasn't gotten one, therefore we will use `pending`.
+   |field|explanation|
+   |-----|-----------|
+   |`esid`|reference to specification section, e.g. `sec-well-known-symbols`|
+   |`description`|short one-line description stating the purpose of the test, e.g., "Throws a TypeError if `this` is not an object"|
+   |`info`|verbose description of the test mentioning, e.g., what does the method look like, which line of code are we testing, etc.|
+
+   For our `upsert` specification, the required key `esid` is not applicable yet, as (at the time of writing) the proposal hasn't gotten one. Therefore, we will use `pending`.
 
    ```
    esid: pending
    ```
 
-   Next comes the description which is the other required key. 
-   The description should be short and on one line regarding the purpose of this testcase.
-   In our case, it will look something like: 
+   Next comes the `description` key. In our case, it will look like this: 
    ```
    description: >
         Throws a TypeError if 'this' is not an object
    ```
 
-   Although not required, we should fill out the `info` key as well.
-   Some points that are beneficial here are:
-    - What does the method look like?
-    - Which line of code are we testing?
+   Although not required, we fill out the `info` key as well:
 
    ```
    info: |
         Map.upsert( key , value )
         
-        1. Let M be the this value
-        2. Perform ? RequireInternalSlot(M, [[MapData]])
+        1. Let M be the this value.
+        2. Perform ? RequireInternalSlot(M, [[MapData]]).
         ... 
    ```
 
-   There are many other keys we can look at, but if you want to learn more about them, check out this <a href="https://github.com/tc39/test262/blob/main/CONTRIBUTING.md#frontmatter" target="_blank">link.</a>
-
-   Our full test should now look something like this:
+   Our full test should now look as follows:
    ```js
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
@@ -1900,8 +1894,10 @@ leaving room for diverse implementations while guaranteeing consistent observabl
        m.upsert.call(false, 1, 1);
    });
    ```
-   ### Fill in test cases
-   We can now fill in with other test cases (non-objects):
+
+   ### Filling in Test Cases
+   We can now fill in other test cases related to calling `upsert` on non-objects:
+   
    ```js
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
@@ -1943,16 +1939,19 @@ leaving room for diverse implementations while guaranteeing consistent observabl
        m.upsert.call(Symbol(), 1, 1);
    });
    ```
-
-   You can take a look at other tests written in the test262 folder or try to write some tests yourself.
+   You can take a look at other tests in the [`test262`](/test262) folder or try to write some tests yourself.
    
-   ### Running tests in SpiderMonkey
-   To add the test you simply create the file in `mozilla-unified/js/src/tests/test262/built-ins/Map/`. 
-   Preferably creating a folder for the proposal as well.
-
-   When this is done, you can run the tests with `./mach jstests built-ins/Map`, or be even more specific if you have created a folder.
+   ### Running Tests in SpiderMonkey
+   To add a test, we create a file with the test in `mozilla-unified/js/src/tests/test262/built-ins/Map/`.
+   It makes sense to create a folder for all the tests related to the proposal.
    
-   You will then see something like this, depending on how many tests are run:
+   We can run the tests by executing
+   
+   ```sh
+   ./mach jstests built-ins/Map
+   ```
+   
+   Depending on how many tests are run, the output of this command will be similar to the following:
    ```sh
    [1|0|0|0]  12% =====>                                                
    [2|0|0|0]  25% ============>                                         
@@ -1965,8 +1964,8 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    [8|0|0|0] 100% ======================================================>|   
    0.4s
    ```
-
-   A general tip for testing is looking at how similar lines are tested in other implementations.
+   
+   As with the implementation itself, a general tip when writing Test262 tests is to look at how similar lines in other specifications are tested.
 </details>
 
 
