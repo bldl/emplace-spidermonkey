@@ -187,6 +187,8 @@ public:
   [[nodiscard]] static bool set(JSContext *cx, unsigned argc, Value *vp);
   [[nodiscard]] static bool getOrInsert(JSContext *cx, unsigned argc,
                                         Value *vp);
+  [[nodiscard]] static bool getOrInsertComputed(JSContext *cx, unsigned argc,
+                                                Value *vp);
 
   static bool isOriginalSizeGetter(Native native) {
     return native == static_cast<Native>(MapObject::size);
@@ -221,6 +223,11 @@ private:
                                  Handle<HashableValue> key, Handle<Value> value,
                                  MutableHandleValue rval);
 
+  static inline bool getOrInsertComputed(JSContext *cx, MapObject *obj,
+                                         Handle<HashableValue> key,
+                                         Handle<Value> callbackfn,
+                                         MutableHandleValue rval);
+
   static bool finishInit(JSContext *cx, HandleObject ctor, HandleObject proto);
 
   static const ValueMap &extract(HandleObject o);
@@ -243,6 +250,8 @@ private:
   [[nodiscard]] static bool set_impl(JSContext *cx, const CallArgs &args);
   [[nodiscard]] static bool getOrInsert_impl(JSContext *cx,
                                              const CallArgs &args);
+  [[nodiscard]] static bool getOrInsertComputed_impl(JSContext *cx,
+                                                     const CallArgs &args);
   [[nodiscard]] static bool delete_impl(JSContext *cx, const CallArgs &args);
   [[nodiscard]] static bool delete_(JSContext *cx, unsigned argc, Value *vp);
   [[nodiscard]] static bool keys_impl(JSContext *cx, const CallArgs &args);

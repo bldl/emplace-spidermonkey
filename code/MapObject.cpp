@@ -517,7 +517,9 @@ const JSFunctionSpec MapObject::methods[] = {
     JS_FN("values", values, 0, 0),
     JS_FN("clear", clear, 0, 0),
     JS_SELF_HOSTED_FN("forEach", "MapForEach", 2, 0),
-    JS_FN("getOrInsert", MapObject::getOrInsert, 2, 0),
+    JS_SELF_HOSTED_FN("emplace", "MapEmplace", 2, 0),
+    JS_FN("getOrInsert", getOrInsert, 2, 0),
+    JS_FN("getOrInsertComputed", getOrInsertComputed, 2, 0),
     JS_FN("entries", entries, 0, 0),
     // @@iterator is re-defined in finishInit so that it has the
     // same identity as |entries|.
@@ -742,6 +744,7 @@ inline bool MapObject::getOrInsert(JSContext *cx, MapObject *obj,
 
   bool needsPostBarriers = obj->isTenured();
   if (needsPostBarriers) {
+    // Use the ValueMap representation which has post barriers.
     if (!PostWriteBarrier(obj, key.get())) {
       ReportOutOfMemory(cx);
       return false;
@@ -755,8 +758,10 @@ inline bool MapObject::getOrInsert(JSContext *cx, MapObject *obj,
     }
 
   } else {
+    // Use the PreBarrieredTable representation which does not.
     auto *preBarriedTable = reinterpret_cast<PreBarrieredTable *>(table);
-    if (const auto *p = preBarriedTable->getOrAdd(key.get(), value)) {
+    if (const PreBarrieredTable::Entry *p =
+            preBarriedTable->getOrAdd(key.get(), value)) {
       rval.set(p->value);
     } else {
       ReportOutOfMemory(cx);
@@ -766,6 +771,110 @@ inline bool MapObject::getOrInsert(JSContext *cx, MapObject *obj,
 
   return true;
 }
+/* static */
+inline bool MapObject::getOrInsertComputed(JSContext *cx, MapObject *obj,
+                                           Handle<HashableValue> key,
+                                           Handle<Value> callbackfn,
+                                           MutableHandleValue rval) {
+  ValueMap *table = obj->getTableUnchecked();
+  if (!table) {
+    return false;
+  }
+
+  if (MOZ_UNLIKELY(!callbackfn.isUndefined() && !IsCallable(callbackfn))) {
+    ReportValueError(cx, JSMSG_NOT_FUNCTION, JSDVG_IGNORE_STACK, callbackfn,
+                     nullptr);
+    return false;
+  }
+
+  if (const ValueMap::Entry *p = table->get(key.get())) {
+    rval.set(p->value);
+
+  } else {
+    RootedValue value(cx);
+    if (!Call(cx, callbackfn, UndefinedHandleValue, key, &value)) {
+      return false;
+    }
+
+    bool needsPostBarriers = obj->isTenured();
+    if (needsPostBarriers) {
+      // Use the ValueMap representation which has post barriers.
+      if (!PostWriteBarrier(obj, key.get()) ||
+          !table->put(key.get(), value.get())) {
+        ReportOutOfMemory(cx);
+        return false;
+      }
+      rval.set(value);
+
+    } else {
+      auto *preBarriedTable = reinterpret_cast<PreBarrieredTable *>(table);
+      if (!preBarriedTable->put(key.get(), value.get())) {
+        ReportOutOfMemory(cx);
+        return false;
+      }
+      rval.set(value);
+    }
+  }
+  return true;
+}
+/* static */
+// inline bool MapObject::getOrInsertComputed(JSContext* cx, MapObject* obj,
+//                                            Handle<HashableValue> key,
+//                                            Handle<Value> callbackfn,
+//                                            MutableHandleValue rval) {
+//   ValueMap* table = obj->getTableUnchecked();
+//   if (!table) {
+//     return false;
+//   }
+//
+//   if (MOZ_UNLIKELY(!callbackfn.isUndefined() && !IsCallable(callbackfn))) {
+//     ReportValueError(cx, JSMSG_NOT_FUNCTION, JSDVG_IGNORE_STACK, callbackfn,
+//                      nullptr);
+//     return false;
+//   }
+//
+//   bool needsPostBarriers = obj->isTenured();
+//   if (needsPostBarriers) {
+//     if (!PostWriteBarrier(obj, key.get())) {
+//       ReportOutOfMemory(cx);
+//       return false;
+//     }
+//
+//     if (const ValueMap::Entry* p = table->get(key.get())) {
+//       rval.set(p->value);
+//
+//     } else {
+//       RootedValue value(cx);
+//       if (!Call(cx, callbackfn, UndefinedHandleValue, key, &value)) {
+//         return false;
+//       }
+//
+//       if (!table->put(key.get(), value.get())) {
+//         return false;
+//       }
+//       rval.set(value);
+//     }
+//
+//   } else {
+//     auto* preBarriedTable = reinterpret_cast<PreBarrieredTable*>(table);
+//     if (const PreBarrieredTable::Entry* p = preBarriedTable->get(key.get()))
+//     {
+//       rval.set(p->value);
+//
+//     } else {
+//       RootedValue value(cx);
+//       if (!Call(cx, callbackfn, UndefinedHandleValue, key, &value)) {
+//         return false;
+//       }
+//
+//       if (!preBarriedTable->put(key.get(), value.get())) {
+//         return false;
+//       }
+//       rval.set(value);
+//     }
+//   }
+//   return true;
+// }
 
 MapObject *MapObject::create(JSContext *cx,
                              HandleObject proto /* = nullptr */) {
@@ -1030,6 +1139,22 @@ bool MapObject::getOrInsert(JSContext *cx, unsigned argc, Value *vp) {
   CallArgs args = CallArgsFromVp(argc, vp);
   return CallNonGenericMethod<MapObject::is, MapObject::getOrInsert_impl>(cx,
                                                                           args);
+}
+
+bool MapObject::getOrInsertComputed_impl(JSContext *cx, const CallArgs &args) {
+  MOZ_ASSERT(MapObject::is(args.thisv()));
+
+  MapObject *obj = &args.thisv().toObject().as<MapObject>();
+  ARG0_KEY(cx, args, key);
+  return getOrInsertComputed(cx, obj, key, args.get(1), args.rval());
+}
+
+bool MapObject::getOrInsertComputed(JSContext *cx, unsigned argc, Value *vp) {
+  AutoJSMethodProfilerEntry pseudoFrame(cx, "Map.prototype",
+                                        "getOrInsertComputed");
+  CallArgs args = CallArgsFromVp(argc, vp);
+  return CallNonGenericMethod<MapObject::is,
+                              MapObject::getOrInsertComputed_impl>(cx, args);
 }
 
 bool MapObject::delete_(JSContext *cx, HandleObject obj, HandleValue key,
