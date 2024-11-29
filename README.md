@@ -1584,9 +1584,7 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
 <details open>
    <summary><h2>Optimization</h2></summary>
   
-  Before a proposal becomes a part of the ECMAScript® language, it goes through several stages, as described in the [TC39 Process Document](https://tc39.es/process-document/).
-  
-  When a new feature in being added to the language, we must consider the complexity it introduces - this can affect the performance of the SpiderMonkey engine.
+  When a new feature is being added to the language, we must consider the complexity it introduces - this can affect the performance of the SpiderMonkey engine.
   Therefore, optimization becomes crucial when designing and implementing proposals.
   In our case, step 4 of the specification 
 
@@ -1807,7 +1805,7 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    
    > _Any test that exercises observable grammar or semantics, originating with citable, normative text in the latest draft of the ECMAScript® Language Specification, the ECMAScript® Internationalization API Specification, the The JSON Data Interchange Syntax, a Stage 3 proposal or a Pull Request which makes a normative change to any of those specifications._
    
-   The key point for this is that we can write tests for any observable grammar or semantic from our specification.
+   The key point for this is that we should write tests for any observable grammar or semantic from our specification.
 
    First, we need to identify the so-called _testable lines_ in our specification.
    One way to think about it is this: whenever the behaviour of the specification is observable to the user, then it is testable.
