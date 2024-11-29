@@ -565,7 +565,7 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
 
 |aspect|`callFunction`|`callContentFunction`|
 |------|--------------|---------------------|
-|_applicability_|used to call general-purpose JavaScript™ functions in the execution context|used to call context scripts functions in sandboxes environments|
+|_applicability_|used to call general-purpose JavaScript™ functions in the execution context|used to call context scripts functions in sandboxed environments|
 |_API-level_|low-level JavaScript™ APIs|browser environments with context boundaries|
 |_security_|no additional security policies enforced|context security policies and sandboxing|
 
