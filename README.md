@@ -636,7 +636,7 @@ From [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/S
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-  `Map` methods in self-hosted JavaScript™ use various methods to implement iteration. The specification states that we should use a _`for ... of` loop_. To implement this line, we again look at [implementations of the already existing methods](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js) and find how a `for ... of` loop can be implemented.  
+  `Map` methods in self-hosted JavaScript™ use various methods to implement iteration. The specification states that we should use a _`for ... of` loop_. To implement this line, we again look at [implementations of the already existing methods](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js) and find how a `for ... of` loop can be implemented. For this implementation we will use [`allowContentIter`(docmentation 29th nov. 2024)](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#122-135). This allows us to iterate through the map, using a _`for ... of` loop_, with `var e` representing en entry in the map. This way we can handle the keys using `e[0]` and the corresponding value with `e[1]`.
 
    ```js
    function MapUpsert(key, handler) {
