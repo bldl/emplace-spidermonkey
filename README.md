@@ -527,21 +527,6 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
   
   This problem can be mitigated by using __function invocations__.
   We will use `callFunction` and `callContentFunction` to call a function within the specific object scope.
-  From [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)
-  ```cpp
-  //     `obj.method(...)` syntax is forbidden in self-hosted JS, to avoid
-  //     accidentally exposing the internal, or allowing user code to modify the
-  //     behavior.
-  ```
-  Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Further, the specification states that if the callee could be user-provided, we should use `callContentFunction`.
-
-  Here are some some links about `callFunction`and `callContentFunction`:
-  |SearchFox (29th nov. 2024)|description|
-  |-------------------------------|-------------------------|
-  |[SearchFox `CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|Macro definitions|
-  |[SearchFox `SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|Syntactical explaination|
-  |[SearchFox `SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
-  
   For example, an invocation:
   ```
   callFunction(std_Map_entries, M);
@@ -579,11 +564,25 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
 
 |aspect|`callFunction`|`callContentFunction`|
 |------|--------------|---------------------|
-|_applicability_|used to call general-purpose JavaScript functions in the execution context|used to call context scripts functions in sandboxes environments|
-|_API-level_|low-level JavaScript APIs|browser environments with context boundaries|
+|_applicability_|used to call general-purpose JavaScript™ functions in the execution context|used to call context scripts functions in sandboxes environments|
+|_API-level_|low-level JavaScript™ APIs|browser environments with context boundaries|
 |_security_|no additional security policies enforced|context security policies and sandboxing|
 
+From [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)
+  ```cpp
+  //     `obj.method(...)` syntax is forbidden in self-hosted JS, to avoid
+  //     accidentally exposing the internal, or allowing user code to modify the
+  //     behavior.
+  ```
+  **To summarize `callFunction` and `callContentFunction`**, as stated in the documentation, the above format is ilegal in self-hosted JavaScript™. Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Furthermore, the specification states that if the callee could be user-provided, we should use `callContentFunction`.
 
+  Here are some links about `callFunction`and `callContentFunction`:
+  |SearchFox (29th nov. 2024)|description|
+  |--------------------------|-----------|
+  |[SearchFox `CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|Macro definitions|
+  |[SearchFox `SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|Syntactical explaination|
+  |[SearchFox `SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
+  
   Apart from the functions made accessible in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp), the following functions **can be used in self-hosted JavaScript™**:
   - other self-hosted functions (remember that "almost" everything is an object),
   - some abstract operations and additional utility functions.
