@@ -1305,7 +1305,6 @@ function MapUpsert(key, value) {
 
 We are now ready to proceed with the steps 4a, 5 and 6 of the updated specification.
 
-  </details>
 
   ### Step 4a - If the key exists, return the value
 
@@ -1357,7 +1356,7 @@ function MapUpsert(key, value) {
 Now the `MapUpsert` function will return the existing `value` if the `key` is found in the `Map`.
 If the `key` does not exist, the function will continue to the next steps which will handle inserting a new entry.
 
-  </details>
+
 
   ### Step 5 and 6 - Insert the new key-value pair
 
