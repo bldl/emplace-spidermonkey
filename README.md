@@ -1226,7 +1226,7 @@ prefs.setdefault("useDarkmode", True) # defaults to `True`
 ```
 
 
-In the <a href="https://github.com/tc39/proposal-upsert" target="_blank">new version</a> of the `upsert` proposal, we will consider two different signatures for the method `upsert`:
+In the <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/keyValueSpec.html" target="_blank">new version</a> of the `upsert` proposal, we will consider two different signatures for the method `upsert`:
   - taking arguments `key` and `value`
   - taking arguments `key` and `callbackfn`
 
