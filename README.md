@@ -541,6 +541,7 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
   |[SearchFox `CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|Macro definitions|
   |[SearchFox `SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|Syntactical explaination|
   |[SearchFox `SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
+  
   For example, an invocation:
   ```
   callFunction(std_Map_entries, M);
