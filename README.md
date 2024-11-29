@@ -533,7 +533,7 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
   //     accidentally exposing the internal, or allowing user code to modify the
   //     behavior.
   ```
-  Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Further, the specification states taht if the callee could be user-provided, we should use `callContentFunction`.
+  Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Further, the specification states that if the callee could be user-provided, we should use `callContentFunction`.
 
   Here are some some links about `callFunction`and `callContentFunction`:
   |SearchFox (29th nov. 2024)|description|
