@@ -1577,7 +1577,7 @@ The following is a demonstration of how we can write the new specification of th
       </emu-clause>
     ```
 
-* **Building the spec**
+* **Building the specification**
 
   After we have written a specification, we can build it to render as an HTML file:
 
