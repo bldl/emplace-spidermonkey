@@ -558,7 +558,7 @@ This is how calls to methods of a `Map` object in "ordidnary" JavaScript™ woul
   |----------------------------------------------------|---------------------------------------------------|
   |`M.entries()`|`callFunction(std_Map_entries, M)`|
   |`M.get("myKey")`|`callFunction(std_Map_get, M, "myKey")`|
-  |`M.set("myKey", "myValue")`|`callFunction(std_Map_set, M, "myKey")`|
+  |`M.set("myKey", "myValue")`|`callFunction(std_Map_set, M, "myKey", "myValue")`|
   
 Besides `callFunction`, we will use `callContentFunction`. The table below summarizes the differences between these two functions.
 
