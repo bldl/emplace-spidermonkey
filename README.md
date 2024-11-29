@@ -42,16 +42,16 @@ L. Angeltveit, J. Haukenes, V. Larsen, S. Lianes, M. Ness, M. Barash. Implementi
 ```mermaid
 flowchart TD
   A[Map.prototype.upsert proposal] --> B[Installing Mozilla Unified];
-  B --> C[Learning To Read ECMA-262 Specification];
-  C --> D[Using Searchfox to navigate Firefox source tool];
+  B --> C[Learning how to read ECMA-262 specification];
+  C --> D[Navigating Firefox source code with Searchfox];
   D --> E[Initial version of the proposal: 'key, handler'];
   E --> F[Implementing the initial proposal];
-  F --> G{Satisfied With The Proposal?};
-  G --> |no| H[Identify The Issues And Create A New Proposal];
-  H --> I[Create The New Specification];
+  F --> G{Committee feedback on the proposal};
+  G --> |changes required| H[Elaborating the proposal to address identified issues];
+  H --> I[Modifying the specification text];
   I --> F;
-  G --> |yes| J[Optimize The Proposal];
-  J --> K[Testing The Proposal];
+  G --> |no changes required| J[Optimizing the proposal implementation];
+  J --> K[Testing the proposal implementation];
 ```
 
 <details open>
