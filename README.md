@@ -553,7 +553,7 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
     // ...
   ```
 
-This is how calls to methods of a `Map` object in "ordidnary" JavaScript™ would be implemented in self-hosted JavaScript™:
+This is how calls to methods of a `Map` object in "ordinary" JavaScript™ would be implemented in self-hosted JavaScript™:
 
   |example of a function call in "ordinary" JavaScript™|example of an invocation in self-hosted JavaScript™|
   |----------------------------------------------------|---------------------------------------------------|
@@ -569,20 +569,20 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
 |_API-level_|low-level JavaScript™ APIs|browser environments with context boundaries|
 |_security_|no additional security policies enforced|context security policies and sandboxing|
 
-From [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)
+As described in [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114),
   ```cpp
   //     `obj.method(...)` syntax is forbidden in self-hosted JS, to avoid
   //     accidentally exposing the internal, or allowing user code to modify the
   //     behavior.
   ```
-  **To summarize `callFunction` and `callContentFunction`**, as stated in the documentation, the above format is ilegal in self-hosted JavaScript™. Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Furthermore, the specification states that if the callee could be user-provided, we should use `callContentFunction`.
+  As stated in the documentation, the `obj.method(...)` format is ilegal in self-hosted JavaScript™. Instead, we have to use `callFunction(callee, thisV, args...)` to invoke functions. Furthermore, the specification states that in case the callee could be user-provided, we should use `callContentFunction`.
 
   Here are some links about `callFunction`and `callContentFunction`:
   |SearchFox|description|
   |--------------------------|-----------|
-  |[SearchFox `CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|Macro definitions|
-  |[SearchFox `SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|Syntactical explaination|
-  |[SearchFox `SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
+  |[`CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|macro definitions|
+  |[`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|explanations regarding the special syntax|
+  |[`SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
   
   Apart from the functions made accessible in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp), the following functions **can be used in self-hosted JavaScript™**:
   - other self-hosted functions (remember that "almost" everything is an object),
