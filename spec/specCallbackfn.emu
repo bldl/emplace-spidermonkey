@@ -3,14 +3,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
 <script src="./spec.js"></script>
 <pre class="metadata">
-title: Map.prototype.emplace
+title: Map.prototype.upsert
 stage: 2
 contributors: Lauritz Angeltveit
 </pre>
 
-<emu-clause id="sec-map.prototype.emplace">
-  <h1>Map.prototype.emplace ( _key_, _callbackfn_ )</h1>
-  <p>When the emplace method is called the following steps are taken:</p>
+<emu-clause id="sec-map.prototype.upsert">
+  <h1>Map.prototype.upsert ( _key_, _callbackfn_ )</h1>
+  <p>When the upsert method is called the following steps are taken:</p>
   <emu-alg>
     1. Let _M_ be the *this* value.
     1. Perform ? RequireInternalSlot(_M_, [[MapData]]).
