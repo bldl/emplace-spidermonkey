@@ -526,7 +526,21 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
   which has been overwritten by user scripts.
   
   This problem can be mitigated by using __function invocations__.
-  We will use [`callFunction`](https://searchfox.org/mozilla-central/source/js/public/CallAndConstruct.h#68) and `callContentFunction` to call a function within the specific object scope.
+  We will use `callFunction` and `callContentFunction` to call a function within the specific object scope.
+  From [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)
+  ```cpp
+  //     `obj.method(...)` syntax is forbidden in self-hosted JS, to avoid
+  //     accidentally exposing the internal, or allowing user code to modify the
+  //     behavior.
+  ```
+  Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Further, the specification states taht if the callee could be user-provided, we should use `callContentFunction`.
+
+  Here are some some links about `callFunction`and `callContentFunction`:
+  |SearchFox (29th nov. 2024)|description|
+  |-------------------------------|-------------------------|
+  |[SearchFox `CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|Macro definitions|
+  |[SearchFox `SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|Syntactical explaination|
+  |[SearchFox `SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
   For example, an invocation:
   ```
   callFunction(std_Map_entries, M);
@@ -557,16 +571,16 @@ This is how calls to methods of a `Map` object in "ordidnary" JavaScript™ woul
   |example of a function call in "ordinary" JavaScript™|example of an invocation in self-hosted JavaScript™|
   |----------------------------------------------------|---------------------------------------------------|
   |`M.entries()`|`callFunction(std_Map_entries, M)`|
-  |`M.get("myKey")`|!!!TODO!!!|
-  |`M.set("myKey", "myValue")`|!!!TODO!!!|
+  |`M.get("myKey")`|`callFunction(std_Map_get, M, "myKey")`|
+  |`M.set("myKey", "myValue")`|`callFunction(std_Map_set, M, "myKey")`|
   
-Besides `callFunction`, we will use `callContentFunction`. The table below summarizes the differences between these two functions. !!!TODO!!! proof-read the table !!!TODO!!!
+Besides `callFunction`, we will use `callContentFunction`. The table below summarizes the differences between these two functions.
 
 |aspect|`callFunction`|`callContentFunction`|
 |------|--------------|---------------------|
 |_applicability_|used to call general-purpose JavaScript functions in the execution context|used to call context scripts functions in sandboxes environments|
 |_API-level_|low-level JavaScript APIs|browser environments with context boundaries|
-|_security_|no specific security policies enforced|context security policies and sandboxing|
+|_security_|no additional security policies enforced|context security policies and sandboxing|
 
 
   Apart from the functions made accessible in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp), the following functions **can be used in self-hosted JavaScript™**:
