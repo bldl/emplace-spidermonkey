@@ -527,7 +527,7 @@ At this point, our work-in-progress implementation of `MapUpsert` will look like
   which has been overwritten by user scripts.
   
   This problem can be mitigated by using __function invocations__.
-  We will use [`callFunction`](https://searchfox.org/mozilla-central/source/js/public/CallAndConstruct.h#68) and `callContentFunction` to call a function within the specific object scope.
+  We will use `callFunction` and `callContentFunction` to call a function within the specific object scope.
   For example, an invocation:
   ```
   callFunction(std_Map_entries, M);
@@ -558,18 +558,32 @@ This is how calls to methods of a `Map` object in "ordidnary" JavaScript™ woul
   |example of a function call in "ordinary" JavaScript™|example of an invocation in self-hosted JavaScript™|
   |----------------------------------------------------|---------------------------------------------------|
   |`M.entries()`|`callFunction(std_Map_entries, M)`|
-  |`M.get("myKey")`|!!!TODO!!!|
-  |`M.set("myKey", "myValue")`|!!!TODO!!!|
+  |`M.get("myKey")`|`callFunction(std_Map_get, M, "myKey")`|
+  |`M.set("myKey", "myValue")`|`callFunction(std_Map_set, M, "myKey", "myValue")`|
   
-Besides `callFunction`, we will use `callContentFunction`. The table below summarizes the differences between these two functions. !!!TODO!!! proof-read the table !!!TODO!!!
+Besides `callFunction`, we will use `callContentFunction`. The table below summarizes the differences between these two functions.
 
 |aspect|`callFunction`|`callContentFunction`|
 |------|--------------|---------------------|
-|_applicability_|used to call general-purpose JavaScript functions in the execution context|used to call context scripts functions in sandboxes environments|
-|_API-level_|low-level JavaScript APIs|browser environments with context boundaries|
-|_security_|no specific security policies enforced|context security policies and sandboxing|
+|_applicability_|used to call general-purpose JavaScript™ functions in the execution context|used to call context scripts functions in sandboxes environments|
+|_API-level_|low-level JavaScript™ APIs|browser environments with context boundaries|
+|_security_|no additional security policies enforced|context security policies and sandboxing|
 
+From [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)
+  ```cpp
+  //     `obj.method(...)` syntax is forbidden in self-hosted JS, to avoid
+  //     accidentally exposing the internal, or allowing user code to modify the
+  //     behavior.
+  ```
+  **To summarize `callFunction` and `callContentFunction`**, as stated in the documentation, the above format is ilegal in self-hosted JavaScript™. Instead we have to use `callFunction(callee, thisV, args...)` to invoke the function calls. Furthermore, the specification states that if the callee could be user-provided, we should use `callContentFunction`.
 
+  Here are some links about `callFunction`and `callContentFunction`:
+  |SearchFox (29th nov. 2024)|description|
+  |--------------------------|-----------|
+  |[SearchFox `CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|Macro definitions|
+  |[SearchFox `SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|Syntactical explaination|
+  |[SearchFox `SelfHosting.h`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#97-114)|`callFunction` vs. `callContentFunction`|
+  
   Apart from the functions made accessible in [`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp), the following functions **can be used in self-hosted JavaScript™**:
   - other self-hosted functions (remember that "almost" everything is an object),
   - some abstract operations and additional utility functions.
@@ -623,7 +637,7 @@ Besides `callFunction`, we will use `callContentFunction`. The table below summa
    4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
    ```
 
-  `Map` methods in self-hosted JavaScript™ use various methods to implement iteration. The specification states that we should use a _`for ... of` loop_. To implement this line, we again look at [implementations of the already existing methods](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js) and find how a `for ... of` loop can be implemented.  
+  `Map` methods in self-hosted JavaScript™ use various methods to implement iteration. The specification states that we should use a _`for ... of` loop_. To implement this line, we again look at [implementations of the already existing methods](https://hg.mozilla.org/mozilla-unified/file/tip/js/src/builtin/Map.js) and find how a `for ... of` loop can be implemented. For this implementation we will use [`allowContentIter`(docmentation 29th nov. 2024)](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.h#122-135). This allows us to iterate through the map, using a _`for ... of` loop_, with `var e` representing en entry in the map. This way we can handle the keys using `e[0]` and the corresponding value with `e[1]`.
 
    ```js
    function MapUpsert(key, handler) {
