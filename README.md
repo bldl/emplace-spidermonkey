@@ -1230,9 +1230,9 @@ In the <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/k
   - taking arguments `key` and `value`
   - taking arguments `key` and `callbackfn`
 
-Both versions serve the same principle as `get` or `insert` if missing method on the `MapObject`.
-For the remainder of this tutorial, we will focus on the `upsert(key, value)` version.
+Both versions serve the same principle as a `get` or `insert`-if-missing method on the `MapObject`. The different signatures offer more flexibility to the developer. The `value` version is simple and works for most use-cases, while the `callbackfn` version offers more versatility and could for example be used to compute a conditional insert-value.
 
+For the remainder of this tutorial, we will focus on the `upsert(key, value)` version.
 
 To implement the new proposal, we first need to adapt the specification. 
 
