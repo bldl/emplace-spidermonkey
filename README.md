@@ -1517,7 +1517,7 @@ We will start with setting up the necessary tools to be able to use _Ecmarkup_: 
   </pre>
 
   <emu-clause id="sec-greater-than-five">
-    <h1>greaterThanFive(_value_)</h1>
+    <h1>greaterThanFive (_value_)</h1>
     <p>When the greaterThanFive method is called, the following steps are taken:</p>
     <emu-alg>
       1. Let _x_ be _value_.
@@ -1531,7 +1531,7 @@ We will start with setting up the necessary tools to be able to use _Ecmarkup_: 
   </emu-clause>
   ```
 
-  <a href="!!!TODO!!!">Here</a> is how this document will look like when "compiled" to an HTML presentation.
+  <a href="https://bldl.github.io/upsert-tutorial/greaterThanFiveExample-spec/out.html">Here</a> is how this document will look like when "compiled" to an HTML presentation.
 
   Please note that this is just an example of how an _Ecmarkup_ file should be structured. The algorithm itself is illustrative and is not a real-world example.
 
@@ -1548,7 +1548,7 @@ _Ecmarkup_ combines HTML-like tags with specific syntactic constructs to write f
 |`_varname_` (_underscores_)|referring to variables within the specification|
 |`*someBoldText*` (_asterisks_)|renders text in bold font|
 
-[Here](!!!TODO!!!link-to-the-file-in-the-spec-folder) is how we can write the new specification of the method `upsert(key, callbackfn)` using _Ecmarkup_. 
+The following is a demonstration of how we can write the new specification of the method `upsert(key, callbackfn)` using _Ecmarkup_. 
 
     ```html
       <!DOCTYPE html>
@@ -1582,13 +1582,12 @@ _Ecmarkup_ combines HTML-like tags with specific syntactic constructs to write f
   After we have written a specification, we can build it to render as an HTML file:
 
     ```sh
-      ecmarkup spec.emu out.html
+    node -e 'fs.mkdirSync("build", { recursive: true })' && ecmarkup --load-biblio @tc39/ecma262-biblio --verbose spec.emu build/out.html --lint-spec
     ```
 
   In this command:
     * `spec.emu` is the source file where we have written our specification using _Ecmarkup_,
-    * `out.html` is the output file, which is an HTML document.
-  To verify that our specification has been built correctly, we can open the [`out.html`](!!!TODO!!!link-to-the-local-file) file in a web browser and visually inspect it.
+    * `out.html` is the output file, which is an HTML document. To verify that our specification has been built correctly, we can open the [`out.html`](https://bldl.github.io/upsert-tutorial/callbackfn-spec/specCallbackfn.html) file in a web browser and visually inspect it.
 
 
 Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es/ecmarkup/).
