@@ -28,11 +28,11 @@ Implementation in `Map.js`
         );
     }
 
-    if (callContentFunction(std_Map_has, M, key)) {
+    if (callFunction(std_Map_has, M, key)) {
         return callFunction(std_Map_get, M, key);
     }
 
-    callContentFunction(std_Map_set, M, key, value);
+    callFunction(std_Map_set, M, key, value);
     return value;
     }
 ```
