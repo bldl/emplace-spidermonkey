@@ -282,7 +282,7 @@ For example, in section <a href="https://262.ecma-international.org/15.0/index.h
 
 * Avoid diving into the complex parts right away.
 * Proceed with sections that describe common JavaScript™ features, such as [arrays](https://262.ecma-international.org/15.0/index.html#sec-array-objects) and [function objects](https://262.ecma-international.org/15.0/index.html#sec-function-objects).
-* **External Help**: Use resources like <a href="https://searchfox.org/" target="_blank">SearchFox.org</a> to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
+* **External Help**: Use resources like <a href="https://searchfox.org/" target="_blank">Searchfox.org</a> to browse and search for JavaScript™ engine implementations or additional explanations before checking the more technical spec.
 * You can also check out [_"How to Read the ECMAScript Specification"_](https://timothygu.me/es-howto/) or [_"Understanding ECMAScript"_](https://v8.dev/blog/tags/understanding-ecmascript): these are helpful guides on how to read the ECMA-262 Language Specification. 
 
 ### 7. Example: Understanding <a href="https://262.ecma-international.org/15.0/index.html#sec-array.prototype.push" target="_blank">`Array.prototype.push`</a>
@@ -344,7 +344,7 @@ In the implementation part of this tutorial, each line of the specification will
 <details open>
    <summary><h2>Searchfox</h2></summary>
 
-  <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a helpful tool. Searchfox provides an indexed view of the source code, allowing one to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like `Map` are handled. SearchFox helps you navigate a seemingly endless and confusing codebase.
+  <a href="https://searchfox.org/" target="_blank">Searchfox</a> is a helpful tool. Searchfox provides an indexed view of the source code, allowing one to efficiently search for specific files, functions, or keywords. For instance, you can trace the implementation of existing JavaScript™ features, see how certain functions interact with SpiderMonkey’s internal data structures, or find how built-in JavaScript™ objects like `Map` are handled. Searchfox helps you navigate a seemingly endless and confusing codebase.
 
 When implementing the `upsert` proposal, you will find that looking at existing implementations of similar functionality is often a good starting point. Combine the ECMA-262 Specification with Searchfox and look at existing code.
 
@@ -578,7 +578,7 @@ As described in [`SelfHosting.h`:](https://searchfox.org/mozilla-central/source/
   As stated in the documentation, the `obj.method(...)` format is ilegal in self-hosted JavaScript™. Instead, we have to use `callFunction(callee, thisV, args...)` to invoke functions. Furthermore, the specification states that in case the callee could be user-provided, we should use `callContentFunction`.
 
   Here are some links about `callFunction`and `callContentFunction`:
-  |SearchFox|description|
+  |Searchfox|description|
   |--------------------------|-----------|
   |[`CommonPropertyNames.h`](https://searchfox.org/mozilla-central/source/js/src/vm/CommonPropertyNames.h#81-84)|macro definitions|
   |[`SelfHosting.cpp`](https://searchfox.org/mozilla-central/source/js/src/vm/SelfHosting.cpp#2516-2529)|explanations regarding the special syntax|
