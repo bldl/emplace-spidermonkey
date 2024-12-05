@@ -59,7 +59,9 @@ flowchart TD
 
    **What is it?**
 
-   `Map.prototype.upsert` is a new method for `Map`-object in JavaScript™. The operation simplifies the process of inserting or updating key-value pairs in the `Map`: it checks for existence of a key and then either `insert`s or `update`s a key-value pair.
+   `Map.prototype.upsert` is a new method for <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">`Map`-object</a> in JavaScript™. The operation simplifies the process of inserting or updating key-value pairs in the `Map`: it checks for existence of a key and then either `insert`s or `update`s a key-value pair.  
+
+   This proposal is also intended for <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap">`WeakMap`</a>, which shares a similar API structure. The behavior of `upsert` in `WeakMap` would follow the same principles, with the primary difference being the behavior of keys in `WeakMap`, as they are held weakly and can be garbage collected when no other references to them exist. In this tutorial however, we will focus on the `Map`-implementation.
 
    **How does it work?**
    The `upsert` operation takes two arguments: a `key` and a `handler` object. The `handler` contains two properties:
