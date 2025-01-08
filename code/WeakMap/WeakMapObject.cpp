@@ -207,7 +207,7 @@ static bool getOrAddWeakMapEntryComputed(JSContext* cx,
                      MemoryUse::WeakMapObject);
   }
 
-  if (ValueValueWeakMap::AddPtr p = map->lookupForAdd(key)) {
+  if (ValueValueWeakMap::Ptr p = map->lookup(key)) {
     rval.set(p->value());
 
   } else {
