@@ -1259,11 +1259,12 @@ The new specification draws from the original specification and adapts to the ne
   ```lua
   1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
-  3. Let entries be the List that is M.[[MapData]].
-  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-    4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
-  5. Set e.[[Value]] to value.
-  6. Return e.[[Value]].
+  3. Set key to CanonicalizeKeyedCollectionKey(key).
+  4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+    4a. If p.[[Key]] is not empty and SameValue(p.[[Key]], _key_) is true, return p.[[Value]].
+  5. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+  6. Append p to M.[[MapData]].
+  7. Return value.
   ```
 
 An HTML version of the specification can be found <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/Map.prototype.getOrInsert.html" target="_blank">here</a>.
@@ -1284,36 +1285,32 @@ An HTML version of the specification can be found <a href="https://bldl.github.i
   ```lua
   1. Let M be the this value.
   2. Perform ? RequireInternalSlot(M, [[MapData]]).
-  3. Let entries be the List that is M.[[MapData]].
-  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+  3. Set key to CanonicalizeKeyedCollectionKey(key).
+  4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
   ```
 
   The only modification we make is that the `handler` of `MapUpsert` is now named `value`.
 
 ```js
 
-function MapUpsert(key, value) {
-  // 1. Let M be the this value.
+function MapGetOrInsert(key, value) {
+  // Step 1.  Let M be the this value.
   var M = this;
 
-  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  // Step 2.  Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
     return callFunction(
       CallMapMethodIfWrapped,
       this,
       key,
       value,
-      "MapUpsert"
+      "MapGetOrInsert"
     );
   }
 
-  // 3. Let entries be the List that is M.[[MapData]].
-  var entries = callFunction(std_Map_entries, M);
-
-  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-  for (var e of allowContentIter(entries)) {
-    var eKey = e[0];
-    var eValue = e[1];
+  // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
+  // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  for (var e of allowContentIter(callFunction(std_Map_entries, M);)) {
     // ...
   }
 }
@@ -1327,7 +1324,7 @@ We are now ready to proceed with the steps 4a, 5 and 6 of the updated specificat
   In this step, we implement the condition to handle the case when the `key` already exists in the `Map`:
 
   ```lua
-  4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  4a. If p.[[Key]] is not empty and SameValue(p.[[Key]], _key_) is true, return p.[[Value]].
   ```
 
 In this updated logic, we are only concerned with returning the existing `value` if the `key` is found, rather than handling updates.
@@ -1335,36 +1332,29 @@ This is a streamlined approach that differs from our previous implementation.
 We use the built-in `std_Map_get` function to return the existing `value`:
 
 ```js
-
-function MapUpsert(key, value) {
-  // 1. Let M be the this value.
+function MapGetOrInsert(key, value) {
+  // Step 1.  Let M be the this value.
   var M = this;
 
-  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  // Step 2.  Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
     return callFunction(
       CallMapMethodIfWrapped,
       this,
       key,
       value,
-      "MapUpsert"
+      "MapGetOrInsert"
     );
   }
 
-  // 3. Let entries be the List that is M.[[MapData]].
-  var entries = callFunction(std_Map_entries, M);
-
-  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-  for (var e of allowContentIter(entries)) {
-    var eKey = e[0];
-    var eValue = e[1];
-
-    // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
-    if (SameValueZero(eKey, key)) {
-      return callFunction(std_Map_get, M, key);
+  // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
+  // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  for (var e of allowContentIter(callFunction(std_Map_entries, M);)) {
+  // Step 4.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+    if (SameValueZero(p[0], key)) {
+      return p[1];
     }
   }
-
   // ...
 }
 ```
@@ -1379,8 +1369,9 @@ If the `key` does not exist, the function will continue to the next steps which 
   Now, we address the scenario where the `key` does not already exist in the `Map`. If the specified `key` is not found in the previous iteration step, `insert` the new `value` and return it:
 
   ```lua
-  5. Set e.[[Value]] to value.
-  6. Return e.[[Value]].
+  5. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+  6. Append p to M.[[MapData]].
+  7. Return value.
   ```
 
   We add the new `key`-`value` pair to the `Map` and then `return` the `value`.
@@ -1388,39 +1379,36 @@ If the `key` does not exist, the function will continue to the next steps which 
 
 
 ```js
-function MapUpsert(key, value) {
-  // 1. Let M be the this value.
+function MapGetOrInsert(key, value) {
+  // Step 1.  Let M be the this value.
   var M = this;
 
-  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  // Step 2.  Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
     return callFunction(
       CallMapMethodIfWrapped,
       this,
       key,
       value,
-      "MapUpsert"
+      "MapGetOrInsert"
     );
   }
 
-  // 3. Let entries be the List that is M.[[MapData]].
-  var entries = callFunction(std_Map_entries, M);
-
-  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-  for (var e of allowContentIter(entries)) {
-    var eKey = e[0];
-    var eValue = e[1];
-
-    // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
-    if (SameValueZero(eKey, key)) {
-      return callFunction(std_Map_get, M, key);
+  // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
+  // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  for (var e of allowContentIter(callFunction(std_Map_entries, M))) {
+  // Step 4.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+    if (SameValueZero(p[0], key)) {
+      return p[1];
     }
   }
 
-  // 5. Set e.[[Value]] to value.
+
+  // Step 5.  Let p be the Record { [[Key]]: key, [[Value]]: value }.
+  // Step 6.  Append p to M.[[MapData]].
   callFunction(std_Map_set, M, key, value);
 
-  // 6. Return e.[[Value]].
+  // Step 7.  Return value.
   return value;
 }
 ```
@@ -1604,17 +1592,15 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
   In our case, step 4 of the specification 
 
   ```lua
-  4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
+  4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
   ```
 
   could use some optimization.
   
   Currently, this step is implemented like this:
   ```js
-  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-  for (var e of allowContentIter(entries)) {
-    var eKey = e[0];
-    var eValue = e[1];
+  //  4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  for (var e of allowContentIter(callFunction(std_Map_entries, M))) {
     // ...
   }
   ```
@@ -1761,32 +1747,33 @@ This will enable us to use [`has`](https://262.ecma-international.org/#sec-map.p
   We can now modify our implementation of the `upsert` method to use `std_Map_has` instead of a _`for ... of`_ loop and [`SameValueZero`](https://262.ecma-international.org/#sec-samevaluezero).
 
 ```js
-function MapUpsert(key, value) {
-  // 1. Let M be the this value. 
+function MapGetOrInsert(key, value) {
+  // Step 1.  Let M be the this value.
   var M = this;
 
-  // 2. Perform ? RequireInternalSlot(M, [[MapData]]).
+  // Step 2.  Perform ? RequireInternalSlot(M, [[MapData]]).
   if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
-    return callFunction(      
-      CallMapMethodIfWrapped, 
+    return callFunction(
+      CallMapMethodIfWrapped,
       this,
       key,
-      value,             
-      "MapUpsert"
+      value,
+      "MapGetOrInsert"
     );
   }
 
-  // 3. Let entries be the List that is M.[[MapData]].
-  // 4. For each Record { [[Key]], [[Value]] } e that is an element of entries, do
-  // 4a. If e.[[Key]] is not empty and SameValueZero(e.[[Key]], key) is true, return e.[[Value]].
+  // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
+  // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  // Step 4.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
   if (callFunction(std_Map_has, M, key)) {
     return callFunction(std_Map_get, M, key);
   }
 
-  // 5. Set e.[[Value]] to value.
+  // Step 5.  Let p be the Record { [[Key]]: key, [[Value]]: value }.
+  // Step 6.  Append p to M.[[MapData]].
   callFunction(std_Map_set, M, key, value);
 
-  // 6. Return e.[[Value]].
+  // Step 7.  Return value.
   return value;
 }
 ```
@@ -1952,7 +1939,7 @@ leaving room for diverse implementations while guaranteeing consistent observabl
        m.upsert.call(Symbol(), 1, 1);
    });
    ```
-   You can take a look at other tests in the [`test262`](/test262) folder or try to write some tests yourself.
+   You can take a look at other tests in the [`test262`](/tests/test262) folder or try to write some tests yourself.
    
    ### Running Tests in SpiderMonkey
    To add a test, we create a file with the test in `mozilla-unified/js/src/tests/test262/built-ins/Map/`.
@@ -1979,6 +1966,85 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    ```
    
    As with the implementation itself, a general tip when writing Test262 tests is to look at how similar lines in other specifications are tested.
+
+<details open>
+
+   <summary><h2>Testing with non262</h2></summary>
+    As test262 is meant to be for javascript proposals that have gotten to step 2.7. When we want to implement our proposal in Spidermonkey, we write the tests as non262 tests. These will be very similar to the test262 ones. But some of the assertion functions are different and it does not have the same support for custom error codes. But if we have integrated them into spidermonkey as non262 tests, once the proposal reaches step 2.7, we will not have to reintegrate them as there exists a internal tool that mozilla uses to convert the tests into test262 automatic.
+
 </details>
 
+<details open>
 
+   <summary><h2>Implementing the second function</h2></summary>
+    Since the proposal was split into two parts, we now have to functions to implement. The first we have already done, and the second one we will do now.
+    
+  ```lua
+   1. Let M be the this value.
+   2. Perform ? RequireInternalSlot(M, [[MapData]]).
+   3. If IsCallable(callbackfn) is false, throw a TypeError exception.
+   4. Set key to CanonicalizeKeyedCollectionKey(key).
+   5. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+     a. If p.[[Key]] is not empty and SameValue(p.[[Key]], _key_) is true, return p.[[Value]].
+   6. Let _value_ be ? Call(callbackfn, undefined, «key»).
+   7. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+     a. If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, then
+        i. Set p.[[Value]] to value.
+       ii. Return value.
+   8. Let p be the Record { [[Key]]: key, [[Value]]: value }.
+   9. Append p to M.[[MapData]].
+  10. Return value.
+  ```
+  
+
+  ```js
+  function MapGetOrInsertComputed(key, callbackfn) {
+  // Step 1.  Let M be the this value.
+  var M = this;
+
+  // Step 2.  Perform ? RequireInternalSlot(M, [[MapData]]).
+  if (!IsObject(M) || (M = GuardToMapObject(M)) === null) {
+    return callFunction(
+      CallMapMethodIfWrapped,
+      this,
+      key,
+      callbackfn,
+      "MapGetOrInsertComputed"
+    );
+  }
+
+  // Step 3.  If IsCallable(callbackfn) is false, throw a TypeError exception.
+  if (!IsCallable(callbackfn)) {
+    ThrowTypeError(JSMSG_NOT_FUNCTION, DecompileArg(1, callbackfn));
+  }
+
+  // Step 4.  Set key to CanonicalizeKeyedCollectionKey(key).
+  // Step 5.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  // Step 5.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
+  if (callFunction(std_Map_has, M, key)) {
+    return callFunction(std_Map_get, M, key);
+  }
+
+  // Step 6.  Let value be ? Call(callbackfn, undefined, « key »).
+  var value = callContentFunction(callbackfn, undefined, key);
+
+  // Step 7.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  // Step 7.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, then
+  // Step 7.a.i.  Set p.[[Value]] to value.
+  // Step 8.  Let p be the Record { [[Key]]: key, [[Value]]: value }.
+  // Step 9.  Append p to M.[[MapData]].
+  callFunction(std_Map_set, M, key, value);
+
+  // Step 7.a.ii, 10. Return value.
+  return value;
+}
+```
+
+</details>
+
+<details open>
+
+   <summary><h2>Further optimization in C++</h2></summary>
+
+
+</details>

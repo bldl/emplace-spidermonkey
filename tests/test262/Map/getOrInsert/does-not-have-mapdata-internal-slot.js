@@ -9,6 +9,7 @@ info: |
     Map.getOrInsert ( key , value )
 
     ...
+    1. Let M be the this value.
     2. Perform ? RequireInternalSLot(M, [[MapData]])
     ...
 ---*/
