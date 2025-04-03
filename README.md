@@ -1210,9 +1210,11 @@ Reducing the scope of the proposal, so that it has a more straightforward behavi
 As we already alluded, a common problem when using a `Map` is how to handle doing a `Map` entry when you're not sure if the `key` already exists in the `Map`.
 This can be handled by first checking if the `key` is present, and then inserting or updating depending upon the result. However, this is both inconvenient for the developer, and far from being optimal - because it requires multiple lookups in the `Map` that could otherwise be handled in a single call.
 
-A possible solution to this is to have a method with the following behaviour: it will check whether the given `key` already exists in the `Map`, and, if the `key` already exists, the `value` associated with the `key` will be returned. Otherwise, the new `key`-`value` pair will be inserted into the `Map`, before returning the newly input `value`.
+A possible solution for this is to have a method with the following behaviour: it will check whether the given `key` already exists in the `Map`, and, if the `key` already exists, the `value` associated with the `key` will be returned. Otherwise, the new `key`-`value` pair will be inserted into the `Map`, before returning the newly input `value`.
 
-Let's look at an example of how the new method `upsert` can be used.
+Togheter with this redesign of the proposal, we will also change the name of the method to `getOrInsert`. This means that we must change the name of the hook we created earlier.
+
+Let's look at an example of how the new method `getOrInsert` can be used.
 
    ```js
     // ECMAScript 15.0 - without using the `upsert` proposal
@@ -1227,12 +1229,12 @@ Let's look at an example of how the new method `upsert` can be used.
     
     // using the new design of the `upsert` proposal
     let prefs = new getUserPrefs();
-    prefs.upsert("useDarkmode", true); // defaults to `true`
+    prefs.getOrInsert("useDarkmode", true); // defaults to `true`
    ```
 
-By using `upsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is so because the `key` would already exist and calling `upsert` will return the existing `key` instead of inserting or overwriting.
+By using `getOrInsert`, default values can be applied at different times, with the assurance that later defaults will not overwrite an existing `value`. This is so because the `key` would already exist and calling `getOrInsert` will return the existing `key` instead of inserting or overwriting.
 
-We can compare this new behaviour of the `upsert` method with the Python's `setDefault` method on dictionaries.
+We can compare this new behaviour of the `getOrInsert` method with the Python's `setDefault` method on dictionaries.
 
 ```python
 # without using `setdefault`
@@ -1247,13 +1249,13 @@ prefs.setdefault("useDarkmode", True) # defaults to `True`
 ```
 
 
-In the <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/keyValueSpec.html" target="_blank">new version</a> of the `upsert` proposal, we will consider two different signatures for the method `upsert`:
-  - taking arguments `key` and `value`
-  - taking arguments `key` and `callbackfn`
+In the <a href="https://bldl.github.io/upsert-tutorial/key-value-callback-spec/keyValueSpec.html" target="_blank">new version</a> of the `upsert` proposal, we will consider two different methods:
+  - `getOrInsert`: taking arguments `key` and `value`
+  - `getOrInsertComputed`: taking arguments `key` and `callbackfn`
 
 Both versions serve the same principle as a `get` or `insert`-if-missing method on the `MapObject`. The different signatures offer more flexibility to the developer. The `value` version is simple and works for most use-cases, while the `callbackfn` version offers more versatility and could for example be used to compute a conditional insert-value.
 
-For the remainder of this tutorial, we will focus on the `upsert(key, value)` version.
+For the remainder of this tutorial, we will focus on the `getOrInsert(key, value)` method. But we will also show the implementation for `getOrInsertComputed(key, callbackfn)` at the end.
 
 To implement the new proposal, we first need to adapt the specification. 
 
@@ -1280,12 +1282,13 @@ An HTML version of the specification can be found <a href="https://bldl.github.i
   <summary><h2>Implementing the New Proposal</h2></summary>
 
   We will now adapt our existing implementation of the original `upsert` proposal to match the updated specification.
+  We will also change the method name to `getOrInsert` to match the final proposal name.
   As we can see, some of the logic from the previous implementation can be reused.
   Our goal here is to make the necessary adjustments to the original implementation.
 
   ### Step 1-4 - The logic remains the same
 
-  The first four steps remain unchanged from the original proposal.
+  The first two steps remain unchanged from the original proposal, but step 3 has been modified to normalize zero values and step 4 has been simplified.  Normalizing zero values mean that -0 = 0 = +0.
 
   ```lua
   1. Let M be the this value.
@@ -1294,7 +1297,7 @@ An HTML version of the specification can be found <a href="https://bldl.github.i
   4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
   ```
 
-  The only modification we make is that the `handler` of `MapUpsert` is now named `value`.
+  Also, the parameter name `handler` of `MapUpsert` is now named `value`.
 
 ```js
 
@@ -1315,7 +1318,7 @@ function MapGetOrInsert(key, value) {
 
   // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
   // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
-  for (var e of allowContentIter(callFunction(std_Map_entries, M);)) {
+  for (var p of allowContentIter(callFunction(std_Map_entries, M);)) {
     // ...
   }
 }
@@ -1354,7 +1357,7 @@ function MapGetOrInsert(key, value) {
 
   // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
   // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
-  for (var e of allowContentIter(callFunction(std_Map_entries, M);)) {
+  for (var p of allowContentIter(callFunction(std_Map_entries, M);)) {
   // Step 4.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
     if (SameValueZero(p[0], key)) {
       return p[1];
@@ -1364,7 +1367,7 @@ function MapGetOrInsert(key, value) {
 }
 ```
 
-Now the `MapUpsert` function will return the existing `value` if the `key` is found in the `Map`.
+Now the `MapGetOrInsert` function will return the existing `value` if the `key` is found in the `Map`.
 If the `key` does not exist, the function will continue to the next steps which will handle inserting a new entry.
 
 
@@ -1401,7 +1404,7 @@ function MapGetOrInsert(key, value) {
 
   // Step 3.  Set key to CanonicalizeKeyedCollectionKey(key).
   // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
-  for (var e of allowContentIter(callFunction(std_Map_entries, M))) {
+  for (var p of allowContentIter(callFunction(std_Map_entries, M))) {
   // Step 4.a.  If p.[[Key]] is not empty and SameValue(p.[[Key]], key) is true, return p.[[Value]].
     if (SameValueZero(p[0], key)) {
       return p[1];
@@ -1543,7 +1546,7 @@ _Ecmarkup_ combines HTML-like tags with specific syntactic constructs to write f
 |`_varname_` (_underscores_)|referring to variables within the specification|
 |`*someBoldText*` (_asterisks_)|renders text in bold font|
 
-The following is a demonstration of how we can write the new specification of the method `upsert(key, callbackfn)` using _Ecmarkup_. 
+The following is a demonstration of how we can write the new specification of the method `getOrInsertComputed(key, callbackfn)` using _Ecmarkup_. 
 
     ```html
       <!DOCTYPE html>
@@ -1556,18 +1559,24 @@ The following is a demonstration of how we can write the new specification of th
       contributors: Lauritz Angeltveit
       </pre>
 
-      <emu-clause id="sec-map.prototype.upsert">
-        <h1>Map.prototype.upsert ( _key_, _callbackfn_ )</h1>
-        <p>When the upsert method is called the following steps are taken:</p>
+      <emu-clause id="sec-map.prototype.getOrInsertComputed">
+        <h1>Map.prototype.getOrInsertComputed ( _key_, _callbackfn_ )</h1>
+        <p>When the getOrInsertComputed method is called the following steps are taken:</p>
         <emu-alg>
           1. Let _M_ be the *this* value.
           1. Perform ? RequireInternalSlot(_M_, [[MapData]]).
-          1. If IsCallable(_callbackfn_) is false, throw a *TypeError* exception.
-          1. For each Record { [[Key]], [[Value]] } _e_ that is an element of _M_.[[MapData]], do:
-            1. If _e_.[[Key]] is not empty and SameValueZero(_e_.[[Key]], _key_) is *true*, return _e_.[[Value]].
-          1. Let _inserted_ be ? Call(_callbackfn_, _key_).
-          1. Set _e_.[[Value]] to _inserted_.
-          1. Return _e_.[[Value]].
+          1. If IsCallable(_callbackfn_) is *false*, throw a *TypeError* exception.
+          1. Set _key_ to CanonicalizeKeyedCollectionKey(_key_).
+          1. For each Record { [[Key]], [[Value]] } _p_ of _M_.[[MapData]], do
+            1. If _p_.[[Key]] is not ~empty~ and SameValue(_p_.[[Key]], _key_) is *true*, return _p_.[[Value]].
+          1. Let _value_ be ? Call(_callbackfn_, *undefined*, « _key_ »).
+          1. For each Record { [[Key]], [[Value]] } _p_ of _M_.[[MapData]], do
+            1. If _p_.[[Key]] is not ~empty~ and SameValue(_p_.[[Key]], _key_) is *true*, then
+              1. Set _p_.[[Value]] to _value_.
+              1. Return _value_.
+          1. Let _p_ be the Record { [[Key]]: _key_, [[Value]]: _value_ }.
+          1. Append _p_ to _M_.[[MapData]].
+          1. Return _value_.
         </emu-alg>
       </emu-clause>
     ```
@@ -1604,8 +1613,8 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
   
   Currently, this step is implemented like this:
   ```js
-  //  4. For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
-  for (var e of allowContentIter(callFunction(std_Map_entries, M))) {
+  // Step 4.  For each Record { [[Key]], [[Value]] } p of M.[[MapData]], do
+  for (var p of allowContentIter(callFunction(std_Map_entries, M))) {
     // ...
   }
   ```
@@ -1614,9 +1623,9 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
   This is rather slow, especially considering that a lookup in maps could be done in a constant time (`~O(1)`), given an efficient `HashTable` implementation.
   In this section, we use this fact to optimize the implementation of the step 4 in the specification.
 
-  Before proceeding, we informally demonstrate the performance of the current design of `upsert`.
+  Before proceeding, we informally demonstrate the performance of the current design of `getOrInsert`.
   In the code below, we measure the runtime of of updating or inserting key-value pairs into a `Map` object:
-  using the `upsert` method vs. using `has`, `get`, and `set`.
+  using the `getOrInsert` method vs. using `has`, `get`, and `set`.
   The `measureRuntime` function is used to execute and log the execution time of each approach over a fixed number of iterations.
 
   We can create a new file `Runtime.js` with the code below and run it with: `./mach build` and `./mach run Runtime.js`.
@@ -1638,19 +1647,19 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
       console.log(`Runtime: ${runtime} milliseconds \n`);
   }
 
-  // test `upsert` for e record of entries
-  function withUpsert() {
+  // test `getOrInsert` for p record of entries
+  function withGetOrInsert() {
       const m = new Map();
 
       var k = 0;
       while (k < iterations) {
-          m.upsert(k, "val");
+          m.getOrInsert(k, "val");
           k++;
       }
   }
 
-  // test without `upsert`
-  function withoutUpsert() {
+  // test without `getOrInsert`
+  function withoutGetOrInsert() {
       const m = new Map();
 
       var k = 0;
@@ -1665,8 +1674,8 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
   }
 
   console.log("Starting tests ...");
-  measureRuntime(withUpsert, "Test `upsert` for " + iterations + " iterations");
-  measureRuntime(withoutUpsert, "Test without `upsert` for " + iterations + " iterations");
+  measureRuntime(withUpsert, "Test `getOrInsert` for " + iterations + " iterations");
+  measureRuntime(withoutUpsert, "Test without `getOrInsert` for " + iterations + " iterations");
   ```
 
 
@@ -1690,7 +1699,7 @@ Note that you can find the official _Ecmarkup_ user guide [here](https://tc39.es
   We can expose `std_Map_has` to self-hosted code by adding the following line in `SelfHosting.cpp`:
   
   ```cpp
-    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
+    JS_FN("std_Map_has", MapObject::has, 1, 0, MapHas),
   ```
 
 To ensure consistency across files, we add this line before `JS_FN("std_Map_set", MapObject::set, 2, 0),`, resulting in the following:
@@ -1702,7 +1711,7 @@ To ensure consistency across files, we add this line before `JS_FN("std_Map_set"
     // ...
     JS_FN("std_Map_entries", MapObject::entries, 0, 0),
     JS_FN("std_Map_get", MapObject::get, 1, 0),
-    JS_INLINABLE_FN("std_Map_has", MapObject::has, 1, 0, MapHas), // we have added this line
+    JS_FN("std_Map_has", MapObject::has, 1, 0, MapHas), // we have added this line
     JS_FN("std_Map_set", MapObject::set, 2, 0),
     // ...
   ```
@@ -1747,9 +1756,9 @@ To ensure consistency across files, we add this line before `JS_FN("std_Map_set"
 
 This will enable us to use [`has`](https://262.ecma-international.org/#sec-map.prototype.has) in our optimized implementation: in self-hosted JavaScript™, we will be able to call this method using `callFunction` and passing `std_Map_has` as an argument.
 
-### Optimizing the implementation of `upsert`
+### Optimizing the implementation of `getOrInsert`
 
-  We can now modify our implementation of the `upsert` method to use `std_Map_has` instead of a _`for ... of`_ loop and [`SameValueZero`](https://262.ecma-international.org/#sec-samevaluezero).
+  We can now modify our implementation of the `getOrInsert` method to use `std_Map_has` instead of a _`for ... of`_ loop and [`SameValueZero`](https://262.ecma-international.org/#sec-samevaluezero).
 
 ```js
 function MapGetOrInsert(key, value) {
@@ -1824,13 +1833,13 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    ```
 
    Recall that this line, among other things, checks whether `this` is an `Object`. Therefore, we can test it by trying it on non-objects, for example, on [values of primitive types](https://262.ecma-international.org/#sec-primitive-value).
-   Here is an example of a test where we assert that calling the `upsert` method on `false` with arguments `1` and `1` will throw  `TypeError` exception:
+   Here is an example of a test where we assert that calling the `getOrInsert` method on `false` with arguments `1` and `1` will throw  `TypeError` exception:
    
    ```js
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.upsert.call(false, 1, 1);
+       m.getOrInsert.call(false, 1, 1);
    });
    ```
 
@@ -1883,11 +1892,11 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
    /*---
-   esid: pending
+   esid: proposal-upsert
    description: >
        Throws a TypeError if `this` is not an Object.
    info: |
-       Map.upsert ( key, value )
+       Map.prototype.getOrInsert ( key , value )
 
        1. Let M be the this value
        2. Perform ? RequireInternalSlot(M, [[MapData]])
@@ -1896,22 +1905,22 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.upsert.call(false, 1, 1);
+       m.getOrInsert.call(false, 1, 1);
    });
    ```
 
    ### Filling in Test Cases
-   We can now fill in other test cases related to calling `upsert` on non-objects:
+   We can now fill in other test cases related to calling `getOrInsert` on non-objects:
    
    ```js
    // Copyright (C) 2024 Sune Eriksson Lianes. All rights reserved.
    // This code is governed by the BSD license found in the LICENSE file.
    /*---
-   esid: pending
+   esid: proposal-upsert
    description: >
        Throws a TypeError if `this` is not an Object.
    info: |
-       Map.upsert ( key, value )
+       Map.prototype.getOrInsert ( key , value )
 
        1. Let M be the this value
        2. Perform ? RequireInternalSlot(M, [[MapData]])
@@ -1921,27 +1930,27 @@ leaving room for diverse implementations while guaranteeing consistent observabl
    var m = new Map();
 
    assert.throws(TypeError, function () {
-       m.upsert.call(false, 1, 1);
+       m.getOrInsert.call(false, 1, 1);
    });
 
    assert.throws(TypeError, function () {
-       m.upsert.call(1, 1, 1);
+       m.getOrInsert.call(1, 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.upsert.call("", 1, 1);
+       m.getOrInsert.call("", 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.upsert.call(undefined, 1, 1);
+       m.getOrInsert.call(undefined, 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.upsert.call(null, 1, 1);
+       m.getOrInsert.call(null, 1, 1);
    });
     
    assert.throws(TypeError, function () {
-       m.upsert.call(Symbol(), 1, 1);
+       m.getOrInsert.call(Symbol(), 1, 1);
    });
    ```
    You can take a look at other tests in the [`test262`](/tests/test262) folder or try to write some tests yourself.
