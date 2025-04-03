@@ -56,7 +56,7 @@ flowchart TD
   J --> K[Modifying the specification text];
   K --> H;
   I --> |no changes required| M[Optimizing the proposal implementation];
-  N --> O[Testing the proposal implementation];
+  M --> N[Testing the proposal implementation];
 ```
 
 <details open>
